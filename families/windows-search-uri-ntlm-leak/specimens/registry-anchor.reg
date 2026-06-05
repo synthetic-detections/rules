@@ -1,0 +1,11 @@
+Windows Registry Editor Version 5.00
+
+; Synthetic fragment showing the DelegateExecute CLSID that resolves search:
+; URIs — paired here with the URI scheme reference for the rule co-occurrence.
+
+[HKEY_CLASSES_ROOT\search]
+@="URL:search"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\search\shell\open\command]
+"DelegateExecute"="{90b9bce2-b6db-4fd3-8451-35917ea1081b}"

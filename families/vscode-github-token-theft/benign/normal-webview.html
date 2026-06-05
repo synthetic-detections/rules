@@ -1,0 +1,24 @@
+<!--
+  Benign baseline: a real-shape VS Code webview document.
+  Uses acquireVsCodeApi() and postMessage but does NOT dispatch synthetic
+  keyboard events to the host window, does NOT name installExtension, and
+  does NOT mention github.dev / api.github.com. Structurally similar to a
+  normal extension's webview, so it stresses the co-occurrence guard.
+-->
+<!doctype html>
+<html><head><meta charset="utf-8"><title>panel</title></head>
+<body>
+<button id="run">Refresh</button>
+<script>
+  const vscode = acquireVsCodeApi();
+  document.getElementById('run').addEventListener('click', () => {
+    vscode.postMessage({ type: 'refresh' });
+  });
+  window.addEventListener('message', (event) => {
+    const msg = event.data;
+    if (msg.type === 'data') {
+      document.body.dataset.value = msg.value;
+    }
+  });
+</script>
+</body></html>

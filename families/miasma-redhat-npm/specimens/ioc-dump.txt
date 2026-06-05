@@ -1,0 +1,39 @@
+Miasma — Mini Shai-Hulud variant against @redhat-cloud-services
+================================================================
+
+Disclosure dates: 2026-06-01 (Wiz, Aikido, Snyk, JFrog); 2026-06-02 Red Hat RHSB-2026-006
+Attribution: TTP overlap with TeamPCP's open-sourced Mini Shai-Hulud; not definitively attributed
+Repo description observed in attacker-controlled repos: "Miasma: The Spreading Blight"
+Greek-mythology rebranding marker: "spartan"
+
+Distinctive Google API User-Agent
+---------------------------------
+  google-api-nodejs-client/7.0.0 gl-node/20.11.0 gccl/7.0.0
+
+Compromised package coordinates (32 packages / 96 versions)
+-----------------------------------------------------------
+  @redhat-cloud-services/frontend-components
+  @redhat-cloud-services/frontend-components-utilities
+  @redhat-cloud-services/frontend-components-notifications
+  @redhat-cloud-services/rbac-client
+  @redhat-cloud-services/chrome
+  @redhat-cloud-services/host-inventory
+  @redhat-cloud-services/insights-common-typescript
+  @redhat-cloud-services/types
+
+Specific vulnerable version pins (per Wiz)
+------------------------------------------
+  frontend-components@7.7.2
+  frontend-components@7.7.3
+  frontend-components@7.7.5
+  rbac-client@9.0.3
+  rbac-client@9.0.4
+  rbac-client@9.0.6
+  chrome@2.3.1
+
+Caveats
+-------
+- Each infection generates a uniquely encrypted payload — hash IOCs do not survive.
+- Initial access (per RHSB-2026-006) was a compromised GitHub account whose commits
+  the org's CI/CD then dutifully published to npm via OIDC. The OIDC pipeline itself
+  was not the root cause.

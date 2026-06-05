@@ -1,0 +1,17 @@
+Ammar Askar VS Code github.dev OAuth-theft PoC — IOC reference dump
+====================================================================
+
+PoC repository:   ammaraskar/github-dev-token-steal-poc
+PoC delivery:     https://github.dev/ammaraskar/github-dev-token-steal-poc/blob/main/README.ipynb
+Attacker ext id:  AmmarTest.hello-ammar-github
+
+Bypass-primitive flags observed together in the manifest:
+  "skipPublisherTrust": true
+  "donotSync": true
+
+Command exercised by the synthetic keypress chain:
+  workbench.extensions.installExtension
+  Notifications: Accept Notification Primary Action  (bound to Ctrl+Shift+A)
+
+Exfil endpoint:
+  https://api.github.com/user/repos
