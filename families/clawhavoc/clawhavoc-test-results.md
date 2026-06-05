@@ -3,14 +3,6 @@
 Companion to `clawhavoc.yar`. Records the smoke-test results so the
 rule's expected behaviour is documented alongside the rule itself.
 
-> **No on-disk samples committed.** The original test used *notional*
-> specimens (see revision history below). Background research and
-> related notes live in `~/repos/another repo/agent-skill-supply-chain/`
-> (campaign writeups, IOC dumps); only the rule and this transcript
-> moved here. If you want to re-run the smoke test against real samples,
-> drop them into a local `specimens/` and `benign/` and follow the
-> commands in the table below.
-
 ## Environment
 
 | Item | Value |
