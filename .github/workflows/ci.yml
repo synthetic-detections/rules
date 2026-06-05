@@ -1,0 +1,226 @@
+name: ci
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+permissions:
+  contents: write
+
+jobs:
+  yara:
+    name: YARA smoke-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install YARA
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends yara
+          yara --version
+
+      - name: Compile-check + smoke-test every YARA family
+        shell: bash
+        run: |
+          set -u
+          fail=0
+          shopt -s nullglob
+          for yar in families/*/*.yar; do
+            fam=$(dirname "$yar")
+            name=$(basename "$fam")
+            echo "::group::$name"
+
+            if ! yara -w "$yar" /dev/null; then
+              echo "::error file=$yar::compile failed"
+              fail=1
+              echo "::endgroup::"
+              continue
+            fi
+            echo "compile OK"
+
+            if [ -d "$fam/specimens" ] && [ -n "$(ls -A "$fam/specimens" 2>/dev/null)" ]; then
+              alerts=$(yara -r "$yar" "$fam/specimens/" | wc -l)
+              if [ "$alerts" -eq 0 ]; then
+                echo "::error file=$yar::specimens produced 0 alerts (expected ≥1)"
+                fail=1
+              else
+                echo "specimens: $alerts alerts"
+              fi
+            else
+              echo "specimens: skipped (no corpus)"
+            fi
+
+            if [ -d "$fam/benign" ] && [ -n "$(ls -A "$fam/benign" 2>/dev/null)" ]; then
+              alerts=$(yara -r "$yar" "$fam/benign/" | wc -l)
+              if [ "$alerts" -ne 0 ]; then
+                echo "::error file=$yar::benign produced $alerts alerts (expected 0)"
+                yara -r "$yar" "$fam/benign/" | head -20
+                fail=1
+              else
+                echo "benign: clean"
+              fi
+            else
+              echo "benign: skipped (no corpus)"
+            fi
+
+            echo "::endgroup::"
+          done
+          exit $fail
+
+  snort:
+    name: Snort/Suricata smoke-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Suricata and scapy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends suricata python3-scapy tcpdump
+          sudo systemctl stop suricata 2>/dev/null || true
+          sudo systemctl disable suricata 2>/dev/null || true
+          suricata --build-info | head -1
+
+      - name: Regenerate PCAPs and smoke-test every Snort/Suricata family
+        shell: bash
+        run: |
+          set -u
+          fail=0
+          shopt -s nullglob
+          for rul in families/*/*.rules; do
+            fam=$(dirname "$rul")
+            name=$(basename "$fam")
+            echo "::group::$name"
+
+            if [ -f "$fam/pcap-gen.py" ]; then
+              (cd "$fam" && python3 pcap-gen.py)
+            fi
+
+            for pcap in "$fam"/pcaps/*.pcap; do
+              [ -f "$pcap" ] || continue
+              tag=$(basename "$pcap" .pcap)
+              out=$(mktemp -d)
+              suricata -k none -r "$pcap" -S "$rul" -l "$out" --runmode single >/dev/null 2>&1
+              alerts=$(wc -l < "$out/fast.log" 2>/dev/null || echo 0)
+
+              case "$tag" in
+                benign*)
+                  if [ "$alerts" -eq 0 ]; then
+                    echo "$tag: clean"
+                  else
+                    echo "::error file=$rul::$tag produced $alerts alerts (expected 0)"
+                    cat "$out/fast.log"
+                    fail=1
+                  fi
+                  ;;
+                attack*|bomb*)
+                  if [ "$alerts" -gt 0 ]; then
+                    echo "$tag: $alerts alerts"
+                  else
+                    echo "::error file=$rul::$tag produced 0 alerts (expected ≥1)"
+                    fail=1
+                  fi
+                  ;;
+                *)
+                  echo "$tag: $alerts alerts (no expectation — filename prefix not benign/attack/bomb)"
+                  ;;
+              esac
+            done
+
+            echo "::endgroup::"
+          done
+          exit $fail
+
+  release:
+    name: Build bundles and mint release
+    needs: [yara, snort]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install YARA for compile check
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends yara
+          yara --version
+
+      - name: Build YARA + Snort bundles
+        shell: bash
+        run: |
+          set -e
+          mkdir -p dist
+          built=$(date -u -Iseconds)
+          repo="https://github.com/${GITHUB_REPOSITORY}"
+
+          # ---- YARA bundle: dedup imports, then concat each family's rules ----
+          {
+            echo '/*'
+            echo " * ai-generated-detection-rules — YARA bundle"
+            echo " * Built:  $built"
+            echo " * Commit: $GITHUB_SHA"
+            echo " * Source: $repo"
+            echo " *"
+            echo ' * Per-family rule files are concatenated here. Imports were'
+            echo ' * deduplicated; per-family header comments and rule bodies are'
+            echo ' * preserved unchanged.'
+            echo ' */'
+            echo
+            grep -h '^import' families/*/*.yar | sort -u
+            echo
+            for yar in families/*/*.yar; do
+              echo "// ===== $(basename "$yar") ====="
+              grep -v '^import' "$yar"
+              echo
+            done
+          } > dist/ai-generated-detection-rules.yar
+
+          # ---- Snort bundle: simple concat with section headers ----
+          {
+            echo "# ai-generated-detection-rules — Snort/Suricata bundle"
+            echo "# Built:  $built"
+            echo "# Commit: $GITHUB_SHA"
+            echo "# Source: $repo"
+            echo "#"
+            echo "# Per-family rule files concatenated; sids are family-scoped"
+            echo "# (9000001+ HTTP/2 Bomb, 9000101+ Kirki, 9000201+ XENOFISCAL,"
+            echo "# 9000301+ Marimo) so no collisions."
+            echo
+            for rul in families/*/*.rules; do
+              echo "# ===== $(basename "$rul") ====="
+              cat "$rul"
+              echo
+            done
+          } > dist/ai-generated-detection-rules.rules
+
+          ls -la dist/
+
+      - name: Validate the YARA bundle compiles
+        run: yara -w dist/ai-generated-detection-rules.yar /dev/null
+
+      - name: Mint release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -e
+          tag="v$(date -u +%Y.%m.%d)-${GITHUB_SHA::7}"
+          title="Bundle $tag"
+          notes="Auto-built YARA + Snort/Suricata rule bundles for commit ${GITHUB_SHA::7}.
+
+          - \`ai-generated-detection-rules.yar\` — every YARA family concatenated, imports deduplicated.
+          - \`ai-generated-detection-rules.rules\` — every Snort/Suricata family concatenated.
+
+          Both files pass the per-commit smoke tests on this run."
+
+          gh release create "$tag" \
+            --title "$title" \
+            --notes "$notes" \
+            --target "$GITHUB_SHA" \
+            dist/ai-generated-detection-rules.yar \
+            dist/ai-generated-detection-rules.rules
