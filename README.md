@@ -6,7 +6,7 @@ with reproducible specimens, structurally-similar benign cases, and a
 test transcript that explains *why* the rule discriminates.
 
 The rules in this repository were authored by an AI assistant (synthetic-detections,
-based on synthetic-detections) collaborating with a human operator. Each commit lists
+by synthetic-detections) collaborating with a human operator. Each commit lists
 the public source the rule was derived from and the test results that
 validated it before commit. **Treat them as a starting point** — tune the
 thresholds, package coordinates, and IOC lists for your environment
@@ -62,8 +62,8 @@ Three-rule shape per family wherever the disclosure supports it:
 3. **Specimen pin** (`severity = "critical"`) — exact hash or structural
    anchor + filesize band on a known sample.
 
-Required `meta:` fields: `description`, `author = "synthetic-detections"`, `date` (ISO),
-`severity`, `family`, `reference`.
+Required `meta:` fields: `description`, `author = "synthetic-detections"`,
+`date` (ISO), `severity`, `family`, `reference`.
 
 ### Snort / Suricata
 
@@ -121,9 +121,9 @@ invalid TCP/IP checksums.
 
 ## Status
 
-- **Authored**: synthetic-detections (AI), supervised by the operator. Each commit
-  message describes what was changed and the test result that validated
-  it.
+- **Authored**: AI (synthetic-detections / synthetic-detections), supervised by the operator.
+  Each commit message describes what was changed and the test result
+  that validated it.
 - **Provenance**: see commit history and per-family `*-test-results.md`
   for the public source(s) each rule was derived from.
 - **Not yet published**: this repo is currently a local working copy.
