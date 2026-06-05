@@ -1,0 +1,4 @@
+HelloDoor indicators:
+  C2: female-disorder-beta-metropolitan.trycloudflare.com
+  RC4: fwr3errsettwererfs
+  Persistence: "tdll"="regsvr32.exe /s c:\\windows\\system32\\bad.dll"
