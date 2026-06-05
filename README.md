@@ -5,10 +5,10 @@ rules for current malware campaigns and vulnerabilities. Each rule ships
 with reproducible specimens, structurally-similar benign cases, and a
 test transcript that explains *why* the rule discriminates.
 
-The rules in this repository were authored by an AI assistant (synthetic-detections,
-by synthetic-detections) collaborating with a human operator. Each commit lists
-the public source the rule was derived from and the test results that
-validated it before commit. **Treat them as a starting point** — tune the
+The rules in this repository were authored by an AI assistant
+collaborating with a human operator. Each commit lists the public
+source the rule was derived from and the test results that validated
+it before commit. **Treat them as a starting point** — tune the
 thresholds, package coordinates, and IOC lists for your environment
 before deploying.
 
@@ -121,9 +121,8 @@ invalid TCP/IP checksums.
 
 ## Status
 
-- **Authored**: AI (synthetic-detections / synthetic-detections), supervised by the operator.
-  Each commit message describes what was changed and the test result
-  that validated it.
+- **Authored**: AI, supervised by the operator. Each commit message
+  describes what was changed and the test result that validated it.
 - **Provenance**: see commit history and per-family `*-test-results.md`
   for the public source(s) each rule was derived from.
 - **License**: MIT — see [LICENSE](LICENSE).
