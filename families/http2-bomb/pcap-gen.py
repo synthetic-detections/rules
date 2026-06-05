@@ -87,7 +87,9 @@ def build_pcap(client_pushes: list[bytes], out_path: str) -> None:
 
 
 def main() -> None:
-    here = "<host>/repos/another repo/families/http2-bomb/pcaps"
+    import os
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pcaps")
+    os.makedirs(here, exist_ok=True)
 
     # Benign: real-shape h2c GET, healthy 64 KiB receive window.
     benign_initial = PREFACE + settings_initial_window(65535) + headers_get_root(1)
