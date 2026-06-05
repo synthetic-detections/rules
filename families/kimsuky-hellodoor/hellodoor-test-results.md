@@ -3,18 +3,6 @@
 Companion to `hellodoor.yar`. Records the smoke-test results so the
 rule's expected behaviour is documented alongside the rule itself.
 
-> **Samples live in the research repo.** The `specimens/` and `benign/`
-> directories referenced below are committed to
-> `~/repos/another repo/kimsuky-hellodoor/`, not in this repo.
-> To re-run the smoke test:
-> ```
-> cd ~/repos/another repo/kimsuky-hellodoor
-> yara -r ~/repos/ai-generated-detection-rules/families/kimsuky-hellodoor/hellodoor.yar specimens/
-> yara -r ~/repos/ai-generated-detection-rules/families/kimsuky-hellodoor/hellodoor.yar benign/
-> ```
-> Re-verified 2026-06-05 after relocation; results unchanged from the
-> table below.
-
 ## Environment
 
 | Item | Value |
