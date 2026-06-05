@@ -103,8 +103,8 @@ $ yara -r families/ironworm-npm-worm/ironworm-npm-worm.yar families/ironworm-npm
   or kernel-side BTF inspection).
 - **Tor C2 traffic** — out of scope for filesystem YARA. A Snort rule on
   Tor circuit establishment from CI runners is the closest sibling, but
-  not committed because the FP load on mixed environments outweighs the
-  detection benefit (see `~/repos/another repo/`).
+  not included in this repo because the FP load on mixed environments
+  outweighs the detection benefit.
 - **Self-propagation via stolen Trusted Publishing tokens.** Catching new
   victim publications requires npm-registry-side monitoring (e.g.
   publisher-account anomaly detection) rather than YARA.
