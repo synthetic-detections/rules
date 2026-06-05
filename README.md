@@ -16,9 +16,11 @@ before deploying.
 
 | Family | YARA | Snort / Suricata | Disclosure |
 |---|:--:|:--:|---|
+| `clawhavoc` | ✅ | — | 2026-05 — ClawHavoc / OpenClaw agent-skill marketplace compromise (samples in `~/repos/another repo/`) |
 | `famous-chollima-packagist` | ✅ | — | 2026-05-30 Socket — DPRK supply-chain compromise of `roberts/leads` |
 | `http2-bomb` | ✅ | ✅ | 2026-06-03 Codex / Calif.io — HTTP/2 DoS, CVE-2026-49975 (Apache) |
 | `ironworm-npm-worm` | ✅ | — | 2026-06-04 JFrog / OX / Phoenix — Rust npm worm, eBPF, Tor C2 |
+| `kimsuky-hellodoor` | ✅ | — | 2026-05 Securelist — Kimsuky / APT43 Rust PebbleDash variant (samples in `~/repos/another repo/`) |
 | `kirki-cve-2026-8206` | — | ✅ | 2026-06-02 — Kirki WordPress plugin admin takeover |
 | `marimo-cve-2026-39987` | — | ✅ | 2026-05-29 Sysdig — Marimo notebook `/terminal/ws` RCE |
 | `miasma-redhat-npm` | ✅ | — | 2026-06-01 Wiz / Aikido / Snyk — Mini Shai-Hulud against `@redhat-cloud-services` |
