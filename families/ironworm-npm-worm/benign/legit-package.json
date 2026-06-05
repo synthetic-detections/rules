@@ -1,0 +1,16 @@
+{
+  "name": "react",
+  "version": "18.3.1",
+  "description": "React is a JavaScript library for building user interfaces.",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "author": "Meta Open Source <opensource@meta.com>",
+  "license": "MIT",
+  "dependencies": {
+    "loose-envify": "^1.1.0"
+  }
+}

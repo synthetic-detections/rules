@@ -1,0 +1,27 @@
+{
+  "name": "prettier-vscode",
+  "displayName": "Prettier - Code formatter",
+  "publisher": "esbenp",
+  "version": "10.4.0",
+  "engines": { "vscode": "^1.89.0" },
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "prettier.forceFormatDocument", "title": "Forced format document" },
+      { "command": "prettier.createConfigFile",    "title": "Create Prettier config" }
+    ],
+    "keybindings": [
+      {
+        "key": "shift+alt+f",
+        "command": "editor.action.formatDocument",
+        "when": "editorTextFocus && !editorReadonly"
+      }
+    ],
+    "configuration": {
+      "title": "Prettier",
+      "properties": {
+        "prettier.printWidth": { "type": "integer", "default": 80 }
+      }
+    }
+  }
+}
