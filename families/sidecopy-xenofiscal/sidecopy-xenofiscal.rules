@@ -1,0 +1,47 @@
+# sidecopy-xenofiscal.rules
+# ----------------------------------------------------------------------------
+# Operation XENOFISCAL — Pakistan-aligned SideCopy (Transparent Tribe / APT36
+# cluster) targeting Afghanistan's Ministry of Finance with XenoRAT 1.8.7.
+# Disclosed 2026-06-02 by Seqrite Labs.
+#
+# Delivery chain:
+#   Spear-phishing ZIP → Pashto-named LNK → mshta.exe → HTA from
+#   hxxp://abimj.edu.af/index.php and hxxp://abimj.edu.af/institute/cloudiya/
+#   → obfuscated JS → DLL loader (WayBroad.dll, Aotestpass.dll) drops
+#   XenoRAT 1.8.7 + decoy → C2 to 185.235.137.106 (AS59711 HZ Hosting).
+#   Hardcoded mutex: "clouda".
+#
+#   sid 9000201 — HTTP request to the compromised staging host abimj.edu.af
+#   sid 9000202 — HTTP GET for any .hta file with mshta-style User-Agent
+#                 (catches the loader stage even after C2 rotation)
+#   sid 9000203 — TCP/UDP traffic to the named XenoRAT C2 IP 185.235.137.106
+#
+# Scope: rules apply to plaintext HTTP/1.1 and L3 packet headers. TLS-
+# encrypted HTA delivery would need to be caught by TLS SNI rules on the
+# attacker hostname (a separate IDS deployment concern).
+# ----------------------------------------------------------------------------
+
+alert http any any -> any any ( \
+    msg:"XENOFISCAL HTTP request to compromised staging host abimj.edu.af (SideCopy)"; \
+    flow:to_server,established; \
+    content:"Host|3a 20|abimj.edu.af"; http_header; nocase; \
+    reference:url,www.seqrite.com/blog/operation-xenofiscal-sidecopy-deploying-persistent-xenorat-targeting-the-mof-afghanistan/; \
+    classtype:trojan-activity; \
+    sid:9000201; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"XENOFISCAL HTA download via mshta-style User-Agent (SideCopy loader stage)"; \
+    flow:to_server,established; \
+    content:"GET"; http_method; \
+    content:".hta"; http_uri; nocase; \
+    content:"Mozilla/4.0"; http_user_agent; \
+    content:"Trident"; http_user_agent; \
+    reference:url,www.seqrite.com/blog/operation-xenofiscal-sidecopy-deploying-persistent-xenorat-targeting-the-mof-afghanistan/; \
+    classtype:trojan-activity; \
+    sid:9000202; rev:1;)
+
+alert ip any any -> 185.235.137.106 any ( \
+    msg:"XENOFISCAL XenoRAT C2 (185.235.137.106 / AS59711 HZ Hosting)"; \
+    reference:url,www.seqrite.com/blog/operation-xenofiscal-sidecopy-deploying-persistent-xenorat-targeting-the-mof-afghanistan/; \
+    classtype:trojan-activity; \
+    sid:9000203; rev:1;)

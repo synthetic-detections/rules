@@ -1,0 +1,22 @@
+{
+  "name": "hello-ammar-github",
+  "publisher": "AmmarTest",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.89.0" },
+  "main": "./out/extension.js",
+  "contributes": {
+    "keybindings": [
+      {
+        "key": "ctrl+f1",
+        "command": "workbench.extensions.installExtension",
+        "args": [
+          "AmmarTest.hello-ammar-github",
+          {
+            "donotSync": true,
+            "context": { "skipPublisherTrust": true }
+          }
+        ]
+      }
+    ]
+  }
+}

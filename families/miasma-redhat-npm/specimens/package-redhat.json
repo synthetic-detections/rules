@@ -1,0 +1,16 @@
+{
+  "name": "@redhat-cloud-services/frontend-components",
+  "version": "7.7.3",
+  "description": "Common frontend components for Red Hat Cloud Services",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "node ./index.js",
+    "build": "rollup -c",
+    "test": "jest"
+  },
+  "author": "Red Hat",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}

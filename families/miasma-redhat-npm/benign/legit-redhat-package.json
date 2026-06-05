@@ -1,0 +1,17 @@
+{
+  "name": "@redhat-cloud-services/frontend-components",
+  "version": "7.7.1",
+  "description": "Common frontend components for Red Hat Cloud Services",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "author": "Red Hat",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "react": "^18.3.1",
+    "@patternfly/react-core": "^5.0.0"
+  }
+}

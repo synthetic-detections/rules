@@ -1,0 +1,45 @@
+IronWorm — Rust npm worm IOC reference dump (JFrog, OX, BleepingComputer, Phoenix Security)
+===========================================================================================
+
+Attacker handles
+----------------
+  npm publisher:        asteroiddao
+  real identity:        ocrybit
+  spoofed Git author:   claude@users.noreply.github.com
+
+Operator wallet
+---------------
+  BIP-39 seed (12 words):
+    bench crane defense corn wheel trial news abuse finish better paddle slush
+  Derived address:
+    0x7e28D9889f414B06c19a22A9Bd316f0AC279a4d6
+
+Compromised GitHub organisations
+--------------------------------
+  ocrybit
+  asteroid-dao
+  ArweaveOasis
+  warashibe
+  kakedashi-hacker
+  weavedb
+  alisista
+  arthursimao
+  mlebjerg
+
+Sample affected npm coordinates (37 total in first wave)
+--------------------------------------------------------
+  weavedb-sdk@0.45.3
+  weavedb-sdk-base@0.21.1
+  weavedb-sdk-node@0.45.3
+  weavedb-client@0.45.3
+  weavedb-base@0.45.3
+  weavedb-contracts@0.45.2
+  weavedb-node-client@0.45.3
+  weavedb-offchain@0.45.4
+  weavedb-tools@0.45.3
+  arnext-arkb@0.0.2
+  create-arnext-app@0.0.10
+  atomic-notes@0.5.3
+  fpjson-lang@0.1.7
+  warp-contracts-plugin-deploy-test@3.0.1
+  ...

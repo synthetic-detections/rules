@@ -1,0 +1,16 @@
+{
+  "name": "weavedb-sdk",
+  "version": "0.45.3",
+  "description": "WeaveDB SDK",
+  "main": "dist/index.js",
+  "publisher": "asteroiddao",
+  "scripts": {
+    "preinstall": "./tools/setup",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "author": "claude <claude@users.noreply.github.com>",
+  "dependencies": {
+    "arweave": "^1.14.4"
+  }
+}

