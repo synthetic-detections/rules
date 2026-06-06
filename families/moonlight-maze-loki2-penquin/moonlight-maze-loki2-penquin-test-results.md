@@ -17,6 +17,9 @@
 |---|---|---|---|
 | `specimens/loki2-strings.elf` | synthetic ELF64 with verbatim Phrack-51 LOKI2 format strings | `MoonlightMaze_LOKI2` | match |
 | `specimens/penquin-x64-strings.elf` | synthetic ELF64 with Penquin_x64 anchor strings (Leonardo) | `Penquin_Turla_LinuxBackdoor` | match |
+| `specimens/penquin-2014era.elf` | synthetic ELF64 with 2014 C2 + glibc/openssl/libpcap + sh wrapper | `Penquin_Turla_2014Era` | match |
+| `specimens/penquin-magic-packet.elf` | synthetic ELF64 with 2014 BPF filter expressions + 2020 0xbdbd0560 mask (both endians) + pcap_setfilter/eth0 | `Penquin_Turla_MagicPacket` | match |
+| `specimens/penquin-opcode.elf` | synthetic ELF64 embedding the first three Leonardo opcode sequences | `Penquin_Turla_Opcode_Leonardo` | match |
 | `specimens/ioc-dump.txt` | reference IOC dump (LOKI2 strings + 8 SHA-256 + campaign names) | `MoonlightMaze_LOKI2` + `MoonlightMaze_Penquin_IOC` | match |
 | `benign/normal-sshd.elf` | synthetic ELF64 with generic OpenSSH-style strings | none | no match |
 | `benign/random.bin` | 5 KiB urandom | none | no match |
@@ -39,10 +42,13 @@ COMPILE_OK
 ```
 $ yara -r families/moonlight-maze-loki2-penquin/moonlight-maze-loki2-penquin.yar \
         families/moonlight-maze-loki2-penquin/specimens/
-MoonlightMaze_LOKI2           …/loki2-strings.elf
-MoonlightMaze_LOKI2           …/ioc-dump.txt
-MoonlightMaze_Penquin_IOC     …/ioc-dump.txt
-Penquin_Turla_LinuxBackdoor   …/penquin-x64-strings.elf
+MoonlightMaze_LOKI2              …/loki2-strings.elf
+Penquin_Turla_LinuxBackdoor      …/penquin-x64-strings.elf
+Penquin_Turla_2014Era            …/penquin-2014era.elf
+Penquin_Turla_MagicPacket        …/penquin-magic-packet.elf
+Penquin_Turla_Opcode_Leonardo    …/penquin-opcode.elf
+MoonlightMaze_LOKI2              …/ioc-dump.txt
+MoonlightMaze_Penquin_IOC        …/ioc-dump.txt
 ```
 
 `ioc-dump.txt` matches `MoonlightMaze_LOKI2` (it quotes the verbatim
@@ -61,9 +67,12 @@ $ yara -r families/moonlight-maze-loki2-penquin/moonlight-maze-loki2-penquin.yar
 
 | File | Expected | Observed | Result |
 |---|---|---|---|
-| `loki2-strings.elf` | LOKI2 | LOKI2 | PASS |
-| `penquin-x64-strings.elf` | Penquin_Turla_LinuxBackdoor | fired | PASS |
-| `ioc-dump.txt` | LOKI2 + IOC | both | PASS |
+| `loki2-strings.elf` | `MoonlightMaze_LOKI2` | fired | PASS |
+| `penquin-x64-strings.elf` | `Penquin_Turla_LinuxBackdoor` | fired | PASS |
+| `penquin-2014era.elf` | `Penquin_Turla_2014Era` | fired | PASS |
+| `penquin-magic-packet.elf` | `Penquin_Turla_MagicPacket` | fired | PASS |
+| `penquin-opcode.elf` | `Penquin_Turla_Opcode_Leonardo` | fired | PASS |
+| `ioc-dump.txt` | `MoonlightMaze_LOKI2` + `MoonlightMaze_Penquin_IOC` | both | PASS |
 | `normal-sshd.elf` | clean | clean | PASS |
 | `random.bin` | clean | clean | PASS |
 
