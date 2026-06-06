@@ -16,7 +16,7 @@
    Kaspersky), Penquin_x64 (2020, Leonardo S.p.A. + Securelist), with
    tens of European and US hosts still compromised at disclosure time.
 
-   Three rules:
+   Six rules:
      1. MoonlightMaze_LOKI2 — original Phrack 51 LOKI2 implementation
         strings, structural names, and constants. Catches both the
         historical Moonlight Maze binaries and any modern derivative
@@ -25,9 +25,22 @@
      2. Penquin_Turla_LinuxBackdoor — ELF gate + Penquin_x64-era
         strings (Leonardo S.p.A. April 2020 disclosure). Detects the
         modern Linux Turla backdoor proper.
-     3. MoonlightMaze_Penquin_IOC — sweep over the nine SHA-256
+     3. MoonlightMaze_Penquin_IOC — sweep over the eight SHA-256
         Penquin Turla samples and the campaign-anchor strings, for
         historical hunts and IOC dumps.
+     4. Penquin_Turla_2014Era — 2014-era anchors: news-bbc.podzone C2,
+        80.248.65.183 IP, three MD5 hashes, and the statically-linked
+        glibc 2.3.2 / OpenSSL 0.9.6 / libpcap build fingerprint
+        (Kaspersky Securelist, December 2014).
+     5. Penquin_Turla_MagicPacket — Penquin's covert-channel
+        authentication anchors: the verbatim libpcap BPF filter
+        expressions for the 2014 samples (IDs 123 and 321) and the
+        2020 Penquin_x64 first-stage mask 0xbdbd0560, plus a
+        co-occurrence branch for cd00r-style pcap_setfilter on eth0.
+     6. Penquin_Turla_Opcode_Leonardo — verbatim republication of
+        Leonardo S.p.A.'s seven opcode byte sequences with explicit
+        attribution; catches Penquin samples that have had their
+        strings stripped.
 
    Sources:
      https://securelist.com/penquins-moonlit-maze/  (Kaspersky + KCL paper)
@@ -37,12 +50,20 @@
      https://phrack.org/issues/51/6.html  (LOKI2 source — Phrack 51 #6, daemon9/route, 1997)
      https://en.wikipedia.org/wiki/Moonlight_Maze
 
-   Acknowledgement: the Penquin-x64 string and opcode anchors used in
-   rules 2 and 3 trace to Leonardo S.p.A.'s public YARA (2026-04-24);
-   Neo23x0/signature-base also republishes them. This file bundles them
-   with the LOKI2-source-code lineage anchors (rule 1) so the historical
-   Moonlight Maze provenance and the modern Penquin detection sit in
-   one family.
+   Acknowledgements:
+     - The Penquin-x64 string anchors (rule 2) and the seven opcode
+       sequences (rule 6) trace to Leonardo S.p.A.'s public YARA
+       (2026-04-24); Neo23x0/signature-base also republishes them.
+       Reproduced here under fair-use for defensive purposes with
+       attribution preserved in the rule meta.
+     - The 2014-era Penquin C2/IP/MD5 anchors and the BPF magic-packet
+       filter expressions (rules 4 and 5) trace to the 2014 Kaspersky
+       Securelist write-up by Stefan Tanase et al.
+     - The LOKI2 source-code lineage anchors (rule 1) trace to
+       Phrack 51 #6 by daemon9/route (Sept 1997).
+   This file bundles all of the above into a single family so the
+   historical Moonlight Maze provenance and the modern Penquin
+   detection sit in one place.
 */
 
 rule MoonlightMaze_LOKI2
@@ -185,4 +206,129 @@ rule MoonlightMaze_Penquin_IOC
             // passing without operational context)
             or (($c_loki2 or $c_lokid) and $op_vartmp)
         )
+}
+
+rule Penquin_Turla_2014Era
+{
+    meta:
+        description = "2014-era Penquin Turla Linux backdoor — C2 hostname, IP, MD5 sample hashes, statically-linked-glibc/openssl/libpcap fingerprint (Kaspersky Securelist 2014)"
+        author      = "synthetic-detections"
+        date        = "2026-06-07"
+        severity    = "high"
+        family      = "moonlight-maze-loki2-penquin"
+        reference   = "https://securelist.com/the-penquin-turla-2/67962/"
+
+    strings:
+        // C2 hostname and IP from the original 2014 disclosure
+        $c2_dom = "news-bbc.podzone" ascii nocase
+        $c2_ip  = "80.248.65.183" ascii
+
+        // MD5 sample hashes published by Kaspersky in 2014
+        $md5_1 = "0994d9deb50352e76b0322f48ee576c6" ascii nocase
+        $md5_2 = "14ecd5e6fc8e501037b54ca263896a11" ascii nocase
+        $md5_3 = "19fbd8cbfb12482e8020a887d6427315" ascii nocase
+
+        // Build-environment fingerprint — statically-linked ancient
+        // crypto+pcap is what makes 2014 Penquin portable across nearly
+        // every Linux box and also what makes it stand out today
+        $glibc_old = "glibc2.3.2" ascii
+        $openssl_old = "OpenSSL 0.9.6" ascii nocase
+        $libpcap_old = "libpcap" ascii nocase
+
+        // Execution wrapper
+        $sh_wrapper = "/bin/sh -c " ascii
+
+    condition:
+        filesize < 5MB
+        and (
+            // Specific IOC strings — fire alone
+            $c2_dom or $c2_ip
+            or any of ($md5_*)
+            // Or build-fingerprint + execution wrapper inside an ELF
+            // (catches structural Penquin 2014-era samples even after
+            // C2/hash rotation)
+            or (
+                uint16(0) == 0x457F
+                and 2 of ($glibc_old, $openssl_old, $libpcap_old)
+                and $sh_wrapper
+            )
+        )
+}
+
+rule Penquin_Turla_MagicPacket
+{
+    meta:
+        description = "Penquin Turla BPF magic-packet authentication anchors — verbatim libpcap filter expressions (2014 IDs 123/321) and the 2020 Penquin_x64 0xbdbd0560 mask"
+        author      = "synthetic-detections"
+        date        = "2026-06-07"
+        severity    = "critical"
+        family      = "moonlight-maze-loki2-penquin"
+        reference   = "https://lab52.io/blog/looking-for-penquins-in-the-wild/"
+
+    strings:
+        // Verbatim BPF filter expressions from the 2014 samples (Kaspersky).
+        // These are highly specific — they would only appear in the actual
+        // Penquin binary OR in a writeup quoting it.
+        $bpf_id123_tcp = "tcp[8:4] & 0xe007ffff = 0xe003bebe" ascii
+        $bpf_id321_tcp = "tcp[8:4] & 0xe007ffff = 0x1bebe"  ascii
+        $bpf_udp_12    = "udp[12:4] & 0xe007ffff"           ascii
+
+        // The 2020 Penquin_x64 first-stage filter mask — a 32-bit
+        // constant the magic packet must match before further validation.
+        $mask_2020_str = "0xbdbd0560" ascii nocase
+        $mask_2020_le  = { 60 05 BD BD }   // little-endian as it would appear in x86 .rodata
+        $mask_2020_be  = { BD BD 05 60 }   // big-endian variant
+
+        // Behavioural anchors: libpcap setup on a single named interface
+        // (cd00r / Penquin pattern — promiscuous mode deliberately disabled)
+        $pcap_setfilter = "pcap_setfilter" ascii
+        $pcap_open_live = "pcap_open_live" ascii
+        $eth0_iface     = "eth0" ascii fullword
+
+    condition:
+        filesize < 5MB
+        and (
+            // Verbatim 2014 BPF filter expressions — fire alone
+            any of ($bpf_id123_tcp, $bpf_id321_tcp, $bpf_udp_12)
+            // 2020 magic-packet mask alone
+            or $mask_2020_str
+            or $mask_2020_le
+            or $mask_2020_be
+            // Or co-occurrence: a binary that uses libpcap + pcap_setfilter
+            // bound to eth0 (the Penquin / cd00r pattern). High confidence
+            // for ELF-gated co-occurrence; modern legitimate tools rarely
+            // bind their pcap filter to a hard-coded interface name in
+            // the same offset as their setfilter call.
+            or (
+                uint16(0) == 0x457F
+                and $pcap_setfilter and $pcap_open_live and $eth0_iface
+            )
+        )
+}
+
+rule Penquin_Turla_Opcode_Leonardo
+{
+    meta:
+        description = "Penquin_x64 opcode patterns republished verbatim from Leonardo S.p.A. 2026-04-24 (also in Neo23x0/signature-base apt_turla_penquin.yar). Catches Penquin samples that have had their strings stripped"
+        author      = "Leonardo S.p.A. (anchors) + synthetic-detections (packaging)"
+        date        = "2026-06-07"
+        severity    = "critical"
+        family      = "moonlight-maze-loki2-penquin"
+        reference   = "https://www.leonardo.com/documents/20142/10868623/Malware+Technical+Insight+_Turla+%E2%80%9CPenquin_x64%E2%80%9D.pdf"
+        attribution = "Anchor byte sequences are Leonardo S.p.A.'s original work; published 2026-04-24 under their public threat-research output and adopted by Neo23x0/signature-base as apt_turla_penquin.yar. Reproduced here under fair-use for defensive purposes with attribution preserved."
+
+    strings:
+        $op0 = { 8D 41 05 32 06 48 FF C6 88 81 E0 80 69 00 }
+        $op1 = { 48 FF C1 48 83 F9 49 75 E9 }
+        $op2 = { C7 05 9B 7D 29 00 1D 00 00 00 C7 05 2D 7B 29 00 65 74 68 30 C6 05 2A 7B 29 00 00 E8 }
+        $op3 = { BF FF FF FF FF E8 96 9D 0A 00 90 90 90 90 90 90 90 90 90 90 89 F0 }
+        $op4 = { 88 D3 80 C3 05 32 9A C1 D6 0C 08 88 9A 60 A1 0F 08 42 83 FA 08 76 E9 }
+        $op5 = { 8B 8D 50 DF FF FF B8 09 00 00 00 89 44 24 04 89 0C 24 E8 DD E5 02 00 }
+        $op6 = { 8D 5A 05 32 9A 60 26 0C 08 88 9A 20 F4 0E 08 42 83 FA 48 76 EB }
+        $op7 = { 8D 4A 05 32 8A 25 26 0C 08 88 8A 20 F4 0E 08 42 83 FA 08 76 EB }
+
+    condition:
+        uint16(0) == 0x457F
+        and filesize < 5MB
+        and 2 of them
 }
