@@ -25,6 +25,7 @@ before deploying.
 | `marimo-cve-2026-39987` | — | ✅ | 2026-05-29 Sysdig — Marimo notebook `/terminal/ws` RCE |
 | `miasma-redhat-npm` | ✅ | — | 2026-06-01 Wiz / Aikido / Snyk — Mini Shai-Hulud against `@redhat-cloud-services` |
 | `miasma-v2-phantom-gyp` | ✅ | — | 2026-06-05 Semgrep / StepSecurity / Corgea — binding.gyp install-time abuse + forged SLSA provenance |
+| `moonlight-maze-loki2-penquin` | ✅ | — | 1996-1999 + 2014-2020 — historical Russia-linked APT, LOKI2 covert-channel backdoor, modern Penquin Turla Linux descendant |
 | `sidecopy-xenofiscal` | — | ✅ | 2026-06-02 Seqrite — APT36 / SideCopy XenoRAT against Afghan MoF |
 | `vscode-github-token-theft` | ✅ | — | 2026-06-02 Ammar Askar — github.dev OAuth theft chain |
 | `windows-search-uri-ntlm-leak` | ✅ | — | 2026-06-03 Huntress — unpatched NTLM leak (no CVE; Microsoft declined to fix) |
