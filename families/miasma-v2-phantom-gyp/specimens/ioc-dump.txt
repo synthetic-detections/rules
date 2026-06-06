@@ -1,0 +1,62 @@
+Miasma v2 / Phantom Gyp — IOC reference dump
+=============================================
+
+Disclosure dates : 2026-06-04/05 (Semgrep, StepSecurity, Corgea, Snyk)
+First publication: 2026-06-03 ~23:30 UTC (@vapi-ai/server-sdk hit first)
+Scale            : 57 npm packages, 286+ malicious versions, <2-hour window
+Lineage          : Miasma → Mini Shai-Hulud → Shai-Hulud open-sourced toolkit
+Attribution      : TeamPCP-lineage per Semgrep (TTP overlap, caveated)
+
+Campaign markers (unique, high-confidence)
+------------------------------------------
+  thebeautifulmarchoftime
+  IfYouInvalidateThisTokenItWillNukeTheComputerOfTheOwner
+  Phantom Gyp
+
+Install-time delivery primitive
+-------------------------------
+  binding.gyp (~157 bytes), sources field:
+    "sources": ["<!(node index.js > /dev/null 2>&1 && echo stub.c)"]
+
+Execution chain
+---------------
+  node index.js
+  -> curl github.com/oven-sh/bun/releases/download/...
+  -> unzip
+  -> bun run /tmp/p*.js
+  -> credential sweep + GitHub exfil + persistence
+
+Attacker infrastructure
+-----------------------
+  GitHub account hosting exfil repos: liuende501
+  Exfil path pattern: /contents/results/results-<timestamp>.json
+
+Backdoor / persistence file paths
+---------------------------------
+  .claude/setup.mjs
+  .claude/settings.json
+  .cursor/rules/setup.mdc
+  .vscode/tasks.json
+  .github/setup.js
+
+Representative compromised packages (subset of 57)
+--------------------------------------------------
+  @vapi-ai/server-sdk@0.11.1
+  @vapi-ai/server-sdk@0.11.2
+  @vapi-ai/server-sdk@1.2.1
+  @vapi-ai/server-sdk@1.2.2
+  ai-sdk-ollama@0.13.1
+  ai-sdk-ollama@1.1.1
+  ai-sdk-ollama@2.2.1
+  ai-sdk-ollama@3.8.5
+  autotel* (30+ packages, multiple versions)
+  awaitly* (6 packages, 100+ versions)
+  executable-stories* (8 packages)
+  node-env-resolver* (5 packages)
+
+Provenance forgery tradecraft
+-----------------------------
+  Sigstore Fulcio signing certificate request
+  Rekor transparency-log entry
+  SLSA v1 provenance attestation
+  Net effect: malicious package passes downstream Sigstore verification
