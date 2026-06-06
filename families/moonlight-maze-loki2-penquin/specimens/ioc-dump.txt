@@ -1,0 +1,98 @@
+Operation Moonlight Maze + Penquin Turla — IOC reference dump
+==============================================================
+
+Operation span     : 1996-1999 (Moonlight Maze era), 2011-2020+ (Penquin Turla era)
+Attribution        : Russia (consensus); circumstantially linked to Turla via
+                     LOKI2 code reuse (Kaspersky + KCL, 2017)
+Primary tooling    : LOKI2 covert-channel backdoor (Phrack 51 #6, daemon9/route, 1997)
+Modern descendant  : Penquin Turla / Penquin_x64 (Kaspersky 2014, Leonardo 2020)
+
+Campaign / tool names
+---------------------
+  Moonlight Maze
+  Penquin Turla
+  LOKI2
+  lokid
+  HRTest                                     (UK Solaris proxy, admin: David Hedges)
+
+Researchers (Penquin's Moonlit Maze, 2017)
+------------------------------------------
+  Thomas Rid           — King's College London
+  Daniel Moore         — King's College London
+  Costin Raiu          — Kaspersky
+  Juan Andres Guerrero-Saade — Kaspersky
+
+Penquin Turla SHA-256 samples (Leonardo S.p.A. 2026-04-24)
+----------------------------------------------------------
+  67d9556c695ef6c51abf6fbab17acb3466e3149cf4d20cb64d6d34dc969b6502
+  8ccc081d4940c5d8aa6b782c16ed82528c0885bbb08210a8d0a8c519c54215bc
+  8856a68d95e4e79301779770a83e3fad8f122b849a9e9e31cfe06bf3418fa667
+  1d5e4466a6c5723cd30caf8b1c3d33d1a3d4c94c25e2ebe186c02b8b41daf905
+  2dabb2c5c04da560a6b56dbaa565d1eab8189d1fa4a85557a22157877065ea08
+  3e138e4e34c6eed3506efc7c805fce19af13bd62aeb35544f81f111e83b5d0d4
+  5a204263cac112318cd162f1c372437abf7f2092902b05e943e8784869629dd8
+  d49690ccb82ff9d42d3ee9d7da693fd7d302734562de088e9298413d56b86ed0
+
+LOKI2 distinctive strings (durable detection anchors, from Phrack 51 #6)
+------------------------------------------------------------------------
+  "lokid: inactive client <%d> expired from list [%d]"
+  "[SUPER fatal] control should NEVER fall here"
+  "lokid: Client database full"
+  "loki: submiting our public key to server"   (note typo: "submiting")
+  "[fatal] Diffie-Hellman key generation failure"
+  "lokid: client <%d> requested an all kill"
+
+LOKI2 source-code identifiers
+-----------------------------
+  Source files: loki.c, lokid.c, crypt.c, client_db.c, shm.c, pty.c, surplus.c
+  Functions   : lokid_xmit, loki_xmit, swap_t, shadow, reaper, catch_timeout,
+                generate_dh_keypair, extract_bf_key, add_client, locate_client,
+                age_client, prep_shm, dump_shm
+  Constants   : L_TAG=0xf001 (packet ID marker, embedded in ICMP seq field),
+                L_PK_REQ=0xa1, L_PK_REPLY=0xa2, L_REQ=0xb1, L_REPLY=0xb2,
+                L_EOT=0xf1, BUFSIZE=0x38, BF_KEYSIZE=16, IVEC_SIZE=7
+
+Penquin Turla distinctive strings (Leonardo 2020 + Neo23x0 signature-base)
+-------------------------------------------------------------------------
+  /root/.hsperfdata
+  Desc| Filename | size |state|
+  VS filesystem: %s
+  File already exist on remote filesystem !
+  /tmp/.sync.pid
+  rem_fd: ssl
+  TREX_PID=%u
+  /tmp/.xdfg
+  __we_are_happy__
+  /root/.sess
+
+Operator file-system conventions (from 1998 server logs)
+--------------------------------------------------------
+  /var/tmp/                                  (tasking files, scripts staged here)
+
+Historical victim networks (Moonlight Maze, 1996-1999)
+-----------------------------------------------------
+  NASA
+  The Pentagon
+  Wright Patterson Air Force Base
+  Los Alamos National Laboratory
+  Sandia National Laboratory
+  U.S. Department of Energy
+  Army research institutions
+  University of South Carolina
+  Wright University
+  University of Cincinnati
+  Institute of Personnel and Development (London)
+  ATI-Corp (Charleston, SC)
+
+Caveats
+-------
+- Penquin Turla's LOKI2 code reuse is the bridge connecting the 1998 era to
+  the 2011-2020 Turla activity. The 2017 Securelist paper is the canonical
+  reference; the attribution chain (Moonlight Maze -> Turla) is presented as
+  a strong circumstantial argument, not a forensic proof.
+- The cd00r-based stealth backdoor variant of Penquin does not show up in
+  netstat and runs without root, so endpoint hunting must inspect process
+  state via /proc rather than user-space tools.
+- Sample hashes above are consensus from Leonardo + Neo23x0; ESET's
+  malware-ioc Turla README does NOT contain Linux/Penquin samples (Windows
+  Turla only). Cross-reference accordingly.
