@@ -23,6 +23,8 @@ before deploying.
 | `kimsuky-hellodoor` | ✅ | — | 2026-05 Securelist — Kimsuky / APT43 Rust PebbleDash variant |
 | `kirki-cve-2026-8206` | — | ✅ | 2026-06-02 — Kirki WordPress plugin admin takeover |
 | `marimo-cve-2026-39987` | — | ✅ | 2026-05-29 Sysdig — Marimo notebook `/terminal/ws` RCE |
+| `fluttershell-flutterbridge` | ✅ | ✅ | 2026-06-06 Palo Alto Unit 42 — Flutter-framework macOS backdoor delivered via Google Ads malvertising |
+| `miasma-azure-aiagent` | ✅ | — | 2026-06-06 — Miasma worm reaches Microsoft via AI-coding-agent workspace-config trigger (73 repos disabled) |
 | `miasma-redhat-npm` | ✅ | — | 2026-06-01 Wiz / Aikido / Snyk — Mini Shai-Hulud against `@redhat-cloud-services` |
 | `miasma-v2-phantom-gyp` | ✅ | — | 2026-06-05 Semgrep / StepSecurity / Corgea — binding.gyp install-time abuse + forged SLSA provenance |
 | `moonlight-maze-loki2-penquin` | ✅ | — | 1996-1999 + 2014-2020 — historical Russia-linked APT, LOKI2 covert-channel backdoor, modern Penquin Turla Linux descendant |

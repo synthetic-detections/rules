@@ -1,0 +1,14 @@
+{
+  "name": "@example/library",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0"
+  }
+}
