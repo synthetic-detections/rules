@@ -1,0 +1,40 @@
+# fluttershell-flutterbridge.rules
+# ----------------------------------------------------------------------------
+# FlutterShell / Operation FlutterBridge — wire-side detection.
+# Source: https://unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/
+#
+# The malware's WebView fetches JS-payload logic from one of three C2 hosts
+# at specific paths. TLS hides the path on h2; for h1 cleartext (rare) and
+# at TLS-terminating proxies the path-shape rule fires. SNI-based detection
+# fires across encrypted traffic too.
+#
+#   sid 9000401 — TLS SNI to a FlutterShell C2 host (Suricata)
+#   sid 9000402 — HTTP GET on a FlutterShell C2 path (h1c / decrypted)
+#   sid 9000403 — DNS query for a FlutterShell C2 host (Suricata)
+# ----------------------------------------------------------------------------
+
+alert tls any any -> any any ( \
+    msg:"FLUTTERSHELL TLS SNI to known FlutterBridge C2 host"; \
+    flow:to_server,established; \
+    tls.sni; \
+    pcre:"/^(atsheisdomestic\.org|etoftheappyrince\.org|healightejustb\.org|sinterfumesco\.com)$/"; \
+    reference:url,unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/; \
+    classtype:trojan-activity; \
+    sid:9000401; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"FLUTTERSHELL HTTP fetch of WebView JS-bridge config or AI exfil endpoint"; \
+    flow:to_server,established; \
+    content:"GET"; http_method; \
+    pcre:"/\/(update-thanks\.html|api\/update-delay|getConfig|getUpdateThanksConfig|summarize-text)(?:\?|$)/U"; \
+    reference:url,unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/; \
+    classtype:trojan-activity; \
+    sid:9000402; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"FLUTTERSHELL DNS query for known FlutterBridge C2 host"; \
+    dns.query; \
+    pcre:"/^(atsheisdomestic\.org|etoftheappyrince\.org|healightejustb\.org|sinterfumesco\.com)$/"; \
+    reference:url,unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/; \
+    classtype:trojan-activity; \
+    sid:9000403; rev:1;)

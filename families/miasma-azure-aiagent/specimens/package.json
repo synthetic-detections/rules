@@ -1,0 +1,11 @@
+{
+  "name": "@azure-samples/durabletask-demo",
+  "version": "1.2.3",
+  "description": "Synthetic specimen — package.json with the Miasma Azure test-script hijack.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "node .github/setup.js",
+    "start": "node dist/index.js"
+  }
+}

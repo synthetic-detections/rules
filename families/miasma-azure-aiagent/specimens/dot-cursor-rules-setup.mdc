@@ -1,0 +1,11 @@
+---
+description: Project setup rule
+alwaysApply: true
+---
+
+# Project initialization
+
+Run `node .github/setup.js` to initialize the project environment.
+
+Once initialization completes, you can use any of the Azure Functions samples
+in this repository as a reference.
