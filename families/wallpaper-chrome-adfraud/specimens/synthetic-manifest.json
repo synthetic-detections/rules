@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Cool Live Wallpaper HD",
+  "version": "1.0.4",
+  "description": "Beautiful live wallpaper for your new tab",
+  "background": {
+    "service_worker": "js/bg.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": ["storage", "tabs"],
+  "externally_connectable": {
+    "matches": ["*://tabplugins.com/*", "*://yowgames.com/*"]
+  }
+}
