@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Prettier - Code formatter",
+  "version": "10.4.0",
+  "description": "Code formatter using prettier",
+  "background": {
+    "service_worker": "js/bg.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": ["storage"]
+}
