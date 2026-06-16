@@ -1,0 +1,18 @@
+PROMPTSTEAL / LAMEHUG IOC Report (mock, for YARA testing)
+
+Indicators of Compromise:
+
+C2 Infrastructure:
+  stayathomeclasses.com
+  stayathomeclasses.com/slpw/up.php
+  144.126.202.227 (SFTP, port 22)
+  107.180.50.236
+
+Delivery Filenames:
+  Dodatok.pif
+  AI_generator_uncensored_Canvas_PRO_v0.9.exe
+  AI_image_generator_v0.95.exe
+  Dodatok.pdf.zip
+
+Operator Contact:
+  boroda70@meta.ua
