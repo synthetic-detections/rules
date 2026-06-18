@@ -34,6 +34,10 @@
 - Benign dayjs usage, clean @mastra package.json, and legitimate nvm config all pass cleanly.
 - Rule 1 uses the XOR-0x80 byte sequence `{E5 E1 F3 F9 AD E4 E1 F9 AD EA F3}` as a hex string match — this catches the encoded "easy-day-js" marker written to .pkg_logs even if the plaintext name never appears on disk.
 
+## Companion family: axios-silkbell-rat
+
+The Axios npm compromise (2026-03-31, Microsoft-confirmed Sapphire Sleet) shares extensive tradecraft with this campaign: identical User-Agent string, Hostwinds hosting, port 8000 dropper, postinstall hook pattern, TLS disable, self-delete, cross-platform RAT architecture. Cross-family testing confirms clean separation — neither family's rules fire on the other's specimens despite the shared indicators. Full tradecraft comparison in `axios-silkbell-rat-test-results.md`.
+
 ## Caveats
 
 - No real malware samples available yet (easy-day-js was pulled from npm). Rules validated against synthetic specimens reconstructed from JFrog, Snyk, Phoenix Security, Orca, and Aikido analyses.
