@@ -1,0 +1,38 @@
+INCIDENT REPORT: Axios npm Supply Chain Compromise (SILKBELL/WAVESHAPER)
+Date: 2026-03-31
+Attribution: Sapphire Sleet / BlueNoroff / UNC1069 (DPRK)
+Classification: CRITICAL
+
+C2 Infrastructure:
+- Primary: sfrclak.com (142.11.206.73, Hostwinds AS54290)
+  Reverse DNS: hwsrv-1320779.hostwindsdns.com
+  Port: 8000, endpoint: /6202033
+- Secondary: callnrwise.com (same IP)
+
+Related Infrastructure (hunt.io pivots):
+- 23.254.167.216 (shared ETag, JustJoin landing page)
+- 108.174.194.44 (shared SSH key)
+- 108.174.194.196 (shared SSH key, email ports open)
+- SSH key: e1f6b7f621a391a9d26e9a196974f3e2cc1ce8b4d8f73a14b2e8cb0f2a40289f
+
+Compromised Account: jasonsaayman (email changed to ifstap@proton.me)
+Attacker Account: nrwise (nrwise@proton.me)
+
+Malicious Packages:
+- axios@1.14.1 (SHA256: 5bb67e88846096f1f8d42a0f0350c9c46260591567612ff9af46f98d1b7571cd)
+- axios@0.30.4
+- plain-crypto-js@4.2.1 (SHA256: 58401c195fe0a6204b42f5f90995ece5fab74ce7c69c67a24c61a057325af668)
+
+Payload Hashes:
+- setup.js: e10b1fa84f1d6481625f741b69892780140d4e0e7769e7491e5f4d894c2e0e09
+- macOS RAT: 92ff08773995ebc8d55ec4b8e1a225d0d1e51efa4ef88b8849d0071230c9645a
+- macOS RAT (alt): 506690fcbd10fbe6f2b85b49a1fffa9d984c376c25ef6b73f764f670e932cab4
+- Windows PS1: 617b67a8e1210e4fc87c92d1d1da45a2f311c08d26e89b12307cf583c900d101
+- Windows BAT: f7d335205b8d7b20208fb3ef93ee6dc817905dc3ae0c10a0b164f4e7d07121cd
+- Linux ld.py: fcb81618bb15edfdedfb638b4c08a2af9cac9ecfa551af135a8402bf980375cf
+
+macOS Build Artifact: /Users/mac/Desktop/Jain_DEV/client_mac/macWebT/
+
+XOR Obfuscation Key: OrDeR_7077
+
+Defender Detections: Trojan:JS/AxioRAT.DA!MTB, Trojan:MacOS/Multiverze!rfn, Trojan:Python/TalonStrike.C!dha
