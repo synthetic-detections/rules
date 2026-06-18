@@ -1,0 +1,15 @@
+{
+  "name": "@mastra/example-app",
+  "version": "1.0.0",
+  "description": "Example Mastra AI application (clean, pre-compromise)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@mastra/core": "^1.41.0",
+    "@mastra/memory": "^1.19.0",
+    "dayjs": "^1.11.10"
+  }
+}

@@ -1,0 +1,32 @@
+INCIDENT REPORT: Mastra npm Supply Chain Compromise (easy-day-js)
+Date: 2026-06-17
+Classification: HIGH
+
+C2 Infrastructure:
+- Dropper payload host: 23.254.164.92:8000
+  Hostwinds VPS: hwsrv-1327786.hostwindsdns.com
+  Payload URL: /update/49890878
+
+- RAT C2 beacon: 23.254.164.123:443
+  Hostwinds VPS: hwsrv-1327785.hostwindsdns.com
+  Campaign ID: 49890878
+
+Hijacked Account: ehindero (scope access never revoked after departure)
+Attacker Publisher: sergey2016 (sergey2016@tutamail.com)
+
+Affected Packages (subset of 144):
+- @mastra/core@1.42.1
+- @mastra/memory@1.20.4
+- @mastra/server@2.1.1
+- @mastra/mcp@1.10.1
+- @mastra/deployer@1.42.1
+- @mastra/rag@2.2.2
+- @mastra/schema-compat@1.2.12
+- create-mastra@1.13.1
+
+Persistence Artifacts:
+- Windows: C:\ProgramData\NodePackages\protocal.cjs, Run key NvmProtocal
+- macOS: ~/Library/NodePackages/protocal.cjs, LaunchAgent com.nvm.protocal.plist
+- Linux: ~/.config/systemd/nvmconf/protocal.cjs, unit nvmconf.service
+
+Remediation: rotate all credentials, check for .pkg_history/.pkg_logs in tmpdir
