@@ -1,0 +1,15 @@
+Rokarolla IOC Report — tests Rokarolla_IOC rule
+
+C2 Domains:
+  beralisvc.info
+  blestorians.cfd
+  abiorime.cfd
+  morevoms.cfd
+
+Distribution:
+  infocontablidades.it.com
+
+Sample Hashes (SHA-256):
+  890ecea4ebe4fea692ad36adf02abeb37c181cb7bdb6122cd52d9aaafe7d6cf3
+  7aa389f25997610a96f014977eecd6d69142bdc63841e0d84976e3e621831303
+  4e2cbefc6bdbfdb6e885057ce47d460e3d3355a5e97db51b22e9c5a14e14302b
