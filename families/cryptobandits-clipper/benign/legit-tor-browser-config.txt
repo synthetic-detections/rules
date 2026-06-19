@@ -1,0 +1,7 @@
+// Legitimate Tor Browser configuration fragment
+// Contains Tor-related strings but should NOT trigger rules
+
+SOCKSPort 9050
+SocksListenAddress 127.0.0.1
+Log notice file /var/log/tor/notices.log
+DataDirectory /var/lib/tor

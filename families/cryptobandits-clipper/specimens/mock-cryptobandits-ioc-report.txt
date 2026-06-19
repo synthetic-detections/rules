@@ -1,0 +1,15 @@
+CryptoBandits IOC Report — tests CryptoBandits_IOC rule
+
+Tor C2 Hidden Services:
+  cgky6bn6ux5wvlybtmm3z255igt52ljml2ngnc5qp3cnw5jlglamisad.onion
+  gfoqsewps57xcyxoedle2gd53o6jne6y5nq5eh25muksqwzutzq7b3ad.onion
+  shinypogk4jjniry5qi7247tznop6mxdrdte2k6pdu5cyo43vdzmrwid.onion
+
+Renamed Tor binary: ugate.exe
+
+Worm hashes (SHA-256):
+  7630debd35cac6b7d58c4427695579b3e3a8b1cc462f523234cd6c698882a68c
+  a7abf1d9d6686af1cefcd60b17a312e7eb8cfe267def1ec34aeab6128c811630
+
+Clipper hashes:
+  0020d23b0f9c5e6851a7f737af73fd143175ee47054931166369edd93338538a
