@@ -1,0 +1,20 @@
+// Legitimate banking app string resources
+// Contains some individual strings that overlap with Rokarolla commands
+// but not in the distinctive combinations that trigger rules
+
+send_sms
+request_pin
+unlock_phone
+hide_app
+btn_back
+btn_home
+open_url
+close_url
+get_contact
+volumeup
+volumedown
+
+// Generic Android UI strings
+overlay_permission_rationale
+notification_channel_default
+accessibility_description
