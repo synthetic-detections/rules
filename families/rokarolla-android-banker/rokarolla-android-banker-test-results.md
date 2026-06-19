@@ -4,7 +4,7 @@ First Android/APK family in the repository.
 
 ## YARA scan results
 
-### Specimens (should match)
+### Mock specimens (should match)
 
 | File | Rule | Result |
 |------|------|--------|
@@ -12,6 +12,15 @@ First Android/APK family in the repository.
 | mock-rokarolla-dex-protocol.txt | Rokarolla_Banker_Behavior | MATCH (via Path 2: $ru_domen + $uniq_keepon) |
 | mock-rokarolla-dex-protocol.txt | Rokarolla_Command_Protocol | MATCH (40+ of 42 strings, all 8 capability groups) |
 | mock-rokarolla-ioc-report.txt | Rokarolla_IOC | MATCH (4 C2 domains, 1 dist URL, 3 hashes) |
+
+### Real samples from MalwareBazaar (should match)
+
+| Hash | Pkg name | Banker_Behavior | Command_Protocol | IOC |
+|------|----------|-----------------|------------------|-----|
+| be8573...d378d34 | com.fav.qca | MATCH (Path 7: comp_overlay + comp_smsrecv wide) | no (packed) | MATCH ($pkg_fav) |
+| fe41e6...f3dadf | com.oel.myx | MATCH (Path 7: comp_overlay + comp_smsrecv wide) | no (packed) | MATCH ($pkg_oel) |
+
+Command_Protocol does not fire on packed APKs — by design. The command strings are encrypted inside Cyrillic-obfuscated asset paths and only visible after runtime unpacking. Rules 1 and 3 provide coverage for the distributed form.
 
 ### Benign (should NOT match)
 
@@ -24,11 +33,23 @@ First Android/APK family in the repository.
 
 ## Rule design notes
 
-**Tier 1 (technique-level, durable):** Rokarolla_Banker_Behavior — anchored on developer typos (`distrub_mode`, `disabe_calls`, `stop_keyloger`, `notification_clian`, `noitificationp`, `unlocktraker`) and the Russian loanword `update_config_domen`. These persist across all known samples because fixing them would require refactoring the command dispatcher. 8 typo strings across 6 distinct misspellings.
+**Tier 1 (technique-level, durable):** Rokarolla_Banker_Behavior — two detection surfaces:
+- *Unpacked DEX:* developer typos (`distrub_mode`, `disabe_calls`, `stop_keyloger`, `notification_clian`, `noitificationp`, `unlocktraker`) and the Russian loanword `update_config_domen`. 8 typo strings across 6 distinct misspellings.
+- *Packed APK:* component names in UTF-16LE string pool (`MyOverlayActivity` + `SmsChangeReceiver`) persist across both observed variants despite code-level packing. Path 8 adds root detection libraries as supporting signal. Path 9 requires 3+ of 4 component names.
 
-**Tier 2 (implementation-level, moderate):** Rokarolla_Command_Protocol — catches the 137-command C2 protocol shape. Requires 15+ command strings from the protocol, or specific capability group combinations (credential triad + control, full surveillance suite, overlay hardening). Would survive typo fixes but not a protocol redesign.
+**Tier 2 (implementation-level, moderate):** Rokarolla_Command_Protocol — catches the 137-command C2 protocol shape. Requires 15+ command strings from the protocol, or specific capability group combinations. Fires on unpacked DEX only.
 
-**Tier 3 (indicator-level, fragile):** Rokarolla_IOC — C2 domains and sample hashes. 4 domains, 1 distribution URL, 15 of 40 known APK hashes. Will break when infrastructure rotates.
+**Tier 3 (indicator-level, fragile):** Rokarolla_IOC — C2 domains, sample hashes, and observed package names (`com.fav.qca`, `com.oel.myx`). Package names likely rotate per build. Will break when infrastructure rotates.
+
+## Sample analysis notes
+
+Two of 40 Zimperium-published hashes found on MalwareBazaar (0 on MalShare). Both APKs are heavily packed:
+- AndroidManifest.xml uses non-standard ZIP compression method 61923
+- Asset paths contain Cyrillic obfuscation characters (Ы¦, Ы–, Ы«)
+- DEX files are stub loaders — no Rokarolla command strings visible via `strings`
+- Target app list (217 banking/crypto apps) is not embedded; fetched at runtime from C2 via `monitored_app_full` command
+- Root detection present in second variant (rootcloak, koushikdutta.superuser, noshufou.android)
+- App masquerades as Reface (face-swap app) in first variant
 
 ## Campaign context
 

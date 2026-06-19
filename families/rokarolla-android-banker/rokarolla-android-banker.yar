@@ -27,12 +27,22 @@
    tables; in standard APKs classes.dex is stored uncompressed (STORED
    method) so YARA matches raw APK bytes directly.
 
+   IMPORTANT: distributed APKs are heavily packed — command strings are
+   encrypted inside Cyrillic-obfuscated asset paths, AndroidManifest.xml
+   uses non-standard ZIP compression (method 61923), and DEX classes are
+   stubs for a runtime unpacker. Rules 1-2 fire on unpacked DEX only.
+   Rule 1 includes packed-variant paths using component names visible
+   in the UTF-16LE string pool (MyOverlayActivity, SmsChangeReceiver)
+   that persist across both observed variants (com.fav.qca, com.oel.myx).
+
    Rule 1 — Behavioral: developer typos and unique compound command
-            names that fingerprint Rokarolla's command dispatcher.
+            names (unpacked DEX), plus packed-variant component names.
    Rule 2 — Structural: command protocol density — clusters of
             capability-specific strings across credential theft, VNC,
             keylogger, SMS, overlay, and device control subsystems.
-   Rule 3 — IOC: C2 domains, distribution URL, sample SHA-256 hashes.
+            Fires on unpacked DEX only.
+   Rule 3 — IOC: C2 domains, distribution URL, sample SHA-256 hashes,
+            observed package names.
 
    Sources:
      https://zimperium.com/blog/rokarolla-android-banker-with-complete-device-takeover-capabilities
@@ -84,6 +94,19 @@ rule Rokarolla_Banker_Behavior
         $gplay_open      = "open_google_play_protect" ascii
         $gplay_full      = "gplay_full_disable" ascii
 
+        // Packed-variant component names — visible in UTF-16LE string
+        // pool even when command strings are encrypted. Observed in
+        // com.fav.qca (be8573...) and com.oel.myx (fe41e6...).
+        $comp_overlay    = "MyOverlayActivity" ascii wide
+        $comp_smsrecv    = "SmsChangeReceiver" ascii wide
+        $comp_webview    = "WebViewActivity" ascii wide
+        $comp_install    = "INSTALL_RESULT" ascii wide
+
+        // Root detection — common in banking trojans, adds signal
+        $root_cloak      = "rootcloak" ascii wide
+        $root_superuser  = "com.koushikdutta.superuser" ascii wide
+        $root_noshufou   = "com.noshufou.android" ascii wide
+
     condition:
         filesize < 100MB
         and (
@@ -104,6 +127,16 @@ rule Rokarolla_Banker_Behavior
             or
             // Path 6: 3+ unique compounds — even without typos
             3 of ($uniq_*)
+            or
+            // Path 7: packed variant — overlay + SMS component names
+            // together are distinctive even without unpacking
+            ($comp_overlay and $comp_smsrecv)
+            or
+            // Path 8: overlay activity + WebView + root detection
+            ($comp_overlay and $comp_webview and any of ($root_*))
+            or
+            // Path 9: 3+ packed-variant markers together
+            (3 of ($comp_overlay, $comp_smsrecv, $comp_webview, $comp_install))
         )
 }
 
@@ -225,6 +258,10 @@ rule Rokarolla_IOC
         // Distribution URL (fake TikTok / Chrome download site)
         $dist_url        = "infocontablidades.it.com" ascii nocase
 
+        // Observed APK package names (from MalwareBazaar samples)
+        $pkg_fav         = "com.fav.qca" ascii wide
+        $pkg_oel         = "com.oel.myx" ascii wide
+
         // APK sample hashes (15 of 40 from Zimperium IOC repository)
         $hash01 = "890ecea4ebe4fea692ad36adf02abeb37c181cb7bdb6122cd52d9aaafe7d6cf3" ascii nocase
         $hash02 = "7aa389f25997610a96f014977eecd6d69142bdc63841e0d84976e3e621831303" ascii nocase
@@ -250,6 +287,9 @@ rule Rokarolla_IOC
             or
             // Distribution URL
             $dist_url
+            or
+            // Observed package names
+            any of ($pkg_*)
             or
             // Any known sample hash
             any of ($hash*)
