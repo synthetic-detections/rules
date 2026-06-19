@@ -1,0 +1,133 @@
+// Mock Rokarolla DEX string table extract — tests Rokarolla_Command_Protocol
+// Contains the full 137-command C2 protocol as string constants from
+// the command dispatcher. Strings appear in DEX string pool.
+
+// Credential theft
+request_pin
+request_pattern
+request_password
+
+// VNC remote control
+start_vnc
+stop_vnc
+
+// Keylogger / UI logger
+startuilogger
+stopuilogger
+clicktextextract
+clickdescextract
+start_uilogger_loop
+textextract
+text
+descextract
+desc
+
+// SMS interception
+send_sms
+change_sms
+change_sms_auto
+get_last_sms
+
+// Device control
+unlock_phone
+keepscreenonforever
+keepscreenoff
+mutevolume
+
+// Overlay injection
+update_config_injects
+inject_block
+inject_unlock
+show_black_overlay
+hide_black_overlay
+make_overlay_not_touchable
+make_overlay_touchable
+hard_stop_overlay_now
+
+// App management
+hide_app
+reset_app_list
+permission_all_files
+btn_permission_list
+
+// Navigation
+btn_launchapp
+btn_launchapp2
+btn_power_dialog
+btn_settings
+btn_back
+btn_home
+btn_recents
+btn_notifications
+
+// Configuration
+update_config_domen
+update_slots
+set_slots
+update_prefix
+update_time
+update_points
+
+// Notification control
+notification_listen_disable
+notification_listen_enabled
+notification_setting
+
+// Clipboard
+copyclipboard
+
+// Grabber / screenshot
+stop_start_grabber
+loading_screenshot
+
+// Additional commands
+loading_modal
+write_setting
+disable_sounds_and_vibrations
+registration_update
+calls_block
+enable_calls
+main_activity
+tap
+longclick
+swipe
+wakeup
+push_send
+appinform
+appinform2
+foundsmspoint
+foundcallpoint
+foundallpoint
+close_all
+clicktext
+clickdesc
+enter_pattern
+enter_point
+startoverlay16
+open_my_app_activity
+hide_overlay_16
+show_loading_overlay
+show_loading_overlay_dont
+overlay_point
+overlay_point_ok
+liveoverlay
+overlay2
+volumeup
+volumedown
+open_url
+close_url
+click_editext
+open_website
+smsclient
+callclient
+allowmodify
+permissiondnd
+enable_second_label
+set_status_packet
+set_url_packet
+up_swipe
+down_swipe
+right_swipe
+left_swipe
+disable_google_play
+get_contact

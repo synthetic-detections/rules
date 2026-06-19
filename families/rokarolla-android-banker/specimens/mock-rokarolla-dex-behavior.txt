@@ -1,0 +1,41 @@
+// Mock Rokarolla DEX string table extract — tests Rokarolla_Banker_Behavior
+// Contains developer typos and unique compound commands as they appear
+// in the malware's command dispatcher class
+
+// Typo strings (developer misspellings persisting across all samples)
+distrub_mode
+distrub_mode_enabled
+disabe_calls
+start_keyloger
+stop_keyloger
+notification_clian
+noitificationp
+unlocktraker
+
+// Russian loanword
+update_config_domen
+
+// Unique compound command names
+liveoverlayblock
+protectorgoogle_disable
+showpinlockoverlay
+showpatternlockoverlay
+keepscreenonforever
+dontstoploadingoverlay
+disable_red_alert_for_default
+editextnow
+editextnow2
+
+// Overlay subsystem
+liveoverlay16
+sms_overlay_16
+call_overlay_16
+overlaywake_true
+overlaywake_false
+overlaywake2_true
+overlaywake2_false
+
+// Play Protect manipulation
+open_google_play_protect
+gplay_full
+gplay_full_disable
