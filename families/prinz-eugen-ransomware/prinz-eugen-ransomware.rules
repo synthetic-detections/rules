@@ -1,0 +1,53 @@
+# prinz-eugen-ransomware.rules
+# ----------------------------------------------------------------------------
+# Prinz Eugen ransomware — Go-based encryptor with recent-file-first
+# strategy, no ransom note, rapid infrastructure teardown. Disclosed
+# 2026-06-20 by ThreatDown (Malwarebytes).
+#
+# Kill chain: stolen RDP → RemotePC RMM → PowerShell stager from
+# 212.80.7[.]74 → servertool.exe → ChaCha20-Poly1305 encryption →
+# .prinzeugen extension → self-delete.
+#
+#   sid 9000501 — IP-based: any traffic to the C2/stager host
+#   sid 9000502 — HTTP stager download: PowerShell payload fetch from C2
+#   sid 9000503 — DNS: resolution of operator typosquat domain stndrdbnk.cc
+#   sid 9000504 — DNS: resolution of ClickFix lure domain g-captchafestung.sbs
+#   sid 9000505 — DNS: resolution of DynDNS staging domain festung-e.duckdns.org
+# ----------------------------------------------------------------------------
+
+alert ip any any -> 212.80.7.74 any ( \
+    msg:"PRINZ-EUGEN C2/stager traffic to 212.80.7.74 (AS215439 Play2go)"; \
+    reference:url,www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/; \
+    classtype:trojan-activity; \
+    sid:9000501; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"PRINZ-EUGEN PowerShell stager download from C2 (/serverscan.ps1 or /stager/)"; \
+    flow:to_server,established; \
+    content:"GET"; http_method; \
+    content:"212.80.7.74"; http_host; \
+    pcre:"/^\/(serverscan\.ps1|stager\/(mini|ps1))/U"; \
+    reference:url,www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/; \
+    classtype:trojan-activity; \
+    sid:9000502; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"PRINZ-EUGEN DNS lookup for operator typosquat stndrdbnk.cc"; \
+    dns.query; content:"stndrdbnk.cc"; nocase; endswith; \
+    reference:url,www.bleepingcomputer.com/news/security/new-prinz-eugen-ransomware-prioritizes-recent-files-for-encryption/; \
+    classtype:trojan-activity; \
+    sid:9000503; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"PRINZ-EUGEN DNS lookup for ClickFix lure g-captchafestung.sbs"; \
+    dns.query; content:"g-captchafestung.sbs"; nocase; endswith; \
+    reference:url,www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/; \
+    classtype:trojan-activity; \
+    sid:9000504; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"PRINZ-EUGEN DNS lookup for DynDNS staging festung-e.duckdns.org"; \
+    dns.query; content:"festung-e.duckdns.org"; nocase; endswith; \
+    reference:url,www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/; \
+    classtype:trojan-activity; \
+    sid:9000505; rev:1;)

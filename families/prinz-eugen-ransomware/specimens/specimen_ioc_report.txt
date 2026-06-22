@@ -1,0 +1,57 @@
+Prinz Eugen Ransomware - Threat Intelligence Report
+====================================================
+Date: 2026-06-20
+Author: synthetic-detections
+Classification: TLP:AMBER
+
+Executive Summary
+-----------------
+A new Go-based ransomware operation dubbed "Prinz Eugen" has been observed
+targeting mid-size financial institutions. The group operates without an
+affiliate model and appears to be a small, focused team.
+
+Infrastructure
+--------------
+The primary command-and-control server is hosted at 212.80.7.74 on AS215439
+(Play2go International, Frankfurt). The operator registered several domains:
+
+  - stndrdbnk.cc (impersonating Standard Bank)
+  - g-captchafestung.sbs (fake CAPTCHA gate)
+  - festung-e.duckdns.org (dynamic DNS fallback)
+
+Initial access typically uses stolen RDP credentials. After gaining access,
+the actor deploys PowerShell stagers from the C2:
+
+  http://212.80.7.74/serverscan.ps1
+  http://212.80.7.74/stager/mini
+  http://212.80.7.74/stager/ps1
+
+Actor Contact Information
+-------------------------
+The threat actor uses multiple communication channels:
+
+  Email: prinzeugen@mail2tor.co
+  Email: standardbankcc@cock.li
+  TOX: 496187425B2944D73FBB17CAF3F9FD569B9ED3A08A497A8314CB4F27A51E65081ACEE1E22F21
+
+Bitcoin wallet for ransom payments:
+  bc1q2ztpcvqdaptej6uu2ywt9mrlatx6envu34rf0v
+
+Leak Sites (Tor)
+----------------
+  prinzfkbjiazbrur4mjje6mntjc4vydx3iatkkzycufoylqcoo4y7pqd.onion
+  6cudc5cqa2bjpwdhcwm2lj6dbqejjjqzeo6ipwvmbazr6cgu7vfk3dad.onion
+
+Operational Commands
+--------------------
+Self-delete: cmd.exe /C ping 127.0.0.1 -n 2 > /dev/null & Del servertool.exe
+Persistence: net user admin germania /add
+
+Actor Handles
+-------------
+ROOTBOY, avtokz, GERMANIA
+
+Recommendations
+---------------
+Block the listed IPs and domains at perimeter. Monitor for .prinzeugen
+file extension and CHV1 file headers on endpoints.
