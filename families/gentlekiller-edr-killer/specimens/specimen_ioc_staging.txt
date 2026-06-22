@@ -1,0 +1,32 @@
+INCIDENT REPORT — GentleKiller Deployment (CONFIDENTIAL)
+=========================================================
+Date: 2026-06-15
+Analyst: IR-Team
+
+During investigation of the compromised host DC01, the following artifacts
+were recovered from the staging directory:
+
+  C:\ProgramData\GentlemenCollection\
+
+Contents of the staging directory:
+  - Kasps.exe          (GentleKiller variant impersonating Kaspersky)
+  - FaceIT1.exe        (GentleKiller variant impersonating FACEIT)
+  - Valorant2.exe      (GentleKiller variant impersonating Vanguard)
+  - BitD1.exe          (GentleKiller variant impersonating BitDefender)
+  - Deletor.exe        (GentleKiller cleanup utility)
+  - MB2.exe            (GentleKiller variant impersonating Malwarebytes)
+
+BYOVD drivers deployed alongside the killers:
+  - eb.sys             (vulnerable Echo driver)
+  - nseckrnl.sys       (vulnerable Nprotect driver)
+  - G11.sys            (unknown provenance)
+  - ThrottleBlood.sys  (ThrottleBlood EDR killer driver)
+  - havoc.sys          (HavocKiller driver)
+  - googleApiUtil64.sys (repurposed Baidu driver)
+
+All variant binaries were packed with Enigma Protector. The BYOVD drivers
+were loaded as Windows services. Process termination targeted 400+ security
+vendor processes. The OxideHarvest credential stealer (buildx641.exe) was
+also present in the staging directory.
+
+Remediation steps: [...]
