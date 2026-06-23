@@ -1,0 +1,40 @@
+# WhatsApp VBScript → ManageEngine RMM campaign (Kaspersky GReAT, 2026-06-22)
+# Suricata 7 rules — C2 domains, payload hosting, C2 IPs
+# Reference: https://securelist.com/whatsapp-vbs-rmm-campaign/120290/
+
+# DNS lookups for C2/staging domains
+alert dns $HOME_NET any -> any any (msg:"WHATSAPP-VBS-RMM C2 domain lookup (baskwms.top)"; dns.query; content:"baskwms.top"; nocase; endswith; classtype:trojan-activity; sid:9000601; rev:1;)
+
+alert dns $HOME_NET any -> any any (msg:"WHATSAPP-VBS-RMM C2 domain lookup (msopsa.top)"; dns.query; content:"msopsa.top"; nocase; endswith; classtype:trojan-activity; sid:9000602; rev:1;)
+
+alert dns $HOME_NET any -> any any (msg:"WHATSAPP-VBS-RMM C2 domain lookup (shoppes.help)"; dns.query; content:"shoppes.help"; nocase; endswith; classtype:trojan-activity; sid:9000603; rev:1;)
+
+alert dns $HOME_NET any -> any any (msg:"WHATSAPP-VBS-RMM C2 domain lookup (shaaslong.one)"; dns.query; content:"shaaslong.one"; nocase; endswith; classtype:trojan-activity; sid:9000604; rev:1;)
+
+alert dns $HOME_NET any -> any any (msg:"WHATSAPP-VBS-RMM C2 domain lookup (baoxis.cc)"; dns.query; content:"baoxis.cc"; nocase; endswith; classtype:trojan-activity; sid:9000605; rev:1;)
+
+# TLS SNI for payload hosting on Alibaba Cloud OSS
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"WHATSAPP-VBS-RMM payload hosting (Alibaba OSS - baolongwes)"; tls.sni; content:"baolongwes.oss-ap-southeast-1.aliyuncs.com"; nocase; endswith; classtype:trojan-activity; sid:9000606; rev:1;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"WHATSAPP-VBS-RMM payload hosting (Alibaba OSS - sdcwww)"; tls.sni; content:"sdcwww.oss-ap-southeast-1.aliyuncs.com"; nocase; endswith; classtype:trojan-activity; sid:9000607; rev:1;)
+
+# TLS SNI for payload hosting on AWS S3
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"WHATSAPP-VBS-RMM payload hosting (S3 - baoyuw2s)"; tls.sni; content:"baoyuw2s.s3.ap-southeast-1.amazonaws.com"; nocase; endswith; classtype:trojan-activity; sid:9000608; rev:1;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"WHATSAPP-VBS-RMM payload hosting (S3 - sjdkjj23)"; tls.sni; content:"sjdkjj23.s3.ap-southeast-1.amazonaws.com"; nocase; endswith; classtype:trojan-activity; sid:9000609; rev:1;)
+
+# TLS SNI for payload hosting on Backblaze B2
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"WHATSAPP-VBS-RMM payload hosting (B2 - caiwuascw)"; tls.sni; content:"caiwuascw.s3.us-east-005.backblazeb2.com"; nocase; endswith; classtype:trojan-activity; sid:9000610; rev:1;)
+
+# C2 server IP addresses (all in 202.61.160.0/24 — ValleyRAT/Gh0st overlap)
+alert ip $HOME_NET any -> 202.61.160.208 any (msg:"WHATSAPP-VBS-RMM C2 server 202.61.160.208"; classtype:trojan-activity; sid:9000611; rev:1;)
+
+alert ip $HOME_NET any -> 202.61.160.202 any (msg:"WHATSAPP-VBS-RMM C2 server 202.61.160.202"; classtype:trojan-activity; sid:9000612; rev:1;)
+
+alert ip $HOME_NET any -> 202.61.160.201 any (msg:"WHATSAPP-VBS-RMM C2 server 202.61.160.201 (ValleyRAT/Gh0st overlap)"; classtype:trojan-activity; sid:9000613; rev:1;)
+
+alert ip $HOME_NET any -> 202.61.160.160 any (msg:"WHATSAPP-VBS-RMM C2 server 202.61.160.160"; classtype:trojan-activity; sid:9000614; rev:1;)
+
+alert ip $HOME_NET any -> 202.61.160.137 any (msg:"WHATSAPP-VBS-RMM C2 server 202.61.160.137"; classtype:trojan-activity; sid:9000615; rev:1;)
+
+alert ip $HOME_NET any -> 38.55.151.63 any (msg:"WHATSAPP-VBS-RMM C2 server 38.55.151.63"; classtype:trojan-activity; sid:9000616; rev:1;)
