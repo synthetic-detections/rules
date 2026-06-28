@@ -1,0 +1,30 @@
+Gaslight IOC specimen — synthetic file for YARA validation
+
+Ad-hoc signing identifier:
+  endpoint-macos-aarch64-5555494492fc075f441637fb9d894913dde3a2ea
+
+LaunchAgent persistence:
+  com.apple.system.services.activity
+
+Telegram Bot API error dispatch:
+  BotBlocked
+  InvalidToken
+  Conflict
+
+Token self-redaction pattern:
+  file/token:redacted
+
+Operator config fields:
+  tg_room_id
+  github_token
+  github_repo
+  aes_key
+  init_python_enable
+  persist_enable
+  payload_path_linux
+  payload_path_macos
+
+Python installer:
+  PY_VERSION=3.10.18
+  BUILD_DATE=20250708
+  python-build-standalone
