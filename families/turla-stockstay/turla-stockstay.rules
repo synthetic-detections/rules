@@ -1,0 +1,24 @@
+# Turla STOCKSTAY — WebSocket C2 over TLS
+# Disclosed 2026-06-26 by Google GTIG. Multi-component .NET backdoor
+# targeting Ukraine and Italy. C2 uses wss://…/ws on legitimate PaaS
+# hosting (Glitch, Render, theworkpc.com).
+#
+# Author: synthetic-detections, 2026-06-28
+# Reference: https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering
+
+# Rule 1: TLS SNI match for known STOCKSTAY C2 domains
+# These are actor-controlled hostnames on PaaS platforms.
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY Turla C2 domain in TLS SNI (Glitch)"; tls.sni; content:"wool-basalt-clock.glitch.me"; classtype:trojan-activity; sid:2026062801; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family STOCKSTAY, actor Turla;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY Turla C2 domain in TLS SNI (theworkpc)"; tls.sni; content:"weatherdataai.theworkpc.com"; classtype:trojan-activity; sid:2026062802; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family STOCKSTAY, actor Turla;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY Turla C2 domain in TLS SNI (Render canal1zac1a)"; tls.sni; content:"canal1zac1a.onrender.com"; classtype:trojan-activity; sid:2026062803; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family STOCKSTAY, actor Turla;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY Turla C2 domain in TLS SNI (Render driverx86-adobe)"; tls.sni; content:"driverx86-adobe.onrender.com"; classtype:trojan-activity; sid:2026062804; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family STOCKSTAY, actor Turla;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY Turla C2 domain in TLS SNI (Render google-ai-labs-it)"; tls.sni; content:"google-ai-labs-it.onrender.com"; classtype:trojan-activity; sid:2026062805; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family STOCKSTAY, actor Turla;)
+
+# Rule 2: Payload staging from compromised Ukrainian government/edu sites
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY payload staging URL (Ukrainian government site)"; flow:to_server,established; http.host; content:"drs.gov.ua"; http.uri; content:"/wp-content/themes/twentytwentyfive/docs.zip"; classtype:trojan-activity; sid:2026062806; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity high, family STOCKSTAY, actor Turla;)
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"STOCKSTAY payload staging URL (online.zp.ua)"; flow:to_server,established; http.host; content:"online.zp.ua"; http.uri; content:"/wp-content/uploads/Tools/EditorToolsPdf.zip"; classtype:trojan-activity; sid:2026062807; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity high, family STOCKSTAY, actor Turla;)

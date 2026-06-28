@@ -1,0 +1,22 @@
+# macOS.Gaslight — DPRK Rust backdoor Telegram Bot API C2
+# Documented 2026-06-23 by SentinelLABS. C2 via Telegram Bot API
+# (getUpdates polling, sendDocument for exfil). Certificate pinning
+# means content inspection requires endpoint visibility; these rules
+# target TLS metadata and HTTP patterns where decryption is available.
+#
+# Note: Telegram Bot API traffic is legitimate in many environments.
+# These rules are tuned for correlation with other indicators (macOS
+# endpoint + non-browser User-Agent + high-frequency polling) rather
+# than standalone alerting.
+#
+# Author: synthetic-detections, 2026-06-28
+# Reference: https://thehackernews.com/2026/06/new-gaslight-macos-malware-uses-prompt.html
+
+# Rule 1: Telegram Bot API polling from non-browser client
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"GASLIGHT Telegram Bot API getUpdates polling (non-browser UA)"; flow:to_server,established; http.host; content:"api.telegram.org"; http.uri; content:"/bot"; content:"/getUpdates"; http.user_agent; content:!"Mozilla"; classtype:trojan-activity; sid:2026062810; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity high, family Gaslight, actor DPRK;)
+
+# Rule 2: Telegram Bot API document upload (exfiltration)
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"GASLIGHT Telegram Bot API sendDocument exfil"; flow:to_server,established; http.host; content:"api.telegram.org"; http.uri; content:"/bot"; content:"/sendDocument"; http.request_body; content:"collected_data"; classtype:trojan-activity; sid:2026062811; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity critical, family Gaslight, actor DPRK;)
+
+# Rule 3: Python standalone runtime fetch (installer stage)
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"GASLIGHT cpython standalone installer fetch (astral-sh)"; flow:to_server,established; http.host; content:"github.com"; http.uri; content:"/astral-sh/python-build-standalone/"; content:"cpython-3.10.18"; classtype:misc-activity; sid:2026062812; rev:1; metadata:author synthetic-detections, created_at 2026_06_28, severity medium, family Gaslight, actor DPRK;)
