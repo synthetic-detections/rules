@@ -1,0 +1,16 @@
+Telegram Bot Framework v3.2
+A legitimate Python Telegram bot application.
+
+API endpoints used:
+  /getUpdates
+  /sendMessage
+  /sendDocument
+
+Error handling:
+  BotBlocked - user blocked the bot
+  Conflict - duplicate polling instance
+
+This legitimate bot application uses the Telegram Bot API.
+It does NOT contain: prompt injection payloads, {{DATA}} tokens,
+certificate pinning via SecTrustSetAnchorCertificatesOnly,
+or IOPMAssertionCreateWithName sleep prevention.

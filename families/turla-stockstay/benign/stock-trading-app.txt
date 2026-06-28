@@ -1,0 +1,15 @@
+StockMarket Trading Application v2.1
+Copyright 2025 FinTech Solutions Inc.
+
+Configuration:
+  Services: wss://ws-api.binance.com:443/ws-api/v3
+  Interval: 10
+  Theme: Dark
+
+Database schema:
+  CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY, symbol TEXT)
+  CREATE TABLE IF NOT EXISTS portfolio (id INTEGER PRIMARY KEY, asset TEXT)
+
+This legitimate trading application uses WebSocket for real-time data.
+It does NOT contain: ProtocolMessageConnect, K1.Morpher, Squirrel3,
+SMEditorPage, or any STOCKSTAY artifacts.

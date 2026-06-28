@@ -1,0 +1,35 @@
+STOCKSTAY IOC specimen — synthetic file for YARA validation
+
+C2 WebSocket endpoints:
+  wool-basalt-clock.glitch.me
+  weatherdataai.theworkpc.com
+  canal1zac1a.onrender.com
+  driverx86-adobe.onrender.com
+  google-ai-labs-it.onrender.com
+
+Compromised staging:
+  drs.gov.ua/wp-content/themes/twentytwentyfive/docs.zip
+  online.zp.ua/wp-content/uploads/Tools/EditorToolsPdf.zip
+  basecon.com.ua/calculator.rar
+  circoloesteri.elezioni.idnet.it/admin-election/riepilogo.php
+
+Actor GitHub accounts:
+  Roberto1983-ai
+  ChikenFresh
+
+Delivery filenames:
+  Copia.msi
+  DiplomacyEduAI.msi
+  DriversPrinterGraphic.rar
+  MSViewer.exe
+  MSDriver.exe
+  MSRender.exe
+  MicrosoftUpdateOneDrive.exe
+
+Component DLLs:
+  ms-lib-math-core.dll
+  ms-api-wmcpdt.dll
+  ms-api-win-render.dll
+
+Config directory: Programs\SMN\
+Config description: An application for getting information about current events on trading platforms
