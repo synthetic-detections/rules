@@ -71,8 +71,11 @@ rule WhatsApp_VBS_RMM_Technique
         filesize < 5MB
         and $createobj
         and (
-            // UAC bypass + ManageEngine install in same script
-            (any of ($uac_*) and any of ($msi_*))
+            // UAC bypass + ManageEngine-specific agent name
+            (any of ($uac_*) and $msi_agent)
+            or
+            // UAC bypass + generic msiexec requires staging directory co-occurrence
+            (any of ($uac_*) and $msi_exec and any of ($dir_*))
             or
             // Working directory creation + ZIP extraction + UAC tampering
             (any of ($dir_*) and $shell_app and $copy_here and any of ($uac_*))
