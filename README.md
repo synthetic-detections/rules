@@ -12,6 +12,11 @@ it before commit. **Treat them as a starting point** — tune the
 thresholds, package coordinates, and IOC lists for your environment
 before deploying.
 
+## Requirements
+
+- **YARA ≥ 4.2** — some rules use the `base64` string modifier (introduced in 4.2). Modules used: `pe`, `hash`.
+- **Suricata ≥ 7.0** — rules use Suricata-7 syntax.
+
 ## What's covered
 
 | Family | YARA | Snort / Suricata | Disclosure |
