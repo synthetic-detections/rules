@@ -169,7 +169,8 @@ rule Gaslight_Rust_MachO_Shape
         $crate_aes2  = "aes-gcm" ascii
 
     condition:
-        ($macho_le at 0 or $macho_be at 0)
+        filesize < 50MB
+        and ($macho_le at 0 or $macho_be at 0)
         and 1 of ($rust_*)
         and (
             // Certificate pinning + sleep prevention + persistence resolution

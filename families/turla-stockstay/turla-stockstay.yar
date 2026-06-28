@@ -188,9 +188,8 @@ rule Turla_STOCKSTAY_K1Morpher
         reference   = "https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering"
 
     strings:
-        // K1MORPHER namespace/class (wide for .NET metadata)
-        $ns_k1       = "K1" wide
-        $cls_morpher = "Morpher" wide
+        // K1MORPHER namespace.class (wide for .NET metadata)
+        $ns_k1morpher = "K1.Morpher" wide
 
         // Squirrel3 PRNG method names
         $fn_sq3      = "Squirrel3" wide ascii
@@ -216,7 +215,7 @@ rule Turla_STOCKSTAY_K1Morpher
             // Method-name based: Squirrel3 + any decrypt method
             ($fn_sq3 and 2 of ($fn_dec_*))
             // Namespace + methods
-            or ($ns_k1 and $cls_morpher and 1 of ($fn_*))
+            or ($ns_k1morpher and 1 of ($fn_*))
             // Constant-based: all three Squirrel3 PRNG noise constants
             or (all of ($noise*) and 1 of ($fn_sq3, $fn_inject, $fn_squ*))
         )
