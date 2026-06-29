@@ -1,0 +1,118 @@
+[
+  {
+    "type": "function",
+    "name": "Unresolved_bca8c7b5",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      },
+      {
+        "name": "arg1",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "destroyContract",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "loserMulticall_3869193990",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address[]"
+      },
+      {
+        "name": "arg1",
+        "type": "bytes[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "loserSweepETH_11435948882",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "transferNative",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "transferTokens",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "event",
+    "name": "CallExecuted",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "arg1",
+        "type": "bytes",
+        "indexed": false
+      },
+      {
+        "name": "arg2",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DecryptionFailed",
+    "inputs": [],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Event_de90b0fdc12f4ca2384f240d76cdc216ddcf00aa8a3eb80382c17a86c6ebf7ff",
+    "inputs": [],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "NativeForwarded",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "arg1",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  }
+]
