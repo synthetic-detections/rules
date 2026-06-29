@@ -111,28 +111,14 @@ yara -r -s <family>.yar benign/      # should produce no alerts
 
 #### Corpus false-positive test (real malware)
 
-The in-repo `benign/` proves the condition logic; the **MalShare corpus**
-(~497k real samples) proves the rule survives contact with the wild. After
-the local smoke test passes, run the rule against the corpus with the
-for additional confidence, test against a real malware corpus. (See
-the project wiki for tooling details.)
-
-```bash
-# FP test: stop at 40 hits or 15 min. For a RECENT family, expect zero hits —
-# every hit is a candidate false positive to investigate and tighten.
-yara -r -s families/<family>/<family>.yar \
-    --max-hits 40 --budget 15m --label <family>
-
-# Retro hunt (older families only): full ~7–14 h pass, detached; announces in
-# Signal and writes logs/yara/ when done. May surface real in-the-wild samples.
-yara -r -s families/<family>/<family>.yar \
-    --full --detach --label <family>-retro
-```
+The in-repo `benign/` proves the condition logic; for additional confidence,
+test against a real malware corpus (e.g. MalShare, VirusTotal, or a private
+collection). For a **recent** family, any corpus hit is a candidate false
+positive to investigate and tighten. For **older** families, a full retro
+hunt may surface real in-the-wild samples.
 
 Record the corpus result (slice size, hits, verdict) in
-`<family>-yara-test-results.md` under a **Corpus FP test** section. Matched
-paths are sha256-named — cross-reference the hash; the file itself isn't
-
+`<family>-yara-test-results.md` under a **Corpus FP test** section.
 
 ### Snort / Suricata
 
