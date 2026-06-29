@@ -147,8 +147,6 @@ invalid TCP/IP checksums.
 - **Provenance**: see commit history and per-family `*-test-results.md`
   for the public source(s) each rule was derived from.
 - **License**: MIT — see [LICENSE](LICENSE).
-***REMOVED***
-
 
 ## Caveats and honesty
 
