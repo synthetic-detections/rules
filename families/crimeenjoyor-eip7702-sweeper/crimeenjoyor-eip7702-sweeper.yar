@@ -9,10 +9,12 @@
    itself — CrimeEnjoyor variants exploit this to drain ETH and
    tokens from any wallet that signs a malicious authorization tuple.
 
-   Three known generations:
+   Four known generations:
      v1 "CrimeEnjoyor" (Solidity 0.8.20): minimal — destination(),
         initialize(address), receive(). Over 52K authorizations on
         mainnet via a single deployment.
+     v1-rebrand "GOLD" (Solidity 0.8.25): identical bytecode shape to v1,
+        different contract name. Deployed at 0xb59f...dfca (block 24605695).
      v2 "CrimeEnjoyor2" (Solidity 0.8.24): obfuscated function names
         with "loser" prefix and numeric suffixes. initLoser, xorLoser,
         doubleLoser naming convention.
@@ -39,6 +41,7 @@
      https://etherscan.io/address/0x89383882fc2d0cd4d7952a3267a3b6dae967e704
      https://etherscan.io/address/0x89046d34e70a65acab2152c26a0c8e493b5ba629
      https://etherscan.io/address/0x6b7879a5d747e30a3adb37a9e41c046928fce933
+     https://eth.blockscout.com/address/0xb59f313dcf8c8107adffeabd0c041c896c64dfca
 */
 
 rule CrimeEnjoyor_Sweeper_Behavior
@@ -250,15 +253,18 @@ rule CrimeEnjoyor_IOC
         $addr02 = "0x6b7879a5d747e30a3adb37a9e41c046928fce933" ascii nocase
         $addr03 = "0x89046d34e70a65acab2152c26a0c8e493b5ba629" ascii nocase
 
+        // v1 rebrand "GOLD" — same bytecode shape, Solidity 0.8.25
+        $addr04 = "0xb59f313dcf8c8107adffeabd0c041c896c64dfca" ascii nocase
+
         // Polymarket incident — attacker wallet
-        $addr04 = "0xe65b1C586757c5510B60F998Eebb14C1eF71E1eD" ascii nocase
+        $addr05 = "0xe65b1C586757c5510B60F998Eebb14C1eF71E1eD" ascii nocase
 
         // v3 XOR-deobfuscated theft destination (a^b resolved by decompiler)
-        $addr05 = "0x77dd9a93d7a1ab9dd3bdd4a70a51b2e8c9b2350d" ascii nocase
+        $addr06 = "0x77dd9a93d7a1ab9dd3bdd4a70a51b2e8c9b2350d" ascii nocase
         // v3 deployer/owner (only address that can call destroyContract)
-        $addr06 = "0x86d9ad92fc3f69cc9c1a83aff7834fea27f1fff2" ascii nocase
+        $addr07 = "0x86d9ad92fc3f69cc9c1a83aff7834fea27f1fff2" ascii nocase
         // v1 deployer (from Sourcify verification metadata)
-        $addr07 = "0x63a3AABa7B12573ff0A68A45b56EeEA5508C4DBf" ascii nocase
+        $addr08 = "0x63a3AABa7B12573ff0A68A45b56EeEA5508C4DBf" ascii nocase
 
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
@@ -276,10 +282,10 @@ rule CrimeEnjoyor_IOC
         filesize < 50MB
         and (
             // Any known CrimeEnjoyor contract or operator address
-            any of ($addr01, $addr02, $addr03, $addr05, $addr06, $addr07)
+            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08)
             or
             // Polymarket attacker wallet + any contract name
-            ($addr04 and any of ($name*))
+            ($addr05 and any of ($name*))
             or
             // Contract name + EIP-7702 bytecode marker
             (any of ($name*) and $evm_7702)
