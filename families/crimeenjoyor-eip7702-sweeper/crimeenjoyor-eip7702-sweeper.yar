@@ -22,6 +22,10 @@
         executeCall, token sweeping via transferTokens, self-destruct.
         "loser" prefix retained on core functions with large numeric
         suffixes (loserMulticall_3869193990, loserSweepETH_11435948882).
+     v3b "AdvancedCrimeEnjoyor2" (Solidity 0.8.30): stripped v3 —
+        identical sweeper logic but no destroyContract() or owner
+        state variable. Different XOR destination wallet. Deployed at
+        0x289c...48ae9 (block 24589357, verified 2026-06-06).
 
    By late 2025, >97% of all EIP-7702 delegations on mainnet pointed
    to CrimeEnjoyor-family bytecode. Used in the Polymarket $3.1M
@@ -242,7 +246,7 @@ rule CrimeEnjoyor_IOC
     meta:
         description = "CrimeEnjoyor family — static IOC sweep for known contract addresses, deployer identifiers, and EVM bytecode markers"
         author      = "synthetic-detections"
-        date        = "2026-06-29"
+        date        = "2026-07-01"
         severity    = "high"
         family      = "crimeenjoyor-eip7702-sweeper"
         reference   = "https://etherscan.io/address/0x89046d34e70a65acab2152c26a0c8e493b5ba629"
@@ -266,6 +270,11 @@ rule CrimeEnjoyor_IOC
         // v1 deployer (from Sourcify verification metadata)
         $addr08 = "0x63a3AABa7B12573ff0A68A45b56EeEA5508C4DBf" ascii nocase
 
+        // v3b contract — stripped v3 without destroyContract
+        $addr09 = "0x289c9c58355e1a7d2b0ad4a5e8f2c3c961b48ae9" ascii nocase
+        // v3b XOR-deobfuscated theft destination
+        $addr10 = "0xbfe129315f75dd7ba60ec85b4024e0fe1264fb13" ascii nocase
+
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
         $name02 = "AdvancedCrimeEnjoyor" ascii
@@ -282,7 +291,7 @@ rule CrimeEnjoyor_IOC
         filesize < 50MB
         and (
             // Any known CrimeEnjoyor contract or operator address
-            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08)
+            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10)
             or
             // Polymarket attacker wallet + any contract name
             ($addr05 and any of ($name*))
