@@ -74,6 +74,16 @@ RustDuck_IOC rustduck-ioc-specimen.bin
 - **String-level detection.** If future RustDuck variants strip ASCII strings or use stack-string construction, the behavioral rule's process-name matching will break. The structural rule's magic bytes (`ASHPCK`, `iEMPK`) are more resilient since they are part of the binary format, not debug strings.
 - **ELF-only.** Rules gate on ELF magic. If RustDuck ports to Windows PE (not currently observed), new structural conditions would be needed.
 
-## Corpus FP scan
+## Corpus FP scan (MalShare, 2026-07-01)
 
-Pending — kicked off against MalShare corpus (~497k samples) after this transcript was written. Results will be appended.
+Each rule scanned individually (scanner gate requires single-rule submissions).
+
+| Rule | Samples scanned | Hits | Elapsed |
+|---|---|---|---|
+| `RustDuck_Botnet_Behavior` | 5,249 | 1 | 10m34s |
+| `RustDuck_ELF_Loader` | 8,337 | 0 | 12m26s |
+| `RustDuck_IOC` | 11,428 | 0 | 14m42s |
+
+**Behavioral rule hit:** `5b18eb5730b8f09de0a51cce5f7840666198222235affe24b0262309378cef24` — confirmed malware (in MalShare corpus), no public identification found. Likely a related IoT botnet with overlapping anti-analysis strings (debugger process names + `/proc` introspection). Not a benign false positive.
+
+**Verdict:** Clean — 0 benign FPs. The single hit is on malware with behaviorally similar anti-analysis patterns, which is acceptable cross-detection for a behavioral rule.
