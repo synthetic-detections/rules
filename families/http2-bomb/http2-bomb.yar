@@ -69,8 +69,11 @@ rule HTTP2_Bomb_PoC_SourceCode
     condition:
         filesize < 5MB
         and (
-            // The technique name is verbatim and PoC-specific
-            $technique
+            // Technique name + a client-library code tell. The name alone
+            // ("indexed reference bomb") appears verbatim in advisories and
+            // news coverage of the CVE, so it must co-occur with actual PoC
+            // code to fire this critical rule.
+            ($technique and any of ($lib_h2py, $lib_hyper, $lib_h2c, $lib_nghttp2))
             or
             // Co-occurrence: HTTP/2 client/framing tell + zero receive window
             // + WINDOW_UPDATE drip + an HPACK / cookie-crumb amplification anchor.
@@ -97,16 +100,26 @@ rule HTTP2_Bomb_PoC_IOC
         reference   = "https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb"
 
     strings:
+        // Publication-specific anchors — safe to fire standalone.
         $repo_path  = "califio/publications/tree/main/MADBugs/http2-bomb" ascii nocase
         $repo_short = "MADBugs/http2-bomb" ascii nocase
         $madbugs    = "MADBugs" ascii
-        $cve_apache = "CVE-2026-49975" ascii nocase
-        $auth1      = "Quang Luong" ascii
-        $auth2      = "Jun Rong" ascii
-        $auth3      = "Duc Phan" ascii
-        $stefan     = "Stefan Eissing" ascii
         $codex_blog = "blog.calif.io" ascii nocase
 
+        // CVE id — corroborating only. It appears in the Apache CHANGES entry
+        // that FIXES this bug, so it must not fire alone.
+        $cve_apache = "CVE-2026-49975" ascii nocase
+
+        // Removed from matching: the researcher names (Quang Luong / Jun Rong /
+        // Duc Phan — attribution now lives in the header) and "Stefan Eissing",
+        // the mod_http2 maintainer who FIXED the CVE. His name is present in
+        // every Apache CHANGES / mod_http2 source file and caused the IOC rule
+        // to false-positive on Apache's own changelog.
+
     condition:
-        filesize < 50MB and any of them
+        filesize < 50MB
+        and (
+            any of ($repo_path, $repo_short, $madbugs, $codex_blog)
+            or ($cve_apache and any of ($repo_path, $repo_short, $madbugs, $codex_blog))
+        )
 }

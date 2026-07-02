@@ -1,0 +1,14 @@
+Benign hard negative: an excerpt of Apache httpd's CHANGES file describing the
+FIX for the HTTP/2 Bomb. It names the maintainer, the CVE, mod_http2, and even
+the technique — exactly the tokens that made the IOC rule false-positive before
+the fix. It must NOT match any rule now.
+
+  Changes with Apache 2.4.66
+
+  *) mod_http2: Fixed a denial-of-service where a crafted stream using an
+     HPACK "indexed reference bomb" combined with a zero-size receive window
+     could exhaust server memory. Reported by the Codex team; fix by
+     Stefan Eissing. CVE-2026-49975. [Stefan Eissing]
+
+  *) mod_http2: Added a limit on the number of HPACK dynamic table references
+     decoded per header block. [Stefan Eissing]
