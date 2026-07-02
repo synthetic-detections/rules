@@ -1,0 +1,20 @@
+{
+  "name": "insights-inventory-frontend",
+  "version": "3.14.0",
+  "description": "Red Hat Insights inventory UI (legitimate consumer app)",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "fec build",
+    "test": "jest",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@redhat-cloud-services/frontend-components": "^7.6.0",
+    "@redhat-cloud-services/frontend-components-utilities": "^5.9.0",
+    "@redhat-cloud-services/frontend-components-notifications": "^4.1.0",
+    "@redhat-cloud-services/host-inventory": "^1.2.0",
+    "@redhat-cloud-services/types": "^1.0.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

@@ -154,9 +154,9 @@ rule Miasma_IOC
             // Or "spartan" marker co-occurring with at least one package name
             // (raw "spartan" alone is a noisy English word)
             or ($theme_spartan and any of ($pkg*))
-            // Or two or more @redhat-cloud-services package names — typical
-            // of IOC dumps and aggregate writeups, not of one legitimate
-            // package's own manifest.
-            or 2 of ($pkg*)
+            // NOTE: bare @redhat-cloud-services package *names* are not IOCs
+            // on their own — any legitimate consumer app or lockfile lists
+            // several of them. Detection here requires a compromised version
+            // pin ($ver*), a campaign theme, or the GCP UA fingerprint.
         )
 }
