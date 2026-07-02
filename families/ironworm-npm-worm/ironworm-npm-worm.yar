@@ -84,14 +84,15 @@ rule IronWorm_LinuxELF_Dropper
         $bip39 = "bench crane defense corn wheel trial news abuse finish better paddle slush" ascii
 
     condition:
-        // ELF64 magic at offset 0 plus an ELF amd64 secondary indicator,
-        // size band centred on the 976 KB packed dropper, and either UPX!
-        // signature (packed sample) or the post-unpack BIP-39 / C2 strings.
+        // ELF64 in the ~976 KB dropper size band. UPX packing ALONE matched any
+        // packed ELF in this band (busybox, Go tools), so require a packed
+        // sample to also carry the agent C2 path; the unique post-unpack BIP-39
+        // operator seed fires on its own.
         uint32(0) == 0x464C457F
         and uint8(4) == 2          // EI_CLASS = ELFCLASS64
         and filesize > 700KB
         and filesize < 1500KB
-        and ($upx_magic or $c2_endpoint or $bip39)
+        and ($bip39 or ($upx_magic and $c2_endpoint))
 }
 
 rule IronWorm_IOC
@@ -158,5 +159,18 @@ rule IronWorm_IOC
         $org4 = "kakedashi-hacker" ascii nocase
 
     condition:
-        filesize < 50MB and any of them
+        filesize < 50MB
+        and (
+            // Globally-unique campaign indicators — safe to fire standalone.
+            any of ($publisher, $real_attacker, $spoof_author, $bip39, $wallet)
+            or
+            // The fake commit messages are ordinary conventional commits (they
+            // match any CHANGELOG) and the package/org names are the LEGITIMATE
+            // pre-compromise coordinates (they match any WeaveDB lockfile). They
+            // only corroborate — require a cluster AND a unique indicator.
+            (
+                (4 of ($commit*) or 3 of ($pkg*) or 2 of ($org*))
+                and any of ($publisher, $real_attacker, $spoof_author, $bip39, $wallet)
+            )
+        )
 }
