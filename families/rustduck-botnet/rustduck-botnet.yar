@@ -102,8 +102,11 @@ rule RustDuck_Botnet_Behavior
             // Path 4: VM + sandbox evasion suite (both categories)
             (2 of ($vm_*) and 2 of ($env_*) and any of ($proc_*))
             or
-            // Path 5: crypto stack co-occurrence — HKDF + symmetric cipher
-            ($cry_hkdf and any of ($cry_ascon, $cry_chacha))
+            // Path 5: distinctive lightweight-crypto stack. HKDF + ChaCha20
+            // alone matched stock OpenSSL/libssl, so anchor on Ascon128 or
+            // Noise_IK — RustDuck's characteristic markers, absent from a
+            // normal TLS stack — plus a second cipher marker.
+            (any of ($cry_ascon, $cry_noise) and any of ($cry_hkdf, $cry_chacha))
             or
             // Path 6: Noise protocol + any anti-analysis
             ($cry_noise and (any of ($dbg_*) or any of ($vm_*)))
