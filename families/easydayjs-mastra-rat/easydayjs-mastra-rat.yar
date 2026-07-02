@@ -216,8 +216,21 @@ rule EasyDayJS_IOC
             // Attack infrastructure context
             ($hostdns and $campaign)
             or
-            // Attacker account indicators
-            any of ($acct_hijack, $acct_publish, $email_atk)
+            // The attacker email is specific enough to stand alone. The
+            // bare usernames (ehindero, sergey2016) are common-shaped and
+            // appear in unrelated contributor lists / git logs, so they only
+            // count alongside a campaign anchor (typosquat name, C2, payload
+            // path, or an affected @mastra package).
+            $email_atk
+            or (
+                any of ($acct_hijack, $acct_publish)
+                and (
+                    $easy_day_js or $update_path
+                    or any of ($c2_dropper, $c2_rat)
+                    or any of ($pkg_core, $pkg_memory, $pkg_server, $pkg_mcp,
+                               $pkg_deployer, $pkg_rag, $pkg_schema, $pkg_mastra)
+                )
+            )
             or
             // Malicious dependency name + any package coordinate
             ($easy_day_js and any of ($pkg_core, $pkg_memory, $pkg_server, $pkg_mcp, $pkg_deployer, $pkg_rag, $pkg_schema, $pkg_mastra))

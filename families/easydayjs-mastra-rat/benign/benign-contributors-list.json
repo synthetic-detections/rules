@@ -1,0 +1,6 @@
+{
+  "name": "some-unrelated-lib",
+  "version": "2.4.1",
+  "contributors": ["alice", "sergey2016", "bob", "carol"],
+  "dependencies": { "dayjs": "^1.11.10" }
+}
