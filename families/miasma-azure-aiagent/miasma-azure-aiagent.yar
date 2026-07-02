@@ -189,9 +189,11 @@ rule Miasma_Azure_IOC
             // Attacker accounts or campaign themes — high-confidence singletons
             $acc_windy629 or $acc_hergom or $acc_liuende
             or $theme_blight or $theme_hades
-            // 2-of repo coordinates (single repo names are too common as
-            // documentation to fire alone, but two together = IOC dump)
-            or 2 of ($repo_*)
+            // NOTE: bare repo coordinates are not IOCs on their own — the
+            // mantine-* libraries and azure-search/durabletask samples are
+            // widely used, so a benign app or lockfile easily lists two.
+            // Require a campaign anchor (attacker account, theme, or the
+            // TeamPCP marker) alongside the repo names.
             // TeamPCP + a repo name corroborates campaign attribution writeup
             or ($theme_name and any of ($repo_*))
         )
