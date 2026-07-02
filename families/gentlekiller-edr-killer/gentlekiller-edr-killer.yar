@@ -47,59 +47,59 @@ rule GentleKiller_EDR_KillList
 
     strings:
         // CrowdStrike processes
-        $edr_cs1 = "CSFalconService" ascii nocase
-        $edr_cs2 = "csfalconcontainer" ascii nocase
-        $edr_cs3 = "CSAgent" ascii nocase
+        $edr_cs1 = "CSFalconService" ascii wide nocase fullword
+        $edr_cs2 = "csfalconcontainer" ascii wide nocase fullword
+        $edr_cs3 = "CSAgent" ascii wide nocase fullword
 
         // SentinelOne processes
-        $edr_s1a = "SentinelAgent" ascii nocase
-        $edr_s1b = "SentinelHelperService" ascii nocase
-        $edr_s1c = "SentinelStaticEngine" ascii nocase
+        $edr_s1a = "SentinelAgent" ascii wide nocase fullword
+        $edr_s1b = "SentinelHelperService" ascii wide nocase fullword
+        $edr_s1c = "SentinelStaticEngine" ascii wide nocase fullword
 
         // Microsoft Defender processes
-        $edr_def1 = "MsMpEng" ascii nocase
-        $edr_def2 = "MsSense" ascii nocase
-        $edr_def3 = "SenseIR" ascii nocase
+        $edr_def1 = "MsMpEng" ascii wide nocase fullword
+        $edr_def2 = "MsSense" ascii wide nocase fullword
+        $edr_def3 = "SenseIR" ascii wide nocase fullword
 
         // Sophos processes
-        $edr_soph1 = "SophosHealth" ascii nocase
-        $edr_soph2 = "SophosCleanM" ascii nocase
-        $edr_soph3 = "SophosFileScanner" ascii nocase
+        $edr_soph1 = "SophosHealth" ascii wide nocase fullword
+        $edr_soph2 = "SophosCleanM" ascii wide nocase fullword
+        $edr_soph3 = "SophosFileScanner" ascii wide nocase fullword
 
         // Palo Alto Cortex XDR
-        $edr_pa1 = "CylanceSvc" ascii nocase
-        $edr_pa2 = "cyserver" ascii nocase
-        $edr_pa3 = "Traps" ascii nocase
+        $edr_pa1 = "CylanceSvc" ascii wide nocase fullword
+        $edr_pa2 = "cyserver" ascii wide nocase fullword
+        $edr_pa3 = "Traps" ascii wide nocase fullword
 
         // Carbon Black
-        $edr_cb1 = "RepMgr" ascii nocase
-        $edr_cb2 = "CbDefense" ascii nocase
+        $edr_cb1 = "RepMgr" ascii wide nocase fullword
+        $edr_cb2 = "CbDefense" ascii wide nocase fullword
 
         // ESET
-        $edr_eset1 = "ekrn" ascii nocase
-        $edr_eset2 = "egui" ascii nocase
+        $edr_eset1 = "ekrn" ascii wide nocase fullword
+        $edr_eset2 = "egui" ascii wide nocase fullword
 
         // Bitdefender
-        $edr_bd1 = "bdagent" ascii nocase
-        $edr_bd2 = "bdservicehost" ascii nocase
+        $edr_bd1 = "bdagent" ascii wide nocase fullword
+        $edr_bd2 = "bdservicehost" ascii wide nocase fullword
 
         // Kaspersky
-        $edr_kas1 = "avpui" ascii nocase
-        $edr_kas2 = "avp" ascii nocase
+        $edr_kas1 = "avpui" ascii wide nocase fullword
+        $edr_kas2 = "avp" ascii wide nocase fullword
 
         // Elastic
-        $edr_el1 = "elastic-agent" ascii nocase
-        $edr_el2 = "elastic-endpoint" ascii nocase
+        $edr_el1 = "elastic-agent" ascii wide nocase fullword
+        $edr_el2 = "elastic-endpoint" ascii wide nocase fullword
 
         // Trend Micro
-        $edr_tm1 = "Ntrtscan" ascii nocase
-        $edr_tm2 = "PccNTMon" ascii nocase
+        $edr_tm1 = "Ntrtscan" ascii wide nocase fullword
+        $edr_tm2 = "PccNTMon" ascii wide nocase fullword
 
         // Qualys
-        $edr_ql1 = "QualysAgent" ascii nocase
+        $edr_ql1 = "QualysAgent" ascii wide nocase fullword
 
         // Huntress
-        $edr_hu1 = "HuntressAgent" ascii nocase
+        $edr_hu1 = "HuntressAgent" ascii wide nocase fullword
 
         // Generic AV service enumeration pattern — DeviceIoControl
         // for kernel driver interaction (BYOVD exploitation)
@@ -198,7 +198,7 @@ rule GentleKiller_IOC
         $fn_easolo1    = "EASOLO1clear" ascii wide
         $fn_eaanticheat = "EAAntiCheatLight" ascii wide
         $fn_bitd       = "BitD1" ascii wide
-        $fn_mb2        = "MB2" ascii wide
+        $fn_mb2        = "MB2" ascii wide fullword
         $fn_deletor    = "Deletor" ascii wide
         $fn_symantec_v = "Symantec.exe" ascii wide
 
