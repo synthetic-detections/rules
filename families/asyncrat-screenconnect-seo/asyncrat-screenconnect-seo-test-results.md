@@ -42,9 +42,19 @@ install alone does not match.
 
 ## Corpus FP test (MalShare, ~497k samples)
 
-Queued via task-runner (yara-fp-scan, task #20, 2026-07-02) — per-rule bounded
-scan (--max-hits 40 / --budget 15m). Results appended on completion. For a
-family disclosed one day ago, any corpus hit is a candidate false positive.
+Ran via task-runner (yara-fp-scan, task #20, 2026-07-02) — per-rule bounded
+scan (--max-hits 40 / --budget 15m) against the MalShare corpus (~497k samples).
+
+**Result: 0 hits, all three rules — FP-clean.**
+
+| Rule | Corpus hits |
+|------|-------------|
+| AsyncRAT_ScreenConnect_SEO_Behavior | 0 |
+| AsyncRAT_ScreenConnect_SEO_LoaderShape | 0 |
+| AsyncRAT_ScreenConnect_SEO_IOC | 0 |
+
+For a family disclosed one day ago, any corpus hit would have been a candidate
+false positive; none surfaced.
 
 Note: the specific sample hashes from the reports were not present in MalShare
 at authoring time (checked 4 SHA256/MD5 — all absent), so the IOC rule is
