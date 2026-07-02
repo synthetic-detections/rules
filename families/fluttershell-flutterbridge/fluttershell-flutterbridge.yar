@@ -136,9 +136,14 @@ rule FlutterShell_WebViewJSBridge
             // 3-of guards against the bridge string appearing on its own
             // in unrelated material that legitimately discusses Flutter.
             ($bridge and 3 of ($cmd_*))
-            // Or any of the verbatim C2 path-shapes — these only appear
-            // inside the malicious JS payload or in samples that mirror it.
-            or any of ($p_*)
+            // Or any of the distinctive verbatim C2 path-shapes — these
+            // only appear inside the malicious JS payload or samples that
+            // mirror it.
+            or any of ($p_update_thanks, $p_update_delay, $p_getupdate, $p_summarize)
+            // /getConfig is a common REST endpoint name (benign apps use it
+            // for fetch('/getConfig')), so it only counts alongside the
+            // flutterInvoke bridge that makes it FlutterShell-specific.
+            or ($p_getconfig and $bridge)
             // Or the recon command + Chrome pref hijack together
             or ($recon_ioreg and $chrome_pref)
         )
