@@ -181,9 +181,11 @@ rule CrimeEnjoyor_Phishing_Frontend
         reference   = "https://www.coindesk.com/tech/2025/06/02/post-pectra-upgrade-malicious-ethereum-contracts-are-trying-to-drain-wallets-but-to-no-avail-wintermute"
 
     strings:
-        // EIP-7702 authorization signing in JS/TS
+        // EIP-7702 authorization signing in JS/TS. Note: "7702" and
+        // "delegate" are only ever used here paired with a sweeper ABI
+        // name or a known sweeper address — never on their own, since
+        // EIP-7702 delegation is itself a legitimate protocol feature.
         $eip_7702     = "7702" ascii
-        $eip_auth     = "authorization" ascii nocase
         $eip_delegate = "delegate" ascii nocase
         $eip_sign     = "signAuthorization" ascii
         $eip_type4    = "0x04" ascii
@@ -221,9 +223,12 @@ rule CrimeEnjoyor_Phishing_Frontend
             // Path 2: EIP-7702 authorization signing + wallet draining pattern
             ($eip_sign and any of ($w3_request, $w3_sendtx, $w3_provider))
             or
-            // Path 2b: EIP-7702 authorization keyword + wallet connect
-            ($eip_auth and $eip_7702 and any of ($w3_*))
-            or
+            // (Removed the former Path 2b "authorization + 7702 + wallet"
+            // heuristic: EIP-7702 delegation is a legitimate protocol
+            // feature, so an EIP-7702 reference plus a wallet call is not
+            // malicious on its own. Malicious delegation is caught below by
+            // pairing the 7702/delegate markers with a sweeper ABI name or a
+            // known sweeper address — Paths 4, 5b, 5 and 6.)
             // Path 3: sweeper ABI names in web3 interaction code
             (2 of ($abi_*) and any of ($w3_*))
             or
