@@ -90,8 +90,10 @@ rule CryptoBandits_Clipper_Behavior
     condition:
         filesize < 5MB
         and (
-            // Path 1: C2 protocol — 3+ action codes + any endpoint
-            (3 of ($proto_*) and any of ($c2_*))
+            // Path 1: C2 protocol — 4+ action codes + any endpoint. The codes
+            // are short generic tokens (GUID/GOOD/EVAL/SEED), so require 4 of
+            // them alongside a C2 endpoint path to avoid matching API docs.
+            (4 of ($proto_*) and any of ($c2_*))
             or
             // Path 2: Tor proxy + C2 endpoint
             (any of ($tor_socks1, $tor_socks2, $tor_socks3) and any of ($c2_*))
@@ -108,8 +110,15 @@ rule CryptoBandits_Clipper_Behavior
             // Path 6: C2 endpoint trifecta (route + recvf + stub)
             ($c2_route and $c2_recvf and $c2_stub)
             or
-            // Path 7: BIP39/WIF wallet format markers + exfil codes
-            (($wallet_bip or $wallet_wif) and any of ($proto_seed, $proto_pkey))
+            // Path 7: wallet-format markers + exfil codes + a C2/Tor anchor.
+            // BIP39/WIF/SEED/PKEY are normal crypto-wallet vocabulary (this
+            // path matched a legitimate BIP39 library), so require a malicious
+            // anchor — a C2 endpoint, Tor SOCKS proxy, or the renamed Tor binary.
+            (
+                ($wallet_bip or $wallet_wif)
+                and any of ($proto_seed, $proto_pkey)
+                and (any of ($c2_*) or any of ($tor_socks1, $tor_socks2, $tor_socks3) or $tor_rename)
+            )
             or
             // Path 8: payload output file + C2 endpoints
             ($payload_out and any of ($c2_*))
