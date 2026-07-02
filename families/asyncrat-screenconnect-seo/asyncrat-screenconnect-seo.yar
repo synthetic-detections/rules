@@ -95,11 +95,18 @@ rule AsyncRAT_ScreenConnect_SEO_Behavior
             ($injector and $inject_tg and ($loader_ps or $vbs or $lnk))
             or
             // Path 5: PowerShell loader behavior — Defender exclusion +
-            // UAC/AMSI tampering + hidden/bypass execution
+            // UAC/AMSI tampering + hidden/bypass execution. This combo is
+            // common to many unrelated loaders and admin/debloat scripts,
+            // so it must co-occur with a campaign-specific artifact (the
+            // Skype.ps1 loader, a stage filename, the side-load DLL, the
+            // injector/target, or a persistence task name) to attribute it
+            // to THIS campaign rather than mislabel generic evasion.
             (
                 $def_excl and $def_path
                 and any of ($uac_off, $amsi)
                 and any of ($ps_hidden, $ps_bypass)
+                and any of ($loader_ps, $vbs, $lnk, $injector, $inject_tg,
+                            $sideload_dll, $task_install, $task_3losh)
             )
         )
 }
