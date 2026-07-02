@@ -1,0 +1,14 @@
+ConnectWise ScreenConnect — legitimate deployment notes (benign control)
+
+We deploy ScreenConnect for remote IT support. The agent installs as
+screenconnect.client.exe and registers a Windows service. This is a normal,
+signed ConnectWise install pulled from our own instance — no SEO-poisoned
+installer, no side-loaded resource DLL, no PowerShell Defender-exclusion or
+UAC tampering, and no AsyncRAT.
+
+Install source: https://company.screenconnect.com/Bin/ConnectWiseControl.ClientSetup.exe
+Service: "ScreenConnect Client (abc123)"
+Support session tools: file transfer, remote view, command shell (operator-initiated).
+
+This file exists to confirm the rules do NOT flag a normal ScreenConnect
+deployment on generic "ScreenConnect" / "screenconnect.client.exe" strings.

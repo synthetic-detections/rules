@@ -1,0 +1,32 @@
+INCIDENT REPORT: SEO-poisoned ScreenConnect -> AsyncRAT ("FlowProxy Monitor V3")
+Date: 2026-07-01
+Attribution: unattributed, financially motivated
+Classification: HIGH
+Reporting: Kaspersky, Hunt.io
+
+C2 / staging infrastructure:
+- 176.65.139.119 (Germany, port 555 open directory; AsyncRAT 5050)
+- 45.74.16.71 (AS207184, Germany; AsyncRAT 5050)
+- 164.68.120.30 (AS51167, Germany; multiple AsyncRAT ports)
+- 78.161.14.229:753 / 78.162.57.179:753 / 88.229.27.40:753 (Turkey, AS9121)
+- 185.208.159.71 (AS42624, Switzerland; logs staging)
+- 94.154.173.145 (US; resolves to dual.saltuta.com)
+
+Delivery / disposable domains:
+- dual.saltuta.com (ScreenConnect installer delivery)
+- verify.uniupdate.net (redirect chain)
+- galusa.ac.mz (HTML redirector)
+- dp.vdpanxxs.top / sc.vdpanxxs.top / vixgstxpnl.top (disposables -> 45.74.16.71)
+
+File hashes (SHA-256):
+- 6142295a7f7ce60b86738e07d79b72d5a3edb3d5915aa9fb6c81ea752a9cd229 (Ab.vbs)
+- 54b762e05af1a1138786a78e9936d63f4e419bbeb0d116c2cee7376566420382 (Skype.ps1)
+- b97d0a646c8aece8f5c4cedb26da808ec5104038c7871ad0481f75df7a75c59d (libPK.dll)
+- 701e702f91942acef4d6afdda2abf70ed8618cde2f2ef3b174b092373c63c033 (screenconnect.client.exe)
+- 1f7b509db8424453b8bb3a45053f3bc47f98414b168a67f253c10f0f6fb83936 (pe.txt AMSI bypass)
+
+File hashes (MD5):
+- cd5207483b78ef50d3dbd3f6a36d2a98 (Stub.exe)
+- c596910b65fb3af81b9ca67ce11ebcc3 (event_support-pdf.Client.exe ClickOnce dropper)
+
+Persistence: scheduled tasks "SystemInstallTask" (10 min), "3losh" (2 min)
