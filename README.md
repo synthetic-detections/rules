@@ -41,6 +41,11 @@ before deploying.
 | `langflow-fileupload-cve-2026-5027` | — | ✅ | 2026-06 Orca — Langflow `/api/v2/files` path-traversal arbitrary write → RCE |
 | `joomla-jce-webshell-cve-2026-48907` | — | ✅ | 2026-06 YesWeHack — Joomla JCE unauth `.xml.php` webshell upload + `/tmp/` execution |
 | `fortisandbox-jsonrpc-cve-2026-39813` | — | ✅ | 2026-06 Fortinet FG-IR-26-112 — FortiSandbox JRPC `session` path-traversal auth bypass |
+| `cisco-ucm-ssrf-cve-2026-20230` | — | ✅ | 2026-06 Cisco/Horizon3 — Unified CM WebDialer SSRF → Axis2 `.jsp` webshell (CISA KEV) |
+| `everest-forms-cve-2026-3300` | — | ✅ | 2026-06 — Everest Forms Pro (WordPress) unauth PHP injection RCE via Calculation Addon |
+| `phpbb-oauth-authbypass-cve-2026-48611` | — | ✅ | 2026-06 Aikido — phpBB auth bypass via `apache` login-link provider |
+| `peoplesoft-psemhub-cve-2026-35273` | — | ✅ | 2026-06 Rapid7 — PeopleSoft EMHub `/PSEMHUB/hub` pre-auth Java deserialization RCE |
+| `servu-deflate-dos-cve-2026-28318` | — | ✅ | 2026-06 SolarWinds — Serv-U deflate-bomb DoS (heuristic: inbound `Content-Encoding: deflate`) |
 | `moonlight-maze-loki2-penquin` | ✅ | — | 1996-1999 + 2014-2020 — historical Russia-linked APT, LOKI2 covert-channel backdoor, modern Penquin Turla Linux descendant |
 | `sap-netweaver-cve-2026-44748` | — | ✅ | 2026-06-09 SAP HotNews — SAML XML Signature Wrapping in NetWeaver AS ABAP (CVSS 9.9) |
 | `sidecopy-xenofiscal` | — | ✅ | 2026-06-02 Seqrite — APT36 / SideCopy XenoRAT against Afghan MoF |
