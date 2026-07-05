@@ -37,6 +37,10 @@ before deploying.
 | `oracle-ebs-ibytransmit-cve-2026-46817` | — | ✅ | 2026-06 — Oracle EBS iPayment `/OA_HTML/ibytransmit` unauth file-path RCE (CVSS 9.8, in the wild) |
 | `flowise-custommcp-rce-cve-2026-56274` | — | ✅ | 2026-06 — Flowise CustomMCP `mcpServerConfig` command injection / RCE (CVSS 9.9) |
 | `crawl4ai-computed-fields-cve-2026-53753` | — | ✅ | 2026-06 — Crawl4AI computed-field AST sandbox escape (`gi_frame` frame walk) → RCE |
+| `kemp-loadmaster-cve-2026-8037` | — | ✅ | 2026-06 watchTowr — Progress Kemp LoadMaster pre-auth heap RCE (`apiuser` quote overflow) |
+| `langflow-fileupload-cve-2026-5027` | — | ✅ | 2026-06 Orca — Langflow `/api/v2/files` path-traversal arbitrary write → RCE |
+| `joomla-jce-webshell-cve-2026-48907` | — | ✅ | 2026-06 YesWeHack — Joomla JCE unauth `.xml.php` webshell upload + `/tmp/` execution |
+| `fortisandbox-jsonrpc-cve-2026-39813` | — | ✅ | 2026-06 Fortinet FG-IR-26-112 — FortiSandbox JRPC `session` path-traversal auth bypass |
 | `moonlight-maze-loki2-penquin` | ✅ | — | 1996-1999 + 2014-2020 — historical Russia-linked APT, LOKI2 covert-channel backdoor, modern Penquin Turla Linux descendant |
 | `sap-netweaver-cve-2026-44748` | — | ✅ | 2026-06-09 SAP HotNews — SAML XML Signature Wrapping in NetWeaver AS ABAP (CVSS 9.9) |
 | `sidecopy-xenofiscal` | — | ✅ | 2026-06-02 Seqrite — APT36 / SideCopy XenoRAT against Afghan MoF |
