@@ -1,0 +1,3 @@
+The build fails on main after the latest merge. Steps to reproduce: run
+`npm test` locally. The CI job times out in the integration suite. Could a
+maintainer look into it and add a comment when it is fixed? Thanks.
