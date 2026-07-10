@@ -1,0 +1,1 @@
+candy_crush_save.candy level=42 lives=5
