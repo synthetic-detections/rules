@@ -1,0 +1,11 @@
+{
+  "name": "@injectivelabs/sdk-ts",
+  "version": "1.20.21",
+  "description": "Injective TypeScript SDK",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist/cjs/accounts-Cy0p4lLW.cjs",
+    "dist/esm/accounts-jQ1GSgaW.js"
+  ]
+}
