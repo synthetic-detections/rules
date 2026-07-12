@@ -1,0 +1,8 @@
+codedome / Balochistan Police CMS watering-hole IOCs
+Delivery URL: https://cms.balochistanpolice.gov.pk/client%20scripts/cms_plugin.exe
+Host: cms.balochistanpolice.gov.pk
+Stager: cms_plugin.exe (Rust stager + .NET/360Safe variant)
+AsyncRAT C2: 41.216.188.140
+SHA1: 23f6781919a50b118d8d4e6a7e9ae63b71ecc885
+SHA1: 4039454c9189e64285e93fc075a30b93f814b5b5
+SHA1: 58cb2d95063b9df807b7aa8dc106b74ce988a491

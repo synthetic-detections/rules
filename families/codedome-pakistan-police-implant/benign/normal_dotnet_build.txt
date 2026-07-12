@@ -1,0 +1,4 @@
+Build log for internal helpdesk client.
+PDB: D:\work\helpdesk\Client\Client2\obj\Debug\Client2.pdb
+Message shown to user on success: "Update complete. Restart the service to apply."
+Standard MSBuild output, no watering-hole, no 360 masquerade.
