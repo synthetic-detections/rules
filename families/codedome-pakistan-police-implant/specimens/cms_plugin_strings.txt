@@ -1,0 +1,9 @@
+; Reconstructed printable-string dump of cms_plugin.exe (.NET variant)
+; masquerading as Qihoo 360 360Safe.exe — codedome cluster.
+D:\codedome\case\six\Client\Client2\obj\Debug\Client2.pdb
+Update Complete! Please refresh the page
+360Safe.exe
+reflective assembly load
+xinshi
+[log] 启动 (simplified-Chinese log strings present)
+AsyncRAT client build
