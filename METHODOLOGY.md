@@ -1,9 +1,8 @@
 # Methodology
 
-How rules in this repository are authored, tested, and validated against a
-live malware corpus. `AGENTS.md` is the terse contributor checklist; this
-document explains the *why* and defines the false-positive-testing regime and
-the per-family corpus-scan statistics every family records.
+How rules in this repository are authored, tested, and validated. `AGENTS.md`
+is the terse contributor checklist; this document explains the *why* and the
+false-positive-testing regime.
 
 ## Authoring workflow
 
@@ -11,18 +10,18 @@ Each family follows the same pipeline:
 
 1. **Source from a primary report.** Start from a vendor/researcher disclosure
    with concrete static artifacts — distinctive strings, file/mutex/service
-   names, hashes, C2, PDB paths, extensions. Items that are pure breach tallies,
-   policy news, or vulnerability disclosures with no sample are not rule-worthy.
+   names, hashes, C2, PDB paths, extensions. Pure breach tallies, policy news,
+   or vulnerability disclosures with no sample are not rule-worthy.
 2. **Extract artifacts, separate the durable from the disposable.** Prefer
    anchors that survive infrastructure rotation (build paths, internal project
    names, misspelled strings, protocol quirks) over hashes and domains, which
    rotate. Both get rules, at different severities (below).
-3. **Write the three-rule shape** (see next section).
+3. **Write the three-rule shape** (next section).
 4. **Commit reproducible evidence.** `specimens/` (should-match) and `benign/`
    (structurally-similar should-NOT-match) are committed on disk, not described.
 5. **Smoke-test** before every commit (specimens must alert, benign must be
    silent, rule must compile).
-6. **Corpus false-positive scan** against the live MalShare corpus (below).
+6. **Scan for false positives** against a large malware corpus (below).
 7. **Commit per family and push immediately** — CI smoke-tests every family and
    mints a release bundle on each push, so local tests must pass first.
 
@@ -61,67 +60,29 @@ that *names* the absent tokens ("contains no `MYMUTEX123…`") will self-match,
 because YARA matches literal strings regardless of surrounding prose. Describe
 missing markers without spelling them.
 
-### 2. Corpus false-positive scan (live, against real malware)
+### 2. Corpus false-positive scan
 
-After the smoke test passes, scan the local MalShare corpus through the
-corpus scanner gate:
+After the smoke test passes, each string-based rule is scanned against a large
+malware corpus. For a **recent** family, any corpus hit is a candidate false
+positive — the malware is too new to already be represented, so a hit is almost
+certainly a benign or unrelated sample the rule mis-fires on. Investigate and
+tighten before committing. A hash-pinned specimen rule has no false-positive
+surface and is not scanned.
 
-```bash
-a corpus scanner scan --rule-file <family>.yar --max-hits 40 --budget 15m
-```
+## Recording results
 
-For a **recent** family, any corpus hit is a candidate false positive — the
-malware is too new to already be represented, so a hit is almost certainly a
-benign or unrelated sample the rule mis-fires on. Investigate and tighten before
-committing. For a **retro hunt** on an older family, use `--full --detach` to
-sweep the entire index.
-
-The gate enforces two hygiene rules on submitted rules: **one rule per scan**
-(rule-sets are rejected) and **every rule must carry a `filesize < N` guard**
-(unbounded scans are rejected). Scan each string-based rule separately, with a
-temporary filesize-guarded copy if the committed rule omits the guard. A
-hash-pinned specimen rule has no false-positive surface and need not be
-corpus-scanned.
-
-If the gate is unreachable, record the scan as `PENDING` in the transcript with
-the exact command to re-run, and proceed — do not block on it.
-
-## Corpus-scan statistics (recorded per family)
-
-`corpus scanner` exposes per-job statistics (persisted to
-`the scan log`, and live via `corpus scanner status` /
-`corpus scanner watch <id>`). Every family's `<family>-yara-test-results.md` records
-these under its **Corpus FP test** section, one row per string-based rule:
-
-| Field | Source | Meaning |
-|---|---|---|
-| Files scanned | `report.files_scanned` | Size of the scanned slice |
-| Throughput | `progress.files_per_sec` | Scan rate (files/sec) |
-| Elapsed | `report.elapsed_secs` | Wall-clock for the slice |
-| Deadline hit | `report.hit_deadline` | Whether `--budget` cut the scan short |
-| Limit hit | `report.hit_limit` | Whether `--max-hits` capped results |
-| Errors | `report.errors` | Read/parse errors |
-| Matches | `report.matches` | Candidate FPs (0 = clean) |
-| Corpus index | `status` → `index` | Total corpus size + build age |
-
-Recording the slice size and whether the budget deadline was hit matters: a
-`0 matches` verdict over a 5,000-file budget slice is a weaker statement than
-the same verdict over the full ~497k index, and the stats make that explicit
-rather than implying full coverage.
-
-**Standard block** (copy into each transcript's Corpus FP section):
+Every family's `<family>-yara-test-results.md` records the corpus result under a
+**Corpus FP test** section as a short markdown table — one row per string-based
+rule, with the number of corpus samples scanned, matches, read errors, and a
+verdict. Keep it high-level; the point is a clear pass/fail signal, e.g.:
 
 ```
 ### Corpus FP test
 
-| Rule | Files scanned | Throughput | Deadline | Matches | Verdict |
-|---|---|---|---|---|---|
-| <Rule_A> | 5,466 | 11.0 f/s | no | 0 | clean |
-| <Rule_B> | …     | …        | …  | … | …     |
-
-Corpus: MalShare index <N> files (built <age>), corpus scanner <version>.
-Slice via `--max-hits 40 --budget 15m`. Specimen (hash-pin) rule not scanned —
-no FP surface. Job logs: `the scan log`.
+| Rule | Corpus samples | Matches | Read errors | Verdict |
+|---|---|---|---|---|
+| <Rule_A> | ~5,500  | 0 | 0 | clean |
+| <Rule_B> | ~11,700 | 0 | 0 | clean |
 ```
 
 ## Identity and commit rules
