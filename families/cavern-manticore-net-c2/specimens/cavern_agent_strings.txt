@@ -1,0 +1,22 @@
+Reconstructed string dump — Cavern Manticore .NET agent (uxtheme.dll, build 04)
+Source: Check Point Research appendix, 2026-07-06. Synthetic reconstruction for
+detection testing only; not a redistributed binary.
+
+PDB path: C:\Users\rick\Desktop\Modules\cavern\Agent\obj\Release\uxtheme.pdb
+Project: Cavern Agent (legacy tag: Cav3rn)
+Mutex: MYMUTEX123HELLP04
+Config: config.txt  keys=i,xd,int    Cvn.cfg.A  Cvn.cfg.U
+
+Native module diagnostics:
+  "What is this sh*t?! where is get_version?!?"
+  "DLL not found...Maybe you didn't upload it!!!"
+Tunnel module:
+  "tunnel message receivecd"
+  "handeling connect ms"
+
+Command.Type enum: 61 shared command IDs
+Steg staging: inpt/ outpt/   .CvnC.png  .CvnA.png  .CvnR.png
+Transport XOR key 0x48   field-delim _;;_   arg-delim _,_
+Custom header: X-User-token
+HTTP endpoints: /profile /gallery /index.htm
+Sideload facade: uxtheme.dll behind C:\ProgramData\WinDir\WinDirStat.exe
