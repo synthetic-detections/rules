@@ -52,5 +52,5 @@ Specimens hit the intended rules; the structurally-similar benign set is clean.
 
 ## Corpus FP test
 
-Pending — MalShare corpus scan (`a corpus scanner scan --rule-file … --max-hits 40
---budget 15m`) queued after commit; result appended here when the job returns.
+Pending — a scan against the malware corpus is queued; result (samples, hits,
+verdict) appended here when it completes.

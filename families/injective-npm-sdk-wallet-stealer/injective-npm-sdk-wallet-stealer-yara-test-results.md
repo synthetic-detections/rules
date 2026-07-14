@@ -65,12 +65,10 @@ No benign file matches.
 
 ## Corpus FP test
 
-- Status: **PENDING** — corpus scanner unreachable at run time
-  (`http://internal-host:9006`, Errno 111 connection refused, 2026-07-11).
-- Planned command: `a corpus scanner scan --rule-file injective-npm-sdk-wallet-stealer.yar --max-hits 40 --budget 15m`
+- Status: **PENDING** — corpus scan unavailable at run time (2026-07-11).
 - FP-risk assessment: low. All matching paths are anchored on high-specificity,
   non-dictionary tokens — the injected handler `trackKeyDerivation`, the crafted
   full exfil host `testnet.archival.chain.grpc-web.injective.network`, the two
   unique hashed dist filenames, or the `@injectivelabs/sdk-ts` + `1.20.21`
-  co-occurrence. Re-run the corpus scan once corpus scanner is reachable and record
-  slice size / hits / verdict here.
+  co-occurrence. Re-run the corpus scan when available and record
+  samples / hits / verdict here.

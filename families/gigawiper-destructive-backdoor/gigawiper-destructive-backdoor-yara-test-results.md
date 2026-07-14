@@ -44,13 +44,7 @@ None fire.
 
 ## Corpus FP test
 
-PENDING — the MalShare corpus scanner (`corpus scanner` / corpus scanner) was unreachable
-at author time (connection refused). To be run when the service is back:
-
-```
-corpus scanner scan --rule-file families/gigawiper-destructive-backdoor/gigawiper-destructive-backdoor.yar \
-  --max-hits 40 --budget 15m
-```
-
-For this recent family, any corpus hit is a candidate false positive to
-investigate and tighten; result (slice size, hits, verdict) to be recorded here.
+PENDING — the corpus scan was unavailable at author time. To be run against the
+malware corpus when available. For this recent family, any corpus hit is a
+candidate false positive to investigate and tighten; result (samples, hits,
+verdict) to be recorded here.

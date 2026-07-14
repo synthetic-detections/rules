@@ -45,13 +45,7 @@ real AnyDesk install with the genuine `AnyDeskService`, a game text mentioning
 
 ## Corpus FP test
 
-PENDING — the MalShare corpus scanner (`corpus scanner` / corpus scanner) was unreachable
-at author time (connection refused). To be run when the service is back:
-
-```
-corpus scanner scan --rule-file families/goddamn-poisonx-ransomware/goddamn-poisonx-ransomware.yar \
-  --max-hits 40 --budget 15m
-```
-
-Watch `PoisonX_Signed_BYOVD_Driver` in particular — the signer string is common,
-so any corpus hit there is a candidate FP to tighten. Result to be recorded here.
+PENDING — the corpus scan was unavailable at author time. To be run against the
+malware corpus when available. Watch `PoisonX_Signed_BYOVD_Driver` in particular
+— the signer string is common, so any corpus hit there is a candidate FP to
+tighten. Result to be recorded here as a short high-level table.
