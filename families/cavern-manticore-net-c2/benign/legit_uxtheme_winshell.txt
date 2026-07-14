@@ -1,0 +1,14 @@
+Legitimate Windows shell utility notes — structurally similar, must NOT match.
+
+This app ships uxtheme.dll and integrates with WinDirStat.exe for disk
+visualization. Both are legitimate Windows/third-party binaries — the Cavern
+agent abuses these exact names as a side-load facade, so a benign mention of
+them alone must not trigger the rule.
+
+Build path: C:\Users\devbuild\source\repos\ShellHelper\obj\Release\ShellHelper.pdb
+Single-instance mutex: Global\ShellHelper_Singleton_9f2c
+HTTP client User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+
+This benign case carries only the legitimate side-load host names and an
+ordinary .NET build path. It intentionally contains none of the framework's
+distinguishing markers, proving those legitimate names do not fire on their own.

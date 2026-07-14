@@ -1,0 +1,16 @@
+Generic .NET plugin host — look-alike tokens, must NOT match.
+
+Product: Cavern Systems Inc. — "Cavern" data-caching platform, unrelated to the
+APT framework. The behaviour rule keys on the leetspeak project tag, never the
+plain English word, so this product name is safe.
+
+Loadable modules in this app: mhm.dll, db.dll, ode.dll — these are the GENERIC
+module filenames the framework also uses, deliberately kept out of the IOC rule
+because they alias ordinary library names. This file proves they do not fire.
+
+Web tier uses an X-User-token auth header and a /cac.aspx status handler — both
+plausible in legitimate ASP.NET apps, so neither is a firing token on its own.
+
+The file carries no developer build-path prefix, no fixed single-instance mutex,
+no leetspeak project tag, no misspelled tunnel diagnostics, no stego staging
+filenames, no framework config file, and none of the unusual transport modules.

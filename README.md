@@ -12,6 +12,11 @@ it before commit. **Treat them as a starting point** — tune the
 thresholds, package coordinates, and IOC lists for your environment
 before deploying.
 
+See **[METHODOLOGY.md](METHODOLOGY.md)** for how rules are authored and
+tested — the three-rule shape, the false-positive-testing regime (in-repo
+smoke tests plus a live-corpus scan), and the per-family corpus-scan
+statistics recorded in each transcript.
+
 ## Requirements
 
 - **YARA ≥ 4.2** — some rules use the `base64` string modifier (introduced in 4.2). Modules used: `pe`, `hash`.
@@ -51,6 +56,7 @@ before deploying.
 | `sidecopy-xenofiscal` | — | ✅ | 2026-06-02 Seqrite — APT36 / SideCopy XenoRAT against Afghan MoF |
 | `vscode-github-token-theft` | ✅ | — | 2026-06-02 Ammar Askar — github.dev OAuth theft chain |
 | `windows-search-uri-ntlm-leak` | ✅ | — | 2026-06-03 Huntress — unpatched NTLM leak (no CVE; Microsoft declined to fix) |
+| `cavern-manticore-net-c2` | ✅ | — | 2026-07-06 Check Point — Iran MOIS-nexus (OilRig/Lyceum) modular .NET "Cavern" C2, RMM abuse + steganographic PNG C2 |
 
 ## Layout
 

@@ -1,0 +1,21 @@
+Cavern Manticore IOC dump (Check Point, 2026-07-06) — detection test input.
+
+C2 infrastructure:
+  hospitalinstallation.com
+  auth.hospitalinstallation.com
+  google.com.hospitalinstallation.com
+  adserviceupdate.com/cac.aspx
+  hygienehistory.com/cac.aspx
+
+Modules (distinctive):
+  n-HTCommp.dll   (transport)
+  n-ten.dll       (network recon)
+  n-sws.dll       (SOCKS5/WebSocket tunnel)
+
+Mutex family: MYMUTEX123HELLP / MYMUTEX123HELLP02 / MYMUTEX123HELLP04
+Config artifacts: Cvn.cfg.A  Cvn.cfg.U
+
+Agent SHA-256:
+  37e123bd7998af4eae32718ce254776f36365a80ba56952593dab46f536d4066
+  92cae0ad7f98f51a14bcc0ee05e372ebdc29ea96ea7bd161bd3f55198767603b
+  5dc08bda6919a57a85e5f38b857985fa71529ca39c8299868d5a49a987e19b18
