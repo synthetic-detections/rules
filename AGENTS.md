@@ -87,18 +87,12 @@ done
 
 ## Corpus false-positive scan (YARA families)
 
-After the in-repo tests pass, scan the local malware corpus:
-
-```bash
-a corpus scanner scan --rule-file <family>.yar --max-hits 40 --budget 15m
-```
-
-For a recent family, any corpus hit is a candidate false positive —
-investigate and tighten before committing. Record slice size, hits, and
-verdict under the **Corpus FP test** section of the transcript. If the scan
-service is unreachable, record `PENDING` with the exact command to re-run
-(see `goddamn-poisonx-ransomware-yara-test-results.md` for the pattern) and
-proceed.
+After the in-repo tests pass, scan each string-based rule against a large
+malware corpus. For a recent family, any corpus hit is a candidate false
+positive — investigate and tighten before committing. Record samples scanned,
+hits, and verdict under the **Corpus FP test** section of the transcript as a
+short high-level table. If the corpus scan is unavailable, record `PENDING`
+and proceed.
 
 ## Identity and commit rules
 
