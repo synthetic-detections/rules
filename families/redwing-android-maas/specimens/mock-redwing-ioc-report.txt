@@ -1,0 +1,18 @@
+RedWing IOC Report — exercises RedWing_IOC and RedWing_Specimen
+
+C2:
+  redwing.top
+  redwingqq.top/login.htm
+  krusty-crabs.sbs
+  api-sync-service.mdkd1184.workers.dev
+
+Distribution:
+  https://manyrei.live/Proton_VPN.apk
+  https://wmanyrei.icu
+  https://yandex-disk.net
+  https://offservers.ru
+
+Sample SHA-256 (subset):
+  f16ee387a667512b6c26d68aa8a62ac3e48052beeaa2a358e6c0bb3cd955c15f
+  2d5c6565a23de8182b1d0750682543f574df3ce8f66e2adbf801ccc3358aaf68
+  267f995c8c8c162e11fc5a0b5adcc251dd61ad400178da934fc4b2c0a334093d
