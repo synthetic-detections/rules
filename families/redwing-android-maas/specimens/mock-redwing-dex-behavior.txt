@@ -1,0 +1,18 @@
+RedWing DEX behavioural specimen — exercises RedWing_MaaS_Behavior (all paths)
+
+// C2 registration telemetry object (Path 1 / Path 4)
+{"device_id":"...","team_id":"...","connected_via":"wifi","is_online":true,"last_seen":0,"battery_level":87,"permissions":{}}
+
+// Silent call-forwarding via USSD carrier codes (Path 2 / Path 4)
+*21*   // activate forwarding to operator MSISDN
+##21#  // deactivate forwarding
+*111#  // balance query
+
+// Financial-data extraction regexes (Path 3)
+^\d{13,19}$
+^\d{3,4}$
+^\d{4,8}$
+^\+?\d{10,15}$
+
+// Overlay-permission grant flow (supporting)
+android.settings.action.MANAGE_OVERLAY_PERMISSION

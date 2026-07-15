@@ -1,0 +1,10 @@
+<!-- Legitimate VPN client manifest fragment -->
+uses-permission: android.permission.INTERNET
+uses-permission: android.permission.FOREGROUND_SERVICE
+action: android.settings.action.MANAGE_OVERLAY_PERMISSION
+label: Proton VPN
+package: ch.protonvpn.android
+service: com.protonvpn.android.vpn.OpenVPNWrapperService
+string: connect_button
+string: select_server
+string: kill_switch_enabled

@@ -1,0 +1,11 @@
+{
+  "device_id": "a1b2c3",
+  "connected_via": "wifi",
+  "is_online": true,
+  "last_seen": 1720000000,
+  "battery_level": 64,
+  "app_version": "4.2.1",
+  "os": "Android 14",
+  "locale": "en_US",
+  "screen_dp": "411x915"
+}
