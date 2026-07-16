@@ -30,10 +30,16 @@ pair or regex cluster for the other paths. `legit-vpn-app-manifest.txt` referenc
 
 ## Corpus false-positive test
 
-PENDING — the corpus scanning service was unreachable at authoring time (request
-timeout). To be re-run: for a family this recent, any corpus hit is a candidate
-false positive to investigate and tighten. Result (slice size / matches /
-read-errors / verdict) to be appended here once the scan completes.
+Each rule was scanned separately against a real-malware corpus slice (2026-07-16):
+
+| Rule | Samples scanned | Matches | Read errors | Verdict |
+|------|-----------------|---------|-------------|---------|
+| RedWing_MaaS_Behavior | 4,915 | 0 | 0 | clean |
+| RedWing_IOC | 9,299 | 0 | 0 | clean |
+| RedWing_Specimen | not scanned | — | — | exact SHA-256 pins, zero-FP by construction |
+
+No corpus hits on either the behavioural or IOC rule — no candidate false positives,
+no tightening required.
 
 ## Rule design notes
 
