@@ -49,6 +49,7 @@ clone `0xc474aefd…` (ownerless, executeCall+transferTokens, XOR destination, a
 a specimen). **Zero false positives.** All 18 specimens match, benign clean.
 
 ### Malware-corpus false-positive scan
-`CrimeEnjoyor_Sweeper_Behavior` scanned against the broad malware corpus (real samples) — result
-recorded on completion. All added paths (11b, 14) are EVM-selector/opcode-anchored and verified
-0-FP against the ~318K EVM bytecode corpus, so non-EVM cross-hits are expected to be negligible.
+`CrimeEnjoyor_Sweeper_Behavior` (with Paths 11b + 14) scanned against the broad malware corpus:
+**11,227 samples scanned, 0 matches, 0 read-errors.** Clean — the added EVM-selector/opcode-anchored
+paths produce no cross-hits on non-EVM samples, consistent with the 0-FP result verified directly
+against the ~318K EVM bytecode corpus.
