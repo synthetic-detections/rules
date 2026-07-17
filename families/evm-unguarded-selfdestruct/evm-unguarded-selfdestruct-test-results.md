@@ -31,7 +31,9 @@ hardened to require **ownerless** (no `owner()` / `transferOwnership()` selector
 re-checked, the live contract is now clean and all specimens still match.
 
 ## Malware-corpus false-positive scan
-Submitted against the large malware corpus. **PENDING** (running at time of commit). Both rules are
-EVM-anchored (runtime dispatcher preamble `60 80 60 40 52` at offset 0, or Solidity `selfdestruct`
-+ a public destroy declaration), so cross-hits on non-EVM samples are expected to be negligible.
-Result to be recorded on completion.
+Scanned against the broad malware corpus (real samples). Both rules clean:
+- `EVM_Unguarded_SelfDestruct_Bytecode`: 5,520 samples scanned, **0 matches**, 0 read-errors.
+- `EVM_Unguarded_SelfDestruct_Source`: 11,177 samples scanned, **0 matches**, 0 read-errors.
+
+Confirms the EVM anchors (dispatcher preamble `60 80 60 40 52` at offset 0; Solidity `selfdestruct`
++ a public destroy declaration) do not cross-hit non-EVM malware.
