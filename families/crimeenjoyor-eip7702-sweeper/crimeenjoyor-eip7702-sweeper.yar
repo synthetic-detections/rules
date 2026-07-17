@@ -128,6 +128,16 @@ rule CrimeEnjoyor_Sweeper_Behavior
         $err_owner    = "Only owner can destroy" ascii
         $err_arrays   = "Arrays length mismatch" ascii
 
+        // v3 destination-obfuscation primitive: two adjacent 32-byte
+        // constants XOR'd (PUSH32 a; PUSH32 b; XOR) — a^b reconstructs the
+        // 20-byte theft address at runtime so it is never a plain literal in
+        // bytecode. The two constants share their high 12 bytes (they cancel),
+        // leaving a 20-byte result. Rare on its own (~0.045% of mainnet
+        // bytecodes) and used by ~all v3 variants; only asserted here in
+        // combination with v3 sweeper selectors, since XOR-of-two-words also
+        // occurs in unrelated (legitimate) contracts.
+        $xor_deob     = { 7f [32] 7f [32] 18 }
+
         // v1 error strings in bytecode
         $err_notinit  = "Not initialized" ascii
         $err_invdest  = "Invalid destination" ascii
@@ -181,6 +191,14 @@ rule CrimeEnjoyor_Sweeper_Behavior
             or
             // Path 13: v3 error strings + any v3 selector
             ($err_owner and $err_arrays and any of ($sel_v3_*))
+            or
+            // Path 14: v3 obfuscated variant — the PUSH32/PUSH32/XOR
+            // destination-deobfuscation primitive together with 2+ v3 sweeper
+            // selectors. Catches obfuscated v3 clones that carry too few
+            // recognised selectors for Path 10 (which needs 3) but still XOR a
+            // hidden destination. The XOR anchor is only asserted alongside the
+            // sweeper selectors, so unrelated XOR-of-words contracts are excluded.
+            ($xor_deob and 2 of ($sel_v3_*) and filesize < 8KB)
         )
 }
 
@@ -301,6 +319,9 @@ rule CrimeEnjoyor_IOC
         $addr13 = "0xf6fcd2ccd2472b71f334c3e4f1a7001f1ee53700" ascii nocase
         $addr14 = "0x2f22ca91e03a96bf5f055d7ded57574eb4b53fbf" ascii nocase
         $addr15 = "0x8d95ce736d17e3daa8afb9b8d5b5b68af9518c1c" ascii nocase
+        // v3 obfuscated clone (PUSH32/PUSH32/XOR destination, executeCall+
+        // transferTokens, ownerless) caught by the XOR-anchor path 2026-07-17
+        $addr16 = "0xc474aefd254694e25fbda8af64caba4c55a8619a" ascii nocase
 
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
@@ -319,7 +340,7 @@ rule CrimeEnjoyor_IOC
         and (
             // Any known CrimeEnjoyor contract or operator address
             any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10,
-                    $addr11, $addr12, $addr13, $addr14, $addr15)
+                    $addr11, $addr12, $addr13, $addr14, $addr15, $addr16)
             or
             // Polymarket attacker wallet + any contract name
             ($addr05 and any of ($name*))
