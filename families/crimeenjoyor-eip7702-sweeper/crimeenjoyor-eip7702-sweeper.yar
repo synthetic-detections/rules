@@ -135,8 +135,11 @@ rule CrimeEnjoyor_Sweeper_Behavior
         // leaving a 20-byte result. Rare on its own (~0.045% of mainnet
         // bytecodes) and used by ~all v3 variants; only asserted here in
         // combination with v3 sweeper selectors, since XOR-of-two-words also
-        // occurs in unrelated (legitimate) contracts.
-        $xor_deob     = { 7f [32] 7f [32] 18 }
+        // occurs in unrelated (legitimate) contracts. Two suffix variants
+        // (XOR;SWAP1;POP and XOR;PUSH0;SHR) give a fixed 3-byte atom so the
+        // pattern is not a slow scan.
+        $xor_deob_a   = { 7f [32] 7f [32] 18 90 50 }   // ...XOR SWAP1 POP
+        $xor_deob_b   = { 7f [32] 7f [32] 18 5f 1c }   // ...XOR PUSH0 SHR
 
         // v1 error strings in bytecode
         $err_notinit  = "Not initialized" ascii
@@ -198,7 +201,7 @@ rule CrimeEnjoyor_Sweeper_Behavior
             // recognised selectors for Path 10 (which needs 3) but still XOR a
             // hidden destination. The XOR anchor is only asserted alongside the
             // sweeper selectors, so unrelated XOR-of-words contracts are excluded.
-            ($xor_deob and 2 of ($sel_v3_*) and filesize < 8KB)
+            (any of ($xor_deob_*) and 2 of ($sel_v3_*) and filesize < 8KB)
         )
 }
 
