@@ -30,8 +30,9 @@ Rules:
 - Sample SHA1: script.sh, chromer.txt, zsh.txt, finderv2.jpg, goyim (5 hashes pinned in the IOC rule)
 
 ## Corpus false-positive scan
-`ClickLock_macOS_Stealer_Behavior` and `..._IOC` submitted against the broad malware corpus
-(recent slice). **PENDING** (running/queued at commit time). ANY hit on this recent family is a
-candidate FP to investigate; result and verdict to be recorded on completion. The Behavior rule is
-guarded by co-occurring ClickFix banners + kill-loop/Keychain markers, and the IOC rule fires on
-exact sample hashes or co-occurring domain+label pairs, so incidental hits are expected to be low.
+Scanned against the broad malware corpus (recent slice). Both rules clean:
+- `ClickLock_macOS_Stealer_Behavior`: 11,839 samples scanned, **0 matches**, 0 read-errors.
+- `ClickLock_macOS_Stealer_IOC`: 11,171 samples scanned, **0 matches**, 0 read-errors.
+
+No candidate false positives. The Behavior rule's co-occurring ClickFix-banner + kill-loop/Keychain
+guards and the IOC rule's exact-hash / domain+label co-occurrence held up across the slice.
