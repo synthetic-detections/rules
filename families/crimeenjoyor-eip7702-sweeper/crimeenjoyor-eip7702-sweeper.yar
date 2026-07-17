@@ -100,6 +100,12 @@ rule CrimeEnjoyor_Sweeper_Behavior
         $sel_v1_dest  = { 63 b2 69 68 1d }  // destination()
         $sel_v1_init  = { 63 c4 d6 6d e8 }  // initialize(address)
 
+        // ownership selectors — the v1 sweeper is ownerless; presence of
+        // owner()/transferOwnership() means a different (often legitimate)
+        // init+destination contract, so the bytecode-only v1 path excludes them
+        $sel_owner    = { 63 8d a5 cb 5b }  // owner()
+        $sel_xferown  = { 63 f2 fd e3 8b }  // transferOwnership(address)
+
         // v2 function selectors
         $sel_v2_dbl   = { 63 0c c5 1f 88 }  // doubleLoser_1858148230(uint256,bool)
         $sel_v2_init  = { 63 61 b0 18 c2 }  // initLoser_863360385(address)
@@ -161,6 +167,14 @@ rule CrimeEnjoyor_Sweeper_Behavior
             or
             // Path 11: v1 bytecode — both selectors + error string
             ($sel_v1_dest and $sel_v1_init and any of ($err_notinit, $err_invdest))
+            or
+            // Path 11b: v1 bytecode-only — both selectors in a small, ownerless
+            // runtime blob. Catches stripped/re-metadata'd v1 clones that carry
+            // no English revert string ("Already initialized"/none), which the
+            // error-string-gated Path 11 misses. The exact destination()+
+            // initialize(address) selector pair in a <3KB contract with no owner
+            // selector is the minimal EIP-7702 sweeper shape.
+            ($sel_v1_dest and $sel_v1_init and filesize < 3KB and not any of ($sel_owner, $sel_xferown))
             or
             // Path 12: v2 distinctive error strings together
             ($err_portal and $err_void)
@@ -280,6 +294,14 @@ rule CrimeEnjoyor_IOC
         // v3b XOR-deobfuscated theft destination
         $addr10 = "0xbfe129315f75dd7ba60ec85b4024e0fe1264fb13" ascii nocase
 
+        // v1 clones caught by corpus sweep 2026-07-17 (ownerless
+        // destination()+initialize() bytecode, not in the original 123-set)
+        $addr11 = "0x71d3410b017de35ad643f67a4f7bc5d02af4dc71" ascii nocase
+        $addr12 = "0x058c9df053828f5817ef67bac3cd90672ae4489a" ascii nocase
+        $addr13 = "0xf6fcd2ccd2472b71f334c3e4f1a7001f1ee53700" ascii nocase
+        $addr14 = "0x2f22ca91e03a96bf5f055d7ded57574eb4b53fbf" ascii nocase
+        $addr15 = "0x8d95ce736d17e3daa8afb9b8d5b5b68af9518c1c" ascii nocase
+
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
         $name02 = "AdvancedCrimeEnjoyor" ascii
@@ -296,7 +318,8 @@ rule CrimeEnjoyor_IOC
         filesize < 50MB
         and (
             // Any known CrimeEnjoyor contract or operator address
-            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10)
+            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10,
+                    $addr11, $addr12, $addr13, $addr14, $addr15)
             or
             // Polymarket attacker wallet + any contract name
             ($addr05 and any of ($name*))
