@@ -27,7 +27,9 @@ Rules:
   the rules therefore anchor on the package names (IOC) and the behavioral combination.
 
 ## Corpus false-positive scan
-Submitted against the broad malware corpus. **PENDING** — the Package_IOC anchors on distinctive
-squatted names and the Behavior rule requires blockchain-SDK + shell-rc-append + spawn together, so
-incidental hits are expected to be low. Result recorded on completion. (the corpus-scan service availability at
-commit time noted below.)
+Scanned against the broad malware corpus (recent slice). Both rules clean:
+- `ChainVeil_ViteVenom_Behavior`: 4,964 scanned, **0 matches**, 0 read-errors.
+- `ChainVeil_ViteVenom_Package_IOC`: 11,643 scanned, **0 matches**, 0 read-errors.
+
+No candidate false positives — the package-name IOC and the blockchain-SDK + shell-rc-append + spawn
+co-occurrence held up across the slice.
