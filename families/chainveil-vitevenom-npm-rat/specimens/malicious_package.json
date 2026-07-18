@@ -1,0 +1,7 @@
+{
+  "name": "@vite-pro/vite-ui",
+  "version": "1.0.3",
+  "description": "Vite UI helpers",
+  "main": "index.js",
+  "dependencies": { "tronweb": "^6.0.0", "@aptos-labs/ts-sdk": "^1.0.0" }
+}
