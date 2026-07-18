@@ -1,0 +1,7 @@
+{
+  "name": "vite-plugin-svgr",
+  "version": "4.2.0",
+  "description": "Vite plugin to transform SVGs into React components",
+  "main": "dist/index.js",
+  "dependencies": { "@svgr/core": "^8.0.0" }
+}
