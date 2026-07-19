@@ -52,7 +52,6 @@ rule NadMesh_Botnet_Behavior
         $ai_comfy  = "ComfyUI" ascii nocase
         $ai_ollama = "ollama" ascii nocase
         $ai_gradio = "Gradio" ascii nocase
-        $ai_mcp    = "mcp" ascii fullword nocase
         $ai_shodan = "shodan" ascii nocase
 
         // Exposed-service exploitation surface
