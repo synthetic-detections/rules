@@ -39,6 +39,12 @@ NadMesh_Agent_Specimen specimens//nadmesh-agent-specimen.bin
 
 ## Corpus FP test
 
-Status: PENDING — corpus false-positive scan queued after commit (recent family;
-any corpus hit is a candidate FP to investigate). Slice size / hits / verdict to be
-recorded here once the scan completes.
+Rule tested: `NadMesh_Botnet_Behavior` (the behavioral rule; the IOC and specimen
+rules are pinned to specific IOCs/hashes and are near-zero-FP by construction).
+
+- Samples scanned: 6,532
+- Matches: 0
+- Read errors: 0
+- Verdict: **CLEAN** — no false positives against the real-malware corpus. The
+  `n4d mesh` marker + AI-targeting + exposed-service co-occurrence is specific enough
+  that no unrelated sample triggered it.
