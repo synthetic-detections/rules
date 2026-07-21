@@ -1,0 +1,15 @@
+SleeperGem — IOC summary (mock, from public reporting 2026-07-20)
+
+Malicious RubyGems (published 2026-07-18 .. 2026-07-19):
+  git_credential_manager  2.8.0, 2.8.1, 2.8.2, 2.8.3
+  Dendreo                 1.1.3, 1.1.4
+  fastlane-plugin-run_tests_firebase_testlab
+
+Host artifacts:
+  Daemon drop dir : ~/.local/share/gcm/
+  Setuid shell    : /usr/local/sbin/ping6  (mode 4755)
+  Persistence     : crontab @reboot entry + systemd user unit gcm.service
+  CI-evasion      : skips when GITHUB_ACTIONS / GITLAB_CI / CI / RUNNER_OS set
+
+Remediation: remove ~/.local/share/gcm/, clear cron+systemd persistence,
+delete setuid /usr/local/sbin/ping6, rotate developer credentials.
