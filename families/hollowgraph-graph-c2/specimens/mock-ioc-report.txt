@@ -1,0 +1,18 @@
+HollowGraph — IOC summary (mock, from public Group-IB reporting 2026-07-20)
+
+Framework    : Cavern (component)
+Targeting    : organizations in Israel; espionage
+Victims      : 12 implanted, ~3 actively beaconing
+Activity     : 2026-06-03 .. 2026-07-09
+
+Host artifacts:
+  Config file      : logAzure.txt  (tenant ID, client_secret, RSA/AES keys)
+  C2 medium        : Microsoft 365 calendar via graph.microsoft.com /me/events
+  Magic event date : 2050-05-13  (all C2 events pinned here to stay hidden)
+  Tasking verbs    : GET / SEND (in event attachments)
+  Crypto           : hybrid RSA + AES-256-GCM
+  Auth             : login.microsoftonline.com with hardcoded app credentials
+
+Note: no attacker-controlled domain or IP — C2 rides Microsoft cloud traffic.
+Detection anchors on logAzure.txt + the 2050-05-13 event date + the Graph
+calendar usage shape, not on network IOCs.
