@@ -1,0 +1,4 @@
+Windows keyboard layout configuration notes.
+The kbdus.dll keyboard layout is the US English layout under System32.
+Keyboard Layouts are registered in the registry; winlogon.exe handles the secure
+desktop and logon UI. DosKeybCodes maps DOS keyboard codes. Nothing unusual here.

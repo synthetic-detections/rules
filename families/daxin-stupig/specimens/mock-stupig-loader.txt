@@ -1,0 +1,7 @@
+INERT MOCK — reconstruction from public Symantec/Broadcom Daxin+Stupig reporting.
+Backdoor.Stupig — keyboard-layout DLL logon-screen backdoor.
+Dropped as a.dll, later renamed kbdus1.dll, registered as a Windows keyboard layout
+so that winlogon.exe loads it at startup via the Keyboard Layouts registry path
+(Control\Keyboard Layouts, DosKeybCodes). At the Windows logon screen it watches for
+a username beginning with the prefix "stupig"; text typed after "stupig" is executed
+with SYSTEM privileges before any user signs in.

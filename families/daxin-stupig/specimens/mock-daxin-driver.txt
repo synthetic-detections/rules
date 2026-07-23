@@ -1,0 +1,4 @@
+INERT MOCK — Backdoor.Daxin kernel rootkit.
+Signed Windows kernel driver srt64.sys installed under %SystemRoot%\System32\drivers.
+Passive C2: monitors inbound TCP for a trigger pattern and hijacks legitimate
+connections; multi-hop relay to reach air-gapped hosts. No outbound beacon.

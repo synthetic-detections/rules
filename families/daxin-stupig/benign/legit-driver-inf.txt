@@ -1,0 +1,2 @@
+Generic signed driver install notes: drivers live under System32\drivers.
+Example: netwtw10.sys, nvlddmkm.sys, rt640x64.sys. Standard kernel drivers, no rootkit.
