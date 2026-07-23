@@ -38,8 +38,9 @@ Keyboard Layouts + DosKeybCodes but no `stupig`/`kbdus1`) and a generic driver n
   co-occurs with the keyboard-layout-DLL/winlogon persistence shape — generic
   winlogon/Keyboard-Layout strings alone do not match.
 - `srt64.sys` is the specific Daxin driver name; `kbdus1.dll` is the specific Stupig DLL.
-- The IOC rule pins the two published SHA-256 samples exactly via the hash module, plus
-  the distinctive-filename co-occurrence.
+- The IOC rule pins the FULL published Daxin sample set (20 SHA-256 from the Symantec 2022
+  report — cores/droppers/suspected — plus the 2026 Stupig sample) exactly via the hash
+  module, plus the distinctive-filename co-occurrence (`srt64.sys`, or `kbdus1`+`stupig`).
 
 ## Corpus FP test
 
