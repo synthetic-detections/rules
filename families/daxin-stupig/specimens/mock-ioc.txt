@@ -1,0 +1,4 @@
+Daxin + Stupig IOCs (mock, Symantec 2026-07)
+Daxin  srt64.sys  SHA256 49c827cf48efb122a9d6fd87b426482b7496ccd4a2dbca31ebbf6b2b80c98530
+Stupig kbdus1.dll SHA256 5bb5cffda4647940919a185df37aab2aef71ca3010a6c1d05bdcc8bc8fb3af3f
+Logon-screen trigger username prefix: stupig
