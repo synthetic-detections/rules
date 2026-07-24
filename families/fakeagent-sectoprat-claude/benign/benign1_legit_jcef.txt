@@ -1,0 +1,4 @@
+Legitimate JetBrains Chromium Embedded Framework helper (benign)
+jcef_helper.exe loads libcef.dll from the app install directory
+Chromium Embedded Framework version info, DevTools, --type=gpu-process
+A legitimately renamed ClaudeDesktop.exe with a signed libcef.dll and nothing else.

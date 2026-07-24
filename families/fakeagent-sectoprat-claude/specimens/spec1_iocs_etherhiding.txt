@@ -1,0 +1,7 @@
+FakeAgent SectopRAT staging config (synthetic specimen)
+libcef.dll stager pulls C2 config from BNB Smart Chain contract 0xc1907d7be91f95903ad66d775c397302e7dd9228
+SectopRAT C2 contract 0xe012d0f34cde9b870e9d9ed566ea5f8fd9b92228
+delivery: claude.ai.download-app.us -> downloading-api.it.com/html/claude/win
+backup C2 5ca8758c-02d0-4a72-89c8-d468b66dda41.com  current C2 2.24.131.246
+malicious tempdir.dll sha256 1cd58cfba596da296ab1878d74023e00c399345a1b6c2a0e5446c53563f4e3bb
+abused artifact claude.ai/public/artifacts/ca456f1f-44c0-42af-b329-4f1c7534a877

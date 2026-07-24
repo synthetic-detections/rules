@@ -1,0 +1,6 @@
+dropper package (synthetic specimen)
+ClaudeDesktop.exe   (renamed jcef_helper.exe)
+DockerDesktop.exe   scheduled task persistence
+sslconf.exe -> tempdir.dll -> appcfg.dat
+installed to %APPDATA%\Roaming\Microsoft\EdgeUpdate\Install\
+sideloads malicious libcef.dll
