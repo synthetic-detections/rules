@@ -184,9 +184,12 @@ rule FakeAgent_SectopRAT_IOC
         $artifact = "ca456f1f-44c0-42af-b329-4f1c7534a877" ascii wide nocase
 
     condition:
-        any of ($h_*)
-        or any of ($bsc*)
-        or any of ($d_*)
-        or $ip1
-        or $artifact
+        filesize < 60MB
+        and (
+            any of ($h_*)
+            or any of ($bsc*)
+            or any of ($d_*)
+            or $ip1
+            or $artifact
+        )
 }
