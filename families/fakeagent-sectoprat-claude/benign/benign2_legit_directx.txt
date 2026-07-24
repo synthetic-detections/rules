@@ -1,0 +1,4 @@
+Legitimate DirectX 11 compute sample (benign)
+D3D11CreateDevice IDXGIAdapter D3DCompile CSSetShader DedicatedVideoMemory
+enumerates GPU adapters and compiles a compute shader for image processing.
+No appcfg.dat, no tempdir.dll, no anti-VM device-id gate.

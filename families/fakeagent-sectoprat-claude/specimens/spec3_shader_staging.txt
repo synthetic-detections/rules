@@ -1,0 +1,5 @@
+tempdir.dll GPU-gated shader decryptor (synthetic specimen)
+appcfg.dat encrypted .NET SectopRAT payload
+anti-VM device id check QEMU 0x1234 and VMware 0x15AD, VRAM DedicatedVideoMemory < 1GB
+D3D11CreateDevice IDXGIAdapter D3DCompile CSSetShader
+EtherHiding via eth_call against bsc-dataseed node

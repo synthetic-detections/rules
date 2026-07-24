@@ -1,0 +1,3 @@
+Legitimate IBM SPSS Statistics component (benign)
+sslconf.exe TLS configuration utility shipped with SPSS
+installs to Program Files, references OpenSSL and libcef.dll only.
