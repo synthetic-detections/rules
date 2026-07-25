@@ -37,9 +37,8 @@ Result: **PASS** — specimens hit the intended rules, benign structurally-simil
 Rule scanned: `XEntry_Team_Branding_IOC` (broadest string surface; the other two
 require both verbatim guarantee sentences, near-zero corpus FP risk).
 Corpus: full malware sample set, budget-limited slice, --max-hits 40, budget 15m.
-Status: **RUNNING (detached)** at time of commit — result announced on completion.
-Expectation: 0 hits — the `Hacked by XEntry Team` brand string gates every match
-path, and it is a made-up crew name unlikely to appear in unrelated samples. Any
-hit on this recent family is a candidate FP to investigate and tighten.
-
-_Update this section with slice size / hits / verdict when the scan returns._
+Slice scanned: 4,355 samples. Matches: **0**. Read-errors: 0. Duration: ~9m.
+Verdict: **PASS / no false positives.** The `Hacked by XEntry Team` brand string
+gates every match path, and it is a made-up crew name that does not appear in
+unrelated samples, as expected. The other two rules require both verbatim
+guarantee sentences and were not corpus-scanned (near-zero FP by construction).
