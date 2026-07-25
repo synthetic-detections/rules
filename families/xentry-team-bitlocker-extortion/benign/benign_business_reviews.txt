@@ -1,0 +1,9 @@
+Vendor Reliability Statement — Acme Logistics GmbH
+
+Our reputation is built on consistent, on-time delivery to every client.
+We are proud that we have no negative online reviews across the platforms
+where our customers rate us. Every contract is treated as a guarantee of
+service, and BitLocker full-disk encryption protects all customer data at
+rest on our fleet of managed endpoints.
+
+For questions about our SLAs, contact accounts@acme-logistics.example.
