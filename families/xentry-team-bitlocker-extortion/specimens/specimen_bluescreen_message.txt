@@ -1,0 +1,6 @@
+Hacked by XEntry Team
+
+Your system has been locked. Drives encrypted with BitLocker.
+Initial access obtained via exposed RDP; lateral movement via GPO.
+Persistence: ManageEngine Endpoint Central, Mesh Agent, Tactical RMM.
+Encryption command: manage-bde -on C: -RecoveryPassword
