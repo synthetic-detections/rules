@@ -1,0 +1,5 @@
+Golden Chickens TAG-195 / TAG-127 — IOC report (mock reconstruction from public reporting, inert)
+Families: TinyEgg, ChonkyChicken, modular ChonkyChicken, ChromEggscalator
+C2 / lure domains: aurekh.com, ahdaratlegalservices.com, screenly.cam, paysolutions.ink, xtrafftrck.net, thessa.trackgrid.net
+C2 IPs: 70.34.205.43, 65.20.102.161, 65.20.105.177, 108.61.209.100
+Sample SHA-256 (ChromEggscalator): b7b322f4638ead5c39031ffc7ca8c791c8d47211b09449f7ceb49f0c32a19b45
