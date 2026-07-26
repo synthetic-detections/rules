@@ -1,0 +1,7 @@
+# modular ChonkyChicken controller (mock, inert)
+controller_module = koki.ocx
+agent_module      = agent.ocx
+ws_channel        = ws://localhost:3000/ws/agent
+plugin_path       = /ws/agent
+chromeggscalator  = chromelevator.ocx  (ChromElevator-based)
+wpad_helper       = wpad_capture.ocx

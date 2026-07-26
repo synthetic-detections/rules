@@ -1,0 +1,3 @@
+Legacy VB6 application manifest (benign).
+Ships Microsoft Common Controls: mscomctl.ocx and mscom.ocx registered via regsvr32.
+No campaign persistence value, no CDP hidden-window offset, no attacker C2.

