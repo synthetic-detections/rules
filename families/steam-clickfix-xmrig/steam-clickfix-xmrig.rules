@@ -1,0 +1,13 @@
+# Steam forum ClickFix -> XMRig cryptominer — network signatures
+# (first reported 2026-07-25; BleepingComputer)
+# C2/payload: hxxps://msfconfig[.]icu:443/tmp/system.txt
+# TLS SNI match is the reliable signal (payload fetch is HTTPS on 443).
+# sid range: local/experimental 21000000+
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"STEAM-CLICKFIX-XMRIG TLS SNI msfconfig.icu (XMRig C2)"; flow:established,to_server; tls.sni; content:"msfconfig.icu"; nocase; endswith; classtype:trojan-activity; reference:url,www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/; metadata:family steam-clickfix-xmrig, severity critical, created_at 2026_07_27; sid:21000701; rev:1;)
+
+# DNS lookup for the C2 domain (defence-in-depth; fires before the TLS flow)
+alert dns $HOME_NET any -> any any (msg:"STEAM-CLICKFIX-XMRIG DNS query msfconfig.icu"; dns.query; content:"msfconfig.icu"; nocase; endswith; classtype:trojan-activity; reference:url,www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/; metadata:family steam-clickfix-xmrig, severity high, created_at 2026_07_27; sid:21000702; rev:1;)
+
+# Plaintext fallback: the payload path if ever served over HTTP
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"STEAM-CLICKFIX-XMRIG HTTP GET /tmp/system.txt payload"; flow:established,to_server; http.method; content:"GET"; http.uri; content:"/tmp/system.txt"; nocase; classtype:trojan-activity; reference:url,www.techechelon.com/post/steam-forums-weaponized-in-clickfix-campaign-distributing-xmrig-cryptominers; metadata:family steam-clickfix-xmrig, severity high, created_at 2026_07_27; sid:21000703; rev:1;)
