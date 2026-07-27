@@ -1,0 +1,11 @@
+Steam ClickFix XMRig — IOC list (2026-07-25 reporting)
+
+C2 domain:      msfconfig.icu
+Payload URL:    https://msfconfig.icu:443/tmp/system.txt
+Install dir:    C:\Windows\Background\
+Miner binary:   C:\Windows\Background\system.exe
+Miner config:   C:\Windows\Background\config.json
+Scheduled task: XMRig-<computer name>  (SYSTEM, ONSTART)
+Defender excl:  C:\Windows\Background
+Firewall:       temporary outbound TCP/443 allow rule
+Lure label:     "msf utility \ PC Opt"

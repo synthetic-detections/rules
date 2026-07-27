@@ -1,0 +1,20 @@
+{
+  "autosave": true,
+  "cpu": {
+    "enabled": true,
+    "max-threads-hint": 75
+  },
+  "randomx": {
+    "init": -1,
+    "mode": "fast"
+  },
+  "pools": [
+    {
+      "url": "pool.supportxmr.com:443",
+      "user": "44AFxxLegitWalletAddressHere",
+      "pass": "worker1",
+      "tls": true,
+      "rig-id": "home-desktop"
+    }
+  ]
+}
