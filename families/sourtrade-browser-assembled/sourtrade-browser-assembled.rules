@@ -1,0 +1,11 @@
+# SourTrade — browser-assembled malvertising malware (Confiant, 2026-07-23)
+# Network signatures for the loader chain. sid range: local/experimental 21000000+
+
+# The /config build-instruction response carrying standaloneUrl (points at the Bun runtime)
+alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"SOURTRADE /config build-instruction response (standaloneUrl)"; flow:established,to_client; http.response_body; content:"standaloneUrl"; content:"random.seed"; distance:0; classtype:trojan-activity; reference:url,blog.confiant.com/p/sourtrade-browser-assembled-malware; metadata:family sourtrade-browser-assembled, severity critical, created_at 2026_07_28; sid:21000801; rev:1;)
+
+# Request to the /config endpoint on a SourTrade landing page
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"SOURTRADE /config endpoint request"; flow:established,to_server; http.uri; content:"/config"; endswith; http.header_names; content:"Referer"; classtype:trojan-activity; reference:url,blog.confiant.com/p/sourtrade-browser-assembled-malware; metadata:family sourtrade-browser-assembled, severity high, created_at 2026_07_28; sid:21000802; rev:1;)
+
+# Known SourTrade infrastructure (sample of the 100+ cluster) via TLS SNI
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SOURTRADE TLS SNI known malvertising infra"; flow:established,to_server; tls.sni; pcre:"/(noxani\.info|greensite\.digital|yuntaro\.digital|form-engine\.digital|zuvex\.club|zuvex\.digital|praxnova\.info|thaivex\.digital)$/i"; classtype:trojan-activity; reference:url,blog.confiant.com/p/sourtrade-browser-assembled-malware; metadata:family sourtrade-browser-assembled, severity high, created_at 2026_07_28; sid:21000803; rev:1;)
