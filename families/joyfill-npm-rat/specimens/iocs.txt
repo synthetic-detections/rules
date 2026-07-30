@@ -1,0 +1,7 @@
+Joyfill npm supply-chain RAT — IOCs (StepSecurity/JFrog, 2026-07-28)
+Packages: @joyfill/components@4.0.0-rc24-2773-beta.4/.5/.6 ; @joyfill/layouts@0.1.2-2773.beta.0/.1/.2
+SHA-256 RAT:     26351aed0397158d3a3b8cc8fd3047d4c015d264c9895f10f20f1521b974ed18
+SHA-256 stealer: 36ff00b45e67baa7e3674b0c80f48e88737264c61e5c6b3b091200972de8157c
+C2 IPs: 166.88.134.62 23.27.13.43 198.105.127.210 23.27.202.27
+C2 paths: /$/boot /u/e /u/f /0x/js /verify-human/ /snv
+Header: Sec-V: A9-0135-3
