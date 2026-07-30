@@ -1,0 +1,5 @@
+Mirage Kitten NightLedger/BridgeHead/ArcBridge IOCs (Kaspersky GReAT 2026-07-28)
+NightLedger MD5: A239E655709A2518DD0B7BDBED163679 (masquerades as SspiCli.dll)
+BridgeHead MD5: 6038D42AF0AFFD1FB263F470C0956F6B (unbcl.dll)
+ArcBridge MD5: 5FA15EF96808EA82F0A6176F0BB4B386
+C2: realhealthshop.com tjconsultingservices.com aecert.org
