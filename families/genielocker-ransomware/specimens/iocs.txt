@@ -1,0 +1,5 @@
+GenieLocker (Toy Ghouls/Bearlyfy) IOCs - Kaspersky GReAT 2026-07-31
+Ext: .03ffc1c4a3da0f02 ; journal magic VCJOURN
+C2: 89.125.66.101
+MD5 (win): 5d62c1349b8981c396c9a23f4f8f053c
+MD5 (linux/esxi): 9201e35e2993612612919a3c71302cab
