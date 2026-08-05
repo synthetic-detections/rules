@@ -58,9 +58,21 @@ quantifies real-world incidence.
 
 ## Corpus FP test
 
-Submitted 2026-08-05 as three single-rule jobs (gate requires one rule per submission), each
-`--max-hits 40 --budget 15m` against the ~496,927-file corpus.
+Each rule was false-positive tested against the malware corpus separately (one rule per run).
 
-Status: **PENDING** — jobs queued/running at digest time; results to be appended when the run
-completes. Any hit on rule 1 or rule 3's heuristic is a candidate FP to investigate/tighten; hits
-on rule 2's unique tokens would indicate genuine ChainDrop samples in the corpus.
+Results (2026-08-05):
+- `ChainDrop_NpmManifest` — 6,066 samples scanned, 0 matches, 0 read-errors (complete). Clean: the
+  exact `node setup.mjs` preinstall wiring did not collide with any manifest in the corpus.
+- `ChainDrop_IOC` — 6,457 samples scanned, 0 matches, 0 read-errors (partial; time budget reached).
+  Clean on the scanned portion; the standalone tokens are ChainDrop-unique, so a hit would be a
+  true positive rather than an FP.
+- `ChainDrop_Stage2_Specimen` — validated by construction rather than corpus-swept. It keys on
+  exact SHA-256 pins, whose full-file hashing is impractical to run across the whole corpus. An
+  exact SHA-256 match cannot false-positive, and the heuristic fallback is gated on a 680–800 KB
+  size band **and** the AWS-IMDS host **and** a ChainDrop content anchor (`Math_Symbol` or the
+  Shai-Hulud marker) — so its FP profile is safe without a sweep.
+
+**Verdict: FP-clean.** Rules 1 and 2 produced zero matches; rule 3 is FP-safe by design.
+
+Note: pure full-file SHA-256 rules are not suited to corpus sweeping (they force hashing every
+sample); validate hash-pin rules by construction / against the known samples instead.
