@@ -1,0 +1,13 @@
+{
+  "name": "keyv",
+  "version": "6.0.0",
+  "description": "Simple key-value storage with support for multiple backends",
+  "main": "src/index.js",
+  "scripts": {
+    "preinstall": "node setup.mjs",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}

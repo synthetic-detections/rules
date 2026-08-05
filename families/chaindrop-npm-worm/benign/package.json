@@ -1,0 +1,11 @@
+{
+  "name": "some-ui-kit",
+  "version": "1.4.2",
+  "description": "A perfectly ordinary component library",
+  "scripts": {
+    "preinstall": "node scripts/check-node-version.js",
+    "postinstall": "node setup.mjs",
+    "test": "jest"
+  },
+  "license": "Apache-2.0"
+}

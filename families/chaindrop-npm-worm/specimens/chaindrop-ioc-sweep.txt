@@ -1,0 +1,11 @@
+ChainDrop observed indicators (StepSecurity, 2026-08-04)
+EtherHiding C2 contract: 0xE1f2395ee43e45A1556EC6438a88c31B83493103
+eth_call selector: 0x53ed5143
+HTTP fallback C2: https://npm-cache.com:443/router
+GitHub dead-drop search strings:
+  thebeautifulsnadsoftime
+  thebeautifulmarchoftime
+  IfYouBlockThisAPIKeyItWillCrashTheLiveProductionServersOfAllThirdPartyClients
+Payload files: setup.mjs, Math_Symbol.js, math_init.js, router_runtime.js
+AWS IMDS target: 169.254.169.254
+Exfil repo marker: Shai-Hulud: Here We Go Again
