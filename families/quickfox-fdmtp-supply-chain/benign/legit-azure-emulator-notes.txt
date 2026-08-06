@@ -1,0 +1,13 @@
+Azure SDK / Compute Emulator install notes (benign).
+Mentions the two legitimate filenames the campaign abuses, but with none of
+the campaign anchors (no staging path, no AES key, no DMTP protocol tag, no
+registration-endpoint beacon). Must NOT match the LoaderChain rule.
+
+The Windows Azure Compute Emulator ships csmonitor.exe and loads
+Microsoft.ServiceHosting.Tools.dll from the SDK bin directory:
+  C:\Program Files\Microsoft SDKs\Azure\Emulator\
+These are Microsoft-signed components used for local role emulation.
+
+Registry:
+  HKLM\SOFTWARE\Microsoft\Windows Azure Emulator
+Service: dsservice
