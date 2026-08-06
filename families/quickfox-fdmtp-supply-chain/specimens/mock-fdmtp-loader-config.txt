@@ -1,0 +1,21 @@
+Mock FDMTP loader/config artifact — reconstructed from Fortinet analysis.
+Tests QuickFox_FDMTP_LoaderChain. Inert; strings only.
+
+Staging path:  %APPDATA%\Local\Temp\quickfox\updated\
+Sideload DLL:  Microsoft.ServiceHosting.Tools.dll  (dropped, malicious)
+Host binary:   csmonitor.exe  (legitimate Azure emulator, side-load target)
+Encrypted:     update.bin
+AES-128-ECB key: POt_L[Bsh0=+@0a.
+
+C2 protocol tag: Dotnet-TcpDmtp
+Registration endpoints:
+  www.icloud-cdn.net:8080/GetCluster
+  www.yahoo-cdn.it.com/GetCluster?protocol=Dotnet-TcpDmtp&tag=campaign
+  www.wangmeng.xyz/GetEndpoints
+  www.wangmengsb.com/GetNodes
+Cluster ports: 20800-20816
+
+Plugin persistence:
+  HKCU\SOFTWARE\Microsoft\IME\{Common.HostInfo.HWID}
+File-based mutex:
+  %APPDATA%\Local\Temp\quickfox\updated\data.dat

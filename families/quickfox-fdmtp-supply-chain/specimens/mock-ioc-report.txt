@@ -1,0 +1,39 @@
+INCIDENT REPORT: QuickFox VPN supply-chain -> FDMTP implant
+Date: 2026-08-04
+Reporting: Fortinet FortiGuard Labs
+Attribution: unconfirmed; tactical overlap with Mustang Panda / Twill Typhoon
+Tests: QuickFox_FDMTP_IOC
+
+C2 / staging domains:
+- cdns3.51quickfox.cn        (initial loader hosting)
+- www.icloud-cdn.net         (FDMTP staging/C2)
+- www.google-apis.net        (FDMTP staging/C2)
+- www.yahoo-cdn.it.com       (FDMTP staging/C2)
+- www.techcheck1.com         (FDMTP staging/C2)
+- www.wangmeng.xyz           (FDMTP staging/C2)
+- www.wangmengsb.com         (FDMTP staging/C2)
+- www.wangmeng66.top         (FDMTP staging/C2)
+
+FDMTP cluster IPs (ports 20800-20816):
+- 47.238.64.56
+- 47.239.93.49
+- 47.239.4.179
+- 47.88.21.252
+- 38.60.142.56
+- 154.223.75.206
+- 154.223.58.64
+- 154.223.58.142
+- 45.158.180.250
+- 47.238.240.219
+
+File hashes (SHA-256):
+- 2b6cdafdfe427a3de1a94a8a2ca1f09fc4c8f90e4f59089fd9b35b73185ed01c  Microsoft.ServiceHosting.Tools.dll (gen1)
+- 795594ad5e6f2868cc4d8ed12dabf4f3999a1477c6b250527c5ede9a98528fb9  Microsoft.ServiceHosting.Tools.dll (gen2/update.bin)
+- 6634339b813e6105b5138de6ab67b016b8dfbf49233c29de9bab3207e8b50d24  Microsoft.ServiceHosting.Tools.dll (gen2/config.bin)
+- dc666e9c148bbca5e21d8c9a97143575c075f53360f135e0191aed9e8278d396  update.bin (v1)
+- 5cbb64375636e83b5f17d6083633cecc02e2a5f4168cd7cca5cdee36ccca9b38  update.bin (v2)
+- a53d756f28457b1c4a239c91cdec8ed7b7da67a93e332e6df9621cbef8417474  config.bin
+- d9db5cbc193ddaf4c0a265804fdef70c32451daaf2974fa9adf52ce1defac5f7  update.zip (gen1)
+- 7462ce2595119c928cf516ec33148dc2a39dd9f71636a5c849c7ed93b7c5ca06  update.zip (gen2 v1)
+- 3bd3b300f3278520819a06d0cb1f0eadbf946dbbc11352538246ff075eb427f1  update.zip (gen2 v2)
+- 6932a20ac61fd3f93d7cfee414f6f46834068ac7c9ca011b054a6a10dc56b3d1  update.zip (gen2 v3)
