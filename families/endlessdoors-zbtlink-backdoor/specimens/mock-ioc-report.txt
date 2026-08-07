@@ -1,0 +1,11 @@
+ENDLESSDOORS (CVE-2026-66747) — VulnCheck, 2026-08-06
+C2 domains:
+  zbtctl.epplink.net
+  online-string.com
+  rbdg4nzqadui.wikaba.com
+C2 IPs:
+  47.100.190.96
+  47.107.224.89
+  45.32.81.152
+  43.248.136.125
+Ports: 7000 (C2), 7001 (interactive root shell)

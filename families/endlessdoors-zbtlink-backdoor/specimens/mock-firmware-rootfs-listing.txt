@@ -1,0 +1,5 @@
+# Unpacked Zbtlink firmware rootfs (excerpt) — ENDLESSDOORS artifacts
+-rwxr-xr-x  /etc/init.d/skworker
+-rw-r--r--  /etc/kworker.cfg
+-rwxr-xr-x  /usr/lib/librctl.so
+-rwxr-xr-x  /usr/sbin/kworker
