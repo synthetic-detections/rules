@@ -325,6 +325,9 @@ rule CrimeEnjoyor_IOC
         // v3 obfuscated clone (PUSH32/PUSH32/XOR destination, executeCall+
         // transferTokens, ownerless) caught by the XOR-anchor path 2026-07-17
         $addr16 = "0xc474aefd254694e25fbda8af64caba4c55a8619a" ascii nocase
+        // v1 clone (ownerless destination()+initialize(), <3KB, no XOR) caught by
+        // the live contract scanner at block 25711950 on 2026-08-08
+        $addr17 = "0x23b4a130273edac471a1b061d9a53cfeae1afbf2" ascii nocase
 
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
@@ -343,7 +346,7 @@ rule CrimeEnjoyor_IOC
         and (
             // Any known CrimeEnjoyor contract or operator address
             any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10,
-                    $addr11, $addr12, $addr13, $addr14, $addr15, $addr16)
+                    $addr11, $addr12, $addr13, $addr14, $addr15, $addr16, $addr17)
             or
             // Polymarket attacker wallet + any contract name
             ($addr05 and any of ($name*))
