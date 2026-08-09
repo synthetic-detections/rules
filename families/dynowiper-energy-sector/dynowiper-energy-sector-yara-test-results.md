@@ -40,10 +40,12 @@ and a wiper-glossary note. All correctly do not match — the guards hold.
 
 ## Corpus FP test
 Budget-bounded slices, one rule per job (gate requires single-rule + filesize guard):
-- `DynoWiper_Wiper_Behavior` — PENDING (job running at commit time).
-- `DynoWiper_PDB_Guarded` — PENDING.
-- `DynoWiper_GPO_Distributor` — PENDING.
-- `LazyWiper_Build` — PENDING.
-- `DynoWiper_Campaign_IOCs` — PENDING (string-pinned to unique hashes + two IPs; FP risk negligible).
+- `DynoWiper_Wiper_Behavior` — 2,674 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_PDB_Guarded` — 5,848 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_GPO_Distributor` — 6,138 scanned, **0 matches**, 0 read-errors.
+- `LazyWiper_Build` — 6,321 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_Campaign_IOCs` — 6,411 scanned, **0 matches**, 0 read-errors.
 
-Results to be appended when the jobs finish.
+Verdict: no false positives on the sampled corpus slices for any of the five rules
+(27,392 files total across the slices, 0 matches each); guards verified against
+structurally-similar benign PE/PowerShell/text.
