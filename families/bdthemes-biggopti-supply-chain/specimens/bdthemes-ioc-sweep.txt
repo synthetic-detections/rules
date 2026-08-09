@@ -1,0 +1,7 @@
+BdThemes / Biggopti supply-chain IOCs (Wordfence 2026-08-08)
+C2:        ia-cdn.com/fz/c
+staging:   api.sigmative.io/prod/store/api/biggopti/x.js
+md5 emer-run.php               1024732009983dd5e54b4cf5593f04d4
+md5 class-wp-token-validate.php 7719cd98a35ffad2771f26d1ceab7d27
+md5 class-wp-query-*.php        9aadc3e5c5242b273bd17c5bdc358845
+md5 wp-cache-optimizer.php      e450ae5bc4bfc0d960dded06a76bb8e9

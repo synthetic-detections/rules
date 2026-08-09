@@ -1,0 +1,3 @@
+Glossary: an onanimationstart handler is a legitimate CSS animation event.
+The display_id field is a common banner identifier. MU-plugins live under
+wp-content/mu-plugins. None of these are malicious on their own.
