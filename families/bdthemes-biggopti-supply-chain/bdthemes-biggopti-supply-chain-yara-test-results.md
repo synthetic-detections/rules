@@ -34,9 +34,8 @@ terms. All correctly do **not** match — the co-occurrence guards hold.
 Budget-bounded slice, one rule per job (gate requires single-rule + filesize guard):
 - `Biggopti_Poisoned_Banner_Payload` — 2,455 scanned, **0 matches**, 0 read-errors.
 - `Biggopti_Dropped_Webshell_Backdoor` — 3,433 scanned, **0 matches**, 0 read-errors.
-- `Biggopti_IOCs` — PENDING (job running at commit time; string-pinned to unique
-  md5s + specific hosts, FP risk negligible; update on completion).
+- `Biggopti_IOCs` — 3,890 scanned, **0 matches**, 0 read-errors.
 
-Verdict: no false positives on the sampled corpus slice for the two completed rules;
-guards verified against structurally-similar benign WordPress/JS/PHP. IOC rule result
-to be appended when its job finishes.
+Verdict: no false positives on the sampled corpus slice for all three rules
+(2,455 + 3,433 + 3,890 files, 0 matches each); guards verified against
+structurally-similar benign WordPress/JS/PHP.
