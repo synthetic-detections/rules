@@ -1,0 +1,5 @@
+DynoWiper / LazyWiper IOCs (CERT Polska, Jan 2026)
+sha256 Source.exe    65099f306d27c8bcdd7ba3062c012d2471812ec5e06678096394b238210f0f7c
+sha1   DynoWiper     4ec3c90846af6b79ee1a5188eefa3fd21f6d4cf6
+C2 relay            185.200.177.10
+exfil               31.172.71.5:50443
