@@ -1,0 +1,3 @@
+Notes: wipers overwrite files then delete them. The string "Error opening file:"
+is a common error message in many benign programs. GPOs and scheduled tasks are
+normal admin tools. None of these alone indicate compromise.
