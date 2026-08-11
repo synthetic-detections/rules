@@ -49,3 +49,12 @@ Budget-bounded slices, one rule per job (gate requires single-rule + filesize gu
 Verdict: no false positives on the sampled corpus slices for any of the five rules
 (27,392 files total across the slices, 0 matches each); guards verified against
 structurally-similar benign PE/PowerShell/text.
+
+Rerun 2026-08-11 (independent second pass, larger budget-bounded slices):
+- `DynoWiper_Wiper_Behavior` — 5,241 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_PDB_Guarded` — 12,304 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_GPO_Distributor` — 11,616 scanned, **0 matches**, 0 read-errors.
+- `LazyWiper_Build` — 12,115 scanned, **0 matches**, 0 read-errors.
+- `DynoWiper_Campaign_IOCs` — 12,021 scanned, **0 matches**, 0 read-errors.
+
+Cumulative across both passes: 80,689 file-scans, 0 matches — verdict unchanged.
