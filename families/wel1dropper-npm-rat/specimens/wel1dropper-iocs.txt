@@ -1,0 +1,18 @@
+WEL1DROPPER campaign IOCs (for WEL1DROPPER_IOC)
+Staging subdomains:
+  sdk.dl.wel1.ru
+  ext.dl.wel1.ru
+  pkg.dl.wel1.ru
+  net.dl.wel1.ru
+Cloudflare Workers hosts:
+  oob-worker.cf103-070.workers.dev
+  oob-worker.cf102-baf.workers.dev
+  oob-worker.cf99-9b3.workers.dev
+Payload paths:
+  /pkg/update_win.exe
+  /pkg/beacon_mac.bin
+macOS persistence:
+  com.apple.windowserver.helper.plist
+XOR decoy strings:
+  tcsbank.ru
+  cloudpayments.ru
