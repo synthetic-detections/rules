@@ -33,10 +33,15 @@ All correctly do not match — the fingerprint/persistence overlaps are held by
 the co-occurrence guards.
 
 ## Corpus FP test
-Budget-bounded slices, one rule per job (single-rule + filesize-guard required).
-Status: **submitted 2026-08-11, results pending** — will record samples scanned /
-matches / read-errors / verdict per rule on completion. Any hit on this recent
-family is a candidate FP to investigate and tighten.
+Budget-bounded slices, one rule per job (single-rule + filesize-guard required),
+2026-08-11:
+- `WEL1DROPPER_Loader_Behavior` — 6,402 scanned, **0 matches**, 0 read-errors.
+- `WEL1DROPPER_IOC` — 11,872 scanned, **0 matches**, 0 read-errors.
+- `WEL1DROPPER_MacOS_Persistence` — 11,925 scanned, **0 matches**, 0 read-errors.
+
+Verdict: no false positives on the sampled slices for any of the three rules
+(30,199 file-scans total, 0 matches each). Guards verified against benign npm
+telemetry / DNS-TXT utilities / legitimate LaunchAgent installers.
 
 ## Notes
 - No file hashes were published in the primary reporting (domains, Workers
