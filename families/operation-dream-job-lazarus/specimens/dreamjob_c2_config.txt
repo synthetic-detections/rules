@@ -1,0 +1,3 @@
+server=envell.xyz
+fallback=135.181.67.203
+alt=uxtramine.org
