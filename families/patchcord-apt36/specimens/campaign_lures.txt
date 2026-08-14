@@ -1,0 +1,5 @@
+dropper archive contents:
+TMS_AfghanTelecom.exe
+Bonus_Salaam_telecom.zip
+startup: SystemHelper.vbs
+GateSentinel-C2-Rat-Hvnc/
