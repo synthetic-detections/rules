@@ -1,0 +1,23 @@
+# Synthetic specimen — distinctive strings reconstructed from the Jamf AmnesiaStealer
+# report (2026-08-13). Not the live binary; text blob to exercise all three rules.
+target/release
+/Users/admin/.cargo/registry/src/index.crates.io/
+run_controller
+dump_mail
+/tmp/mail_accounts_smoke
+[HYBRID_DEBUG] task loop start
+config xor key: 4mn3s1a_2o26!xK
+safe storage pw: pqz8N3vKxRmY2aLcQ
+BUILD_V3_MARKER.txt
+v3_shell_chrome
+~/.local/share/.stream/
+~/.pwd
+/tmp/tempAppleScript.scpt
+debug.allllowef.space
+github.aoitour.com/d/command?t=TOKEN&b=se
+/api/bot/join
+/api/bot/actions?build_id=se&bot_id=BOT
+/send/
+X-API-Key: 86770e8759abf2dad9ae85f5e11a25e9
+sha256 stage1: de5748aac4a4d4cb48cf050652679e6bc49eda33d9ffaa0d280b578122fab55a
+sha256 stage2: e853748ca8f9a5a9168263617409a9039ab09f4ffc7d860374c1e3b0b67b31a5
