@@ -32,7 +32,7 @@ $ yara -r amnesiastealer-macos-stealer.yar benign/
 Behavioral rule (`AmnesiaStealer_macOS_Behavior`) submitted as a single rule.
 IOC and Specimen rules are hash/domain/secret-pinned (near-zero FP by construction — the leetspeak
 XOR key and the sample SHA-256s do not occur in benign files) and are not corpus-swept.
-- Status: **RUNNING** at commit time (submitted 2026-08-18, `--max-hits 40 --budget 15m`);
-  verdict to be recorded here when the job completes. The behavioral condition requires the near-unique
-  `4mn3s1a_2o26!xK` / `pqz8N3vKxRmY2aLcQ` secret, or `[HYBRID_DEBUG]`+module co-occurrence, or two
-  distinct module strings together — no single generic string can trip it, so FPs are expected to be zero.
+- Result (2026-08-18): **5,041 samples scanned, 0 matches, 0 read-errors — CLEAN, no false positives.**
+  The behavioral condition requires the near-unique `4mn3s1a_2o26!xK` / `pqz8N3vKxRmY2aLcQ` secret,
+  or `[HYBRID_DEBUG]`+module co-occurrence, or two distinct module strings together — no single generic
+  string can trip it, consistent with the zero-FP outcome.
