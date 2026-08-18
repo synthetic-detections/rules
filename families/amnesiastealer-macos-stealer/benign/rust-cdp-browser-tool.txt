@@ -1,0 +1,13 @@
+# Benign structural lookalike: a legit Rust CLI that drives Chrome over CDP
+# (chromiumoxide). Shares Rust/cargo + CDP + browser-name surface but carries
+# NONE of the AmnesiaStealer markers. Must NOT match.
+target/release
+/Users/ci/.cargo/registry/src/index.crates.io/
+chromiumoxide v0.7.0
+DevTools Protocol Target.createTarget
+Page.navigate
+launching headless chrome for automated screenshots
+supported browsers: Chrome, Brave, Edge, Vivaldi, Chromium
+[INFO] controller started
+POST /api/v1/jobs
+X-API-Key: <redacted>
