@@ -62,4 +62,4 @@ a drop/selector token, or two distinct `rust-crate_*` payload selectors plus a d
 
 | Date | Samples scanned | Matches | Read-errors | Verdict |
 |---|---|---|---|---|
-| 2026-08-22 | PENDING | PENDING | PENDING | PENDING — scan job submitted, result outstanding |
+| 2026-08-22 | 4,730 | 0 | 0 | CLEAN — no false positives; the behavioral condition needs the chunked-URL constants plus a dropper artefact, nothing generic trips it |
