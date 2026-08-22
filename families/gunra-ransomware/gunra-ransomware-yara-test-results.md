@@ -48,3 +48,6 @@ Re-run per rule on a recent slice once reachable; any hit is a candidate FP.
 - Hashes are in the advisory's downloadable IOC package (not the HTML body); add
   to the digest hash store when retrieved.
 - Attribution: financially motivated RaaS, Conti code lineage; no state nexus.
+
+## Update 2026-08-22 — FP tightening
+C2 condition changed from `2 of them` to `filesize < 2MB and ($mirror or 3 of ($i*))`: the IP strings are substring matches (23.239.119.2 ⊂ 23.239.119.20-29), so a bare 2-of false-positived on asset inventories/netflow. Now requires the distinctive clearnet DLS mirror or three co-occurring C2 IPs under a filesize guard. Smoke test re-run: specimens hit, benign clean.

@@ -188,5 +188,8 @@ rule DynoWiper_Campaign_IOCs
         $ip2 = "31.172.71.5" ascii wide
 
     condition:
-        any of them and filesize < 4MB
+        // Full SHA-256 hashes are unambiguous and may fire alone; the two C2
+        // IPs are substring-prone (e.g. 185.200.177.10 matches 185.200.177.100),
+        // so require BOTH relay IPs together rather than either one.
+        filesize < 4MB and (any of ($s*) or all of ($ip*))
 }

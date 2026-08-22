@@ -97,5 +97,9 @@ rule Gunra_Campaign_C2 {
         $i13 = "123.244.187.144" ascii
         $mirror = "datapub.news" ascii nocase
     condition:
-        2 of them
+        // The IP strings are substring matches (e.g. 23.239.119.2 matches
+        // 23.239.119.20-29), so a bare "2 of them" false-positives on asset
+        // inventories / netflow. Require the distinctive clearnet DLS mirror,
+        // or three co-occurring C2 IPs, under a filesize guard.
+        filesize < 2MB and ($mirror or 3 of ($i*))
 }
