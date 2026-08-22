@@ -70,7 +70,7 @@ rules are domain / IP / hash-pinned (near-zero FP by construction) and are not c
 
 | Date | Samples scanned | Matches | Read errors | Verdict |
 |---|---|---|---|---|
-| 2026-08-22 | — | — | — | **PENDING** — scan submitted, result outstanding |
+| 2026-08-22 | 10,115 | 0 | 0 | CLEAN — no false positives; the behavioral condition needs campaign-specific proxy/implant/LaunchDaemon artefacts co-occurring, not generic NetSupport strings |
 
 The behavioural condition requires a near-unique campaign token (`com.xdivcmp`,
 `Cache_328189ho`, `\2RMS\client32u.ini`, `/api/v1/getscpt/`, `/tmp/lksopo`) or a guarded
