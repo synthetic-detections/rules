@@ -1,0 +1,27 @@
+# Benign structural lookalike: a legitimate Rust HTTP client crate manifest
+# that pulls base64 + ureq + rustls as ORDINARY runtime dependencies (a very
+# common combination for any crate that talks HTTPS and encodes tokens).
+# Shares the base64/ureq/rustls surface with the poisoned proc-macro1 but has
+# no build-script dropper, no attacker crate names, no infra IOCs.
+# Must NOT match.
+
+[package]
+name = "tiny-uploader"
+version = "0.4.2"
+edition = "2021"
+description = "Small CLI that uploads a file over HTTPS with a bearer token"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/example/tiny-uploader"
+
+[dependencies]
+ureq = { version = "2", features = ["tls", "json"] }
+rustls = { version = "0.23", features = ["ring", "std", "tls12"] }
+base64 = "0.22"
+serde = { version = "1", features = ["derive"] }
+clap = { version = "4", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+# Note: base64 is used to encode the Authorization header value; ureq+rustls
+# perform normal certificate-validated TLS. No build-dependencies, no build.rs.

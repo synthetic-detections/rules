@@ -1,0 +1,35 @@
+# Synthetic specimen — reconstructed manifest surface of the 2026-08-20
+# crates.io compromise. Text blob to exercise the IOC + specimen rules;
+# not a live crate.
+
+# --- poisoned arrayref 0.3.10 manifest: silently injected dependency ---
+# [dependencies.proc-macro1]
+# version = "1.0.107"
+
+# --- proc-macro1 1.0.107 build-dependencies added over the clean 1.0.106 ---
+[package]
+name = "proc-macro1"
+version = "1.0.107"
+description = "A substitute implementation of the compiler's `proc_macro` API"
+authors = ["David Tolnay <dtolnay@gmail.com>"]   # forged, typosquat of proc-macro2
+
+[build-dependencies.base64]
+version = "0.22"
+
+[build-dependencies.rustls]
+version = "0.23"
+features = ["ring", "std", "tls12"]
+
+[build-dependencies.ureq]
+version = "2"
+features = ["tls"]
+
+# attacker-owned crates in the same cluster:
+#   proc-macro1, proc-macro-en, aovine, arone, aronenao, tinymember
+# infra: 23.254.165.112:9089 (payload), 23.254.165.112:443 (C2),
+#        23.254.167.216, 23.254.167.107, hwsrv-798836.hostwindsdns.com
+# stage-2 persistence: ~/.config/AzureKits, ~/.config/ServiceKit, MonoService, MonoXpc
+# .crate SHA-256:
+#   arrayref-0.3.10   25ad700976873c76af785cb99b33c48db7df8b81f21d1e9e06b3676b9a9373ae
+#   proc-macro1-1.0.107 61198155da51b838772eecf5bfaac6cbc4dcc388dccc56658fc28a8e831b34d4
+#   proc-macro1-1.0.106 b5c1b5b0763a8809a644a8f92224653f0aca623a98eecc714d27f74b80fbe436
