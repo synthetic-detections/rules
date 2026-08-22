@@ -1,0 +1,14 @@
+# Benign structural lookalike: a developer's notes for setting up a local
+# TLS-intercepting debugging proxy (mitmproxy / Fiddler) — the legitimate
+# shape of "install a root CA, point traffic at 127.0.0.1". Shares certutil
+# ROOT-store installation and a loopback hosts entry, but none of the
+# campaign's forged GTS WR3 CA, firewall-rule name or VirusTotal poisoning.
+# Must NOT match.
+mitmproxy --mode regular --listen-port 8080
+certutil -addstore -f ROOT mitmproxy-ca-cert.cer
+127.0.0.1 api.dev.local
+127.0.0.1 auth.dev.local
+netsh advfirewall firewall add rule name="mitmproxy-8080" dir=in action=allow protocol=TCP localport=8080
+netsh winhttp set proxy 127.0.0.1:8080
+O=mitmproxy, CN=mitmproxy
+SAN: api.dev.local, localhost, 127.0.0.1
