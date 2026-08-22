@@ -1,0 +1,45 @@
+# Synthetic specimen — Windows branch of the post-DEF CON researcher phishing
+# campaign (Huntress 2026-08-19). Distinctive strings reconstructed from the
+# report; not the live binaries. Exercises all three rules.
+https://gapidriver.com/installer/GapiUpdate.application
+https://1foqo.lat/core4
+https://2fksf.lat/res10.php
+https://2fksf.lat/res11.php
+https://3pqow.lat/res12.php
+%TEMP%\sys.ps1
+%LOCALAPPDATA%\Microsoft\Windows\UpdateCache
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MsBuild.exe
+DocsendInstaller.exe md5 8ca79bd95f73a7f984b95e487dc1552b
+App.asar md5 281f1d9e0638517ac90d61e47fd8be60
+https://docsend.web12api.com/api/launcher/start
+https://signow.web12api.com/api/launcher/start
+%TEMP%\Cache_328189ho
+VirtualBoxVGA
+https://eu03hub.com/get_file?file=2Ec6QYynajHw
+https://eu03hub.com/get_file?file=T3YxekrHsgfaDdXY
+https://eu03hub.com/get_file?file=qV06ev1a1pOY
+Manager.msi md5 6dd77235aaa99153ad790b5e59b49372
+Localcertificate.exe md5 f4769ba9e8065727ef26cca72e894f83
+Asusdriverld.exe md5 cd08e22dbfe032d15b54217f4f4ed350
+DockerDesktopSvc.exe
+SteamClientHelperHost.exe
+TeraCopyMonMon.exe
+[NetSupport]
+Licensee=NSM1234
+GatewayAddress=msedgewebview1.pro:443
+GatewayAddress2=msedgewebview2.pro:443
+87.120.104.88
+C:\Users\Administrator\Desktop\2RMS\client32u.ini
+HKLM\SYSTEM\CurrentControlSet\Services\nskbfltr
+C:\Windows\system32\drivers\nskbfltr.sys
+O=Google Trust Services, CN=WR3
+SAN: www.virustotal.com, localhost, 127.0.0.1, ::1
+certutil -addstore -f ROOT rootca.cer
+127.0.0.1 www.virustotal.com
+netsh advfirewall firewall add rule name="LocalProxy" dir=in action=allow
+C:\Program Files\Ledger Live
+C:\Program Files\Ledger Wallet
+%APPDATA%\Ledger Live\app.crc32
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run\Ledger Wallet Installer
+https://eu07connect.com/api/commands/BOTID
+HKCU\Keyboard Layout\Preload

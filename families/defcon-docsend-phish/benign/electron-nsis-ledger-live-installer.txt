@@ -1,0 +1,30 @@
+# Benign structural lookalike: string set of a legitimate Electron app
+# packaged with NSIS (electron-builder), here the real Ledger Live desktop
+# installer. Shares Electron/NSIS/app.asar surface, the "Ledger Live" product
+# name and install paths, and a stock Google Trust Services certificate chain
+# in its resources — but none of the campaign's implant markers (no implant
+# Run-key name, no bot-id file, no tasking path, no firewall-rule name).
+# Must NOT match.
+Nullsoft Install System v3.08
+electron-builder
+resources\app.asar
+resources\app-update.yml
+$LOCALAPPDATA\Programs\Ledger Live\Ledger Live.exe
+C:\Program Files\Ledger Live
+Uninstall Ledger Live.exe
+$APPDATA\Ledger Live\Preferences
+$APPDATA\Ledger Live\Local Storage
+Ledger Live Setup 2.98.0.exe
+Ledger SAS
+Software\Microsoft\Windows\CurrentVersion\Uninstall\{f4c5d4a2-ledger-live}
+electron/js2c/browser_init
+chrome_100_percent.pak
+libEGL.dll
+libGLESv2.dll
+vk_swiftshader.dll
+-----BEGIN CERTIFICATE-----
+O=Google Trust Services LLC, CN=GTS Root R1
+O=Google Trust Services, CN=WR3
+-----END CERTIFICATE-----
+https://api.ledgerwallet.com/update
+Squirrel.Windows
