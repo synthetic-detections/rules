@@ -35,10 +35,16 @@ Design notes:
 - The Specimen rule pins the three rarest tokens (loader thread + MoYu service +
   Zhima client), all present together only in this malware.
 
-## Corpus FP test
+## Corpus FP test (2026-08-24)
 
-Status: **PENDING** — a corpus false-positive scan (`--max-hits 40 --budget 15m`)
-was launched against the sample corpus after the smoke test. Result to be recorded
-here on completion (samples scanned / matches / read-errors / verdict). The rule
-tokens are highly distinctive (malware-unique class/thread/service names), so a
-clean corpus pass is expected; any hit is a candidate FP to investigate.
+Each rule was scanned independently against a slice of the malware sample corpus.
+All three came back clean:
+
+| Rule                            | Samples scanned | Matches | Read errors | Verdict |
+|---------------------------------|-----------------|---------|-------------|---------|
+| MoYu_BADBOX_HeadUnit_Behavior   | 5,379           | 0       | 0           | clean   |
+| MoYu_BADBOX_HeadUnit_IOC        | 11,794          | 0       | 0           | clean   |
+| MoYu_BADBOX_HeadUnit_Specimen   | 11,011          | 0       | 0           | clean   |
+
+Verdict: **no false positives.** The malware-unique class/thread/service tokens
+and the co-occurrence-guarded C2 set produce no corpus collisions.
