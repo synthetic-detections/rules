@@ -1,0 +1,16 @@
+# Synthetic specimen reconstructed from the Securelist IOC appendix
+# (representative of strings recoverable from the malicious classes.dex /
+#  unpacked stages). Not a live sample.
+package com.tw.jar1;
+package com.tw.core;   // legitimate TWCore vector — present in real infections
+Thread name: mosdk-host-loader
+entry com.c.j.qbh.wa
+com.ast.sdk.BillingMain.init()
+service AdmoyuService
+com.miyc.transfer.Client
+POST /cpc/api/task
+GET  /cpc/api/xml
+POST /cpc/api/report
+c2: xmsae.sbs ishano456.sbs xshaon123.sbs kshahnd.sbs mdsjhd.sbs nmnsny.sbs
+mqtt broker: cardoor.cn
+zhima 107.151.248.132:1337

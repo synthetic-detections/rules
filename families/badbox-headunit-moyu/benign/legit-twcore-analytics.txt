@@ -1,0 +1,7 @@
+package com.tw.core;
+class com.tw.core.TWCoreUpdater
+class com.tw.core.Analytics
+androidx.appcompat.app.AppCompatActivity
+com.google.firebase.analytics.FirebaseAnalytics
+https://twcore.example.com/update/check
+Normal automotive analytics + OTA update client. No MoYu/Zhima artifacts.
