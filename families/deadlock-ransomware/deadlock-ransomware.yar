@@ -64,7 +64,15 @@ rule DeadLock_Ransom_Note {
         $b2 = "Session" ascii wide
         $b3 = ".dlock" ascii wide
     condition:
-        filesize < 100KB and ( (all of ($n*)) or ($n1 and 2 of ($b*)) )
+        // $n1/$n2 are the recovery *tokens* that appear in the note body
+        // (HOW_RECOVER is also the note filename, which YARA cannot see, so the
+        // rule must not depend on $n1 alone). A real dropped note reliably
+        // carries the .dlock ext + Session + the leak-site domain together.
+        filesize < 100KB and (
+            (all of ($n*))
+            or (any of ($n*) and 2 of ($b*))
+            or (all of ($b*))
+        )
 }
 
 rule DeadLock_Blockchain_C2 {
@@ -81,7 +89,9 @@ rule DeadLock_Blockchain_C2 {
         $sel1 = "933a9ce8" ascii nocase
         $sel2 = "d4070542" ascii nocase
         $d1 = "deadlock.liveblog365.com" ascii nocase
-        $d2 = "dlock.liveblog365.com" ascii nocase
+        // fullword so this does not self-match inside $d1 ("deadlock...") and
+        // defeat the 2-of count guard
+        $d2 = "dlock.liveblog365.com" ascii nocase fullword
         $onion = "deadblogdbdu5wprek7wa2o4ce7rnt6u6ntqeud3hzjjcveosgpsqqqd" ascii nocase
         $pk = "03bf50bbf97c4e951e66ff12b689a37a3ce675b4921e254eae76da77573843e4a9" ascii nocase
     condition:
