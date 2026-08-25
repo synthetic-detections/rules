@@ -134,7 +134,7 @@ rule Rust_ProcMacro1_Dropper_IOC
         $c_pm1      = "proc-macro1" ascii
         $c_pmen     = "proc-macro-en" ascii
         $c_aovine   = "aovine" ascii
-        $c_arone    = "arone" ascii
+        $c_arone    = "arone" ascii fullword
         $c_aronenao = "aronenao" ascii
         $c_tiny     = "tinymember" ascii
 

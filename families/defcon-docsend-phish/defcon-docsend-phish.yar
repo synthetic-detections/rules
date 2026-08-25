@@ -151,9 +151,12 @@ rule DefconDocsendPhish_IOC
         $d13 = "ariasalmonterachel13/gapi" ascii wide nocase
 
         // infrastructure IPs
-        $i01 = "86.54.25.213" ascii wide
-        $i02 = "192.253.248.181" ascii wide
-        $i03 = "87.120.104.88" ascii wide
+        // fullword so a shorter IP is not matched inside a longer one
+        // (e.g. 86.54.25.213 inside 186.54.25.213) — an unanchored IP literal
+        // is the same single-mention FP that commit ccb9439 removed elsewhere
+        $i01 = "86.54.25.213" ascii wide fullword
+        $i02 = "192.253.248.181" ascii wide fullword
+        $i03 = "87.120.104.88" ascii wide fullword
 
         // ClickFix one-liner / lure
         $c01 = "apple-googleapi.com/i | zsh" ascii wide

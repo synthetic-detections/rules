@@ -83,7 +83,9 @@ rule DynoWiper_Wiper_Behavior
         $x3 = "perflogs" wide nocase
         $x4 = "documents and settings" wide nocase
         $x5 = "system32" wide nocase
-        $x6 = "recycle.bin" wide nocase
+        // ($recycle.bin already covers the recycle-bin token; a separate
+        // "recycle.bin" is a substring of $x1 and would let one indicator
+        // satisfy two slots of the 3-of guard, so it is intentionally omitted.)
 
     condition:
         uint16(0) == 0x5A4D
