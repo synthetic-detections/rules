@@ -51,3 +51,24 @@ Re-run per rule on a recent slice once reachable; any hit is a candidate FP.
 
 ## Update 2026-08-22 — FP tightening
 C2 condition changed from `2 of them` to `filesize < 2MB and ($mirror or 3 of ($i*))`: the IP strings are substring matches (23.239.119.2 ⊂ 23.239.119.20-29), so a bare 2-of false-positived on asset inventories/netflow. Now requires the distinctive clearnet DLS mirror or three co-occurring C2 IPs under a filesize guard. Smoke test re-run: specimens hit, benign clean.
+
+## Update 2026-08-25 — fullword anchoring on C2 IPs
+The 3-of count guard alone did not close the substring class: $i1–$i5 are the
+contiguous block 23.239.119.2..6, and each is a substring of longer IPs in the
+same /24, so a benign subnet inventory listing e.g. 23.239.119.20 / .35 / .48
+matched $i1/$i2/$i3 and satisfied `3 of ($i*)`. All thirteen IP strings now
+carry `fullword` (the same anchoring the dynowiper/gentlekiller siblings use),
+so a match requires non-alphanumeric boundaries on both sides.
+
+Regression sample added: `benign/subnet_inventory.txt` — a netflow/asset
+inventory with five adjacent-/24 IPs (23.239.119.20/.35/.48/.57/.63). The
+pre-fix rule fires Gunra_Campaign_C2 on it (three substring hits); the fixed
+rule is silent, so `yara -r gunra-ransomware.yar benign/` catches any
+reintroduction of the substring match.
+
+The `yara` binary was unavailable in the authoring session, so the smoke test
+could not be re-run locally; string semantics were verified with boundary
+regexes (`(^|[^0-9A-Za-z])<ip>($|[^0-9A-Za-z])`): zero fullword hits in
+`benign/subnet_inventory.txt`, and `specimens/c2_list.txt` still matches $i1,
+$i6, and $mirror (fires via $mirror regardless). CI smoke test validates on
+push.

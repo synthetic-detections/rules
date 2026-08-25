@@ -1,0 +1,6 @@
+Asset inventory export — netflow top talkers, week 34
+23.239.119.20  edge-cache-01     ok
+23.239.119.35  edge-cache-02     ok
+23.239.119.48  build-runner-07   ok
+23.239.119.57  build-runner-08   ok
+23.239.119.63  metrics-relay-a   ok

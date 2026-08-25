@@ -82,24 +82,25 @@ rule Gunra_Campaign_C2 {
         family = "gunra-ransomware"
         reference = "https://media.defense.gov/2026/Aug/10/2003976697/-1/-1/0/CSA_STOPRANSOMWARE_GUNRA_RANSOMWARE.PDF"
     strings:
-        $i1 = "23.239.119.2" ascii
-        $i2 = "23.239.119.3" ascii
-        $i3 = "23.239.119.4" ascii
-        $i4 = "23.239.119.5" ascii
-        $i5 = "23.239.119.6" ascii
-        $i6 = "86.54.28.216" ascii
-        $i7 = "103.125.234.14" ascii
-        $i8 = "70.36.99.82" ascii
-        $i9 = "211.21.210.181" ascii
-        $i10 = "123.184.143.105" ascii
-        $i11 = "182.204.21.240" ascii
-        $i12 = "182.204.16.112" ascii
-        $i13 = "123.244.187.144" ascii
+        $i1 = "23.239.119.2" ascii fullword
+        $i2 = "23.239.119.3" ascii fullword
+        $i3 = "23.239.119.4" ascii fullword
+        $i4 = "23.239.119.5" ascii fullword
+        $i5 = "23.239.119.6" ascii fullword
+        $i6 = "86.54.28.216" ascii fullword
+        $i7 = "103.125.234.14" ascii fullword
+        $i8 = "70.36.99.82" ascii fullword
+        $i9 = "211.21.210.181" ascii fullword
+        $i10 = "123.184.143.105" ascii fullword
+        $i11 = "182.204.21.240" ascii fullword
+        $i12 = "182.204.16.112" ascii fullword
+        $i13 = "123.244.187.144" ascii fullword
         $mirror = "datapub.news" ascii nocase
     condition:
-        // The IP strings are substring matches (e.g. 23.239.119.2 matches
-        // 23.239.119.20-29), so a bare "2 of them" false-positives on asset
-        // inventories / netflow. Require the distinctive clearnet DLS mirror,
-        // or three co-occurring C2 IPs, under a filesize guard.
+        // The IP strings are fullword-anchored: without it, 23.239.119.2
+        // matches inside 23.239.119.20-29, so a benign subnet inventory in
+        // the adjacent /24 satisfies "3 of ($i*)" via substrings. Require the
+        // distinctive clearnet DLS mirror, or three co-occurring C2 IPs,
+        // under a filesize guard.
         filesize < 2MB and ($mirror or 3 of ($i*))
 }
