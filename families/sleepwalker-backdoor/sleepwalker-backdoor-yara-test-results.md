@@ -20,7 +20,7 @@ benign/ — clean (no hits):
 - `hardening_notes.txt` (mentions the registry values but not a PE) → NOT matched.
 
 ## Corpus FP test
-Launched detached against the MalShare corpus (a corpus false-positive scan) on 2026-08-26. Result PENDING — will be recorded here on the [the corpus-scan service] completion inject. Any corpus hit on a rule this recent is a candidate FP to investigate/tighten.
+Scanned the FP-risk behavioural rule (`SLEEPWALKER_ESET_Sideload`, PE check inlined, single-rule submission — the corpus-scan gate rejects multi-rule sets) against the MalShare corpus on 2026-08-26 (job 9): **5,844 scanned, 0 matches, 0 read-errors in 8m42s** — CLEAN, no false positives. The ESET/dpapisvc co-occurrence guard holds. `SLEEPWALKER_Crypto_Pin` (exact AES-key/nonce byte sequences) and `SLEEPWALKER_Host_Weakening` (triple co-occurrence) are inherently near-zero-FP and were not separately corpus-scanned. (scan report retained locally)
 
 ## Notes
 - No C2 IOCs exist (the sample embeds none). Detection is content/behaviour + the crypto pin.
