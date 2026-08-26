@@ -1,0 +1,1 @@
+Windows hardening: set EveryoneIncludesAnonymous=0 and clear NullSessionPipes on ERAAgent.exe hosts.
