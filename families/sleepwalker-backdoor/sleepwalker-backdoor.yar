@@ -38,7 +38,7 @@
 
 private rule sleepwalker_is_pe {
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550
+        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550 and filesize < 8MB
 }
 
 rule SLEEPWALKER_ESET_Sideload {
@@ -60,7 +60,7 @@ rule SLEEPWALKER_ESET_Sideload {
         $host1 = "ERAAgent.exe" ascii wide nocase
         $host2 = "dpapisvc.dll" ascii wide nocase
     condition:
-        sleepwalker_is_pe and 3 of ($x*) and any of ($host*)
+        sleepwalker_is_pe and filesize < 8MB and 3 of ($x*) and any of ($host*)
 }
 
 rule SLEEPWALKER_Host_Weakening {
@@ -77,7 +77,7 @@ rule SLEEPWALKER_Host_Weakening {
         $h1 = "ERAAgent.exe" ascii wide nocase
         $h2 = "dpapisvc.dll" ascii wide nocase
     condition:
-        sleepwalker_is_pe and $r1 and $r2 and any of ($h*)
+        sleepwalker_is_pe and filesize < 8MB and $r1 and $r2 and any of ($h*)
 }
 
 rule SLEEPWALKER_Crypto_Pin {
