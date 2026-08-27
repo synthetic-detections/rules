@@ -134,9 +134,45 @@ jobs:
           done
           exit $fail
 
+  opsec-guard:
+    name: OPSEC keyword guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Block internal identifiers in repo content
+        env:
+          DENYLIST: ${{ secrets.OPSEC_DENYLIST }}
+        shell: bash
+        run: |
+          # Deterministic backstop, independent of any authoring tool: if a
+          # denylisted internal identifier (host/user/tool/service names) is a
+          # literal part of the repo content, fail the run so no release is
+          # minted. The wordlist lives in the OPSEC_DENYLIST repo secret (one
+          # ERE pattern per line) — it is NOT committed, because this repo is
+          # public and the list itself must stay unlinkable.
+          set -uo pipefail
+          if [ -z "${DENYLIST:-}" ]; then
+            echo "::error::OPSEC_DENYLIST secret not configured — failing closed (guard must be active to release)."
+            exit 1
+          fi
+          fail=0
+          while IFS= read -r pat; do
+            [ -z "$pat" ] && continue
+            # -l: paths only (never echo matched lines — logs are public and would re-leak)
+            files=$(git grep -lIiE -e "$pat" -- . ':(exclude).github/**' 2>/dev/null || true)
+            if [ -n "$files" ]; then
+              echo "::error::Release blocked — a denylisted internal identifier appears in:"
+              printf '  %s\n' $files
+              fail=1
+            fi
+          done <<< "$DENYLIST"
+          [ "$fail" -eq 0 ] && echo "OPSEC guard: clean"
+          exit $fail
+
   release:
     name: Build bundles and mint release
-    needs: [yara, snort]
+    needs: [yara, snort, opsec-guard]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
@@ -202,6 +238,29 @@ jobs:
 
       - name: Validate the YARA bundle compiles
         run: yara -w dist/ai-generated-detection-rules.yar /dev/null
+
+      - name: OPSEC keyword guard on built bundles
+        env:
+          DENYLIST: ${{ secrets.OPSEC_DENYLIST }}
+        shell: bash
+        run: |
+          # Final gate on the exact artifacts being uploaded.
+          set -uo pipefail
+          if [ -z "${DENYLIST:-}" ]; then
+            echo "::error::OPSEC_DENYLIST secret not configured — failing closed."
+            exit 1
+          fi
+          fail=0
+          while IFS= read -r pat; do
+            [ -z "$pat" ] && continue
+            if grep -rIiEl -e "$pat" dist/ >/dev/null 2>&1; then
+              echo "::error::Release bundle blocked — denylisted identifier present in:"
+              grep -rIiEl -e "$pat" dist/
+              fail=1
+            fi
+          done <<< "$DENYLIST"
+          [ "$fail" -eq 0 ] && echo "OPSEC bundle guard: clean"
+          exit $fail
 
       - name: Mint release
         env:
