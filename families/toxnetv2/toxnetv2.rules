@@ -1,0 +1,30 @@
+# toxnetv2.rules
+# ----------------------------------------------------------------------------
+# ToxNet v2 -- AArch64 Linux P2P botnet with Tox-protocol C2 and an
+# LLM-integrated controller (NVIDIA NIM, model z-ai/glm-5.2). Disclosed
+# 2026-08-25 by Joe Security (Joe Sandbox).
+#
+# Observed infrastructure (no file hashes published by the vendor):
+#   Payload delivery : http://45.151.139.113/z0l1mxjm4mdl4jjfjf7sb2vdmv/kaf.sh
+#   Tox C2 node      : 45.130.151.214  (Tox DHT 33445, HTTPS fallback 443;
+#                      hardcoded root-SSH target). Tox state file: c2.data
+#
+#   sid 9001201 -- HTTP GET for the kaf.sh payload at the distinctive URI path
+#                  (rotation-resistant on the 26-char path token)
+#   sid 9001202 -- HTTP/any traffic to the payload-delivery host 45.151.139.113
+#   sid 9001203 -- traffic to the Tox C2 node 45.130.151.214
+#
+# Scope: the payload stage is plaintext HTTP; Tox C2 itself is encrypted/P2P,
+# so 9001203 is an IP-reputation match, not content inspection. No YARA rule is
+# shipped -- see toxnetv2-snort-test-results.md for the rationale (no hashes; the
+# only high-entropy static token is this URL path, best matched on the wire).
+#
+# Related family: nadmesh-ai-botnet (separate LLM-integrated botnet; no shared
+# infrastructure -- conceptual overlap only).
+# ----------------------------------------------------------------------------
+
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"TOXNETV2 payload delivery HTTP GET (kaf.sh at z0l1mxjm4mdl4jjfjf7sb2vdmv path)"; flow:to_server,established; http.method; content:"GET"; http.uri; content:"/z0l1mxjm4mdl4jjfjf7sb2vdmv/kaf.sh"; nocase; reference:url,www.joesecurity.org/blog/6764463444623599134; classtype:trojan-activity; sid:9001201; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family toxnetv2;)
+
+alert ip $HOME_NET any -> 45.151.139.113 any (msg:"TOXNETV2 payload-delivery host 45.151.139.113"; reference:url,www.joesecurity.org/blog/6764463444623599134; classtype:trojan-activity; sid:9001202; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family toxnetv2;)
+
+alert ip $HOME_NET any -> 45.130.151.214 any (msg:"TOXNETV2 Tox C2 node 45.130.151.214 (DHT 33445 / HTTPS 443)"; reference:url,www.joesecurity.org/blog/6764463444623599134; classtype:trojan-activity; sid:9001203; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family toxnetv2;)
