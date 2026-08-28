@@ -59,6 +59,7 @@ statistics recorded in each transcript.
 | `cavern-manticore-net-c2` | ✅ | — | 2026-07-06 Check Point — Iran MOIS-nexus (OilRig/Lyceum) modular .NET "Cavern" C2, RMM abuse + steganographic PNG C2 |
 | `defcon-docsend-phish` | ✅ | ✅ | 2026-08-19 Huntress — post-DEF CON researcher phishing: fake CoinDesk exec on X → Google Doc Apps Script sidebar → AMOS (macOS) / DocSend-themed Electron loader staging NetSupport RAT, TLS-intercepting proxy, Ledger Live implant |
 | `rust-proc-macro1-crate-dropper` | ✅ | — | 2026-08-20 crates.io / Rust Security WG / StepSecurity / Aikido — `arrayref` 0.3.10 / `internment` 0.8.7 / `append-only-vec` 0.1.9 poisoned to depend on `proc-macro1` typosquat whose build.rs drops+runs a build-time payload (`/tmp/rust-setup`), infostealer stage-2 |
+| `zbtlink-backdoor` | ✅ | ✅ | 2026-08-27 VulnCheck — SPEAKINGSTONE (`yunmgrd`) + DARKLANTERN (`infosrvd`) ELF implants in Zbtlink router firmware; UDP/9992 + UDP/10000 proto C2, salt `mqonu.com`, C2 `ac-link[.]com` |
 
 ## Layout
 
