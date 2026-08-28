@@ -1,0 +1,7 @@
+SPEAKINGSTONE / DARKLANTERN (Zbtlink) -- VulnCheck, 2026-08-27
+Implant binaries: yunmgrd (SPEAKINGSTONE), infosrvd (DARKLANTERN), inetdetect
+Proto tags: zbtProtocol (UDP/10000), revProto (UDP/9992); replies from 8897/8898
+MD5 salt: mqonu.com    exec prefix: /etc/exec/cmd
+Config: /tmp/yunclient.conf, /tmp/info.txt, /tmp/mac.txt
+OEM contact: sales03@zbt-china.com
+C2 domains: ac-link.com (47.107.224.89), www.findmyipaddr.com (sinkholed)

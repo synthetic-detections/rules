@@ -1,0 +1,36 @@
+# zbtlink-backdoor.rules
+# ----------------------------------------------------------------------------
+# SPEAKINGSTONE + DARKLANTERN -- router implants in Chinese Zbtlink (ZBT)
+# firmware. Disclosed 2026-08-27 by VulnCheck.
+#
+# Wire behaviour (VulnCheck):
+#   DARKLANTERN (infosrvd)   listens on UDP/9992, protocol tag "revProto".
+#   SPEAKINGSTONE (yunmgrd)  listens on UDP/10000, protocol tag "zbtProtocol",
+#                            answering from UDP source ports 8897/8898.
+#   C2: ac-link[.]com (47.107.224.89, Alibaba Shenzhen) and the sinkholed
+#       www.findmyipaddr[.]com.
+#
+#   sid 9001101 -- DARKLANTERN inbound command to UDP/9992 (revProto)
+#   sid 9001102 -- SPEAKINGSTONE inbound to UDP/10000 (zbtProtocol)
+#   sid 9001103 -- SPEAKINGSTONE implant reply from UDP src 8897/8898
+#   sid 9001104 -- C2 domain lookup ac-link.com
+#   sid 9001105 -- C2 domain lookup findmyipaddr.com
+#   sid 9001106 -- traffic to the reported C2 IP 47.107.224.89
+#
+# Scope: plaintext UDP payloads and DNS. The proto tags gate the port rules so
+# unrelated UDP to those ports does not alert. Related repo family:
+# endlessdoors-zbtlink-backdoor (separate Zbtlink implant; shares C2 IP
+# 47.107.224.89).
+# ----------------------------------------------------------------------------
+
+alert udp $EXTERNAL_NET any -> $HOME_NET 9992 (msg:"ZBTLINK DARKLANTERN inbound UDP/9992 revProto command"; content:"revProto"; nocase; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001101; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family zbtlink-backdoor;)
+
+alert udp $EXTERNAL_NET any -> $HOME_NET 10000 (msg:"ZBTLINK SPEAKINGSTONE inbound UDP/10000 zbtProtocol command"; content:"zbtProtocol"; nocase; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001102; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family zbtlink-backdoor;)
+
+alert udp $HOME_NET [8897,8898] -> $EXTERNAL_NET any (msg:"ZBTLINK SPEAKINGSTONE implant reply from UDP src 8897/8898 (zbtProtocol)"; content:"zbtProtocol"; nocase; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001103; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family zbtlink-backdoor;)
+
+alert dns $HOME_NET any -> any any (msg:"ZBTLINK SPEAKINGSTONE C2 domain lookup (ac-link.com)"; dns.query; content:"ac-link.com"; nocase; endswith; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001104; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family zbtlink-backdoor;)
+
+alert dns $HOME_NET any -> any any (msg:"ZBTLINK C2 domain lookup (findmyipaddr.com, sinkholed)"; dns.query; content:"findmyipaddr.com"; nocase; endswith; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001105; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity medium, family zbtlink-backdoor;)
+
+alert ip $HOME_NET any -> 47.107.224.89 any (msg:"ZBTLINK C2 IP 47.107.224.89 (Alibaba Shenzhen)"; reference:url,www.vulncheck.com/blog/zbt-darklantern-speakingstone; classtype:trojan-activity; sid:9001106; rev:1; metadata:author synthetic-detections, created_at 2026_08_28, severity high, family zbtlink-backdoor;)

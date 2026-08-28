@@ -1,0 +1,5 @@
+Zbtlink WE1626 firmware build banner
+Vendor: Shenzhen Zbtlink Technology  (www.zbt-china.com)
+Support: support@zbt-china.com
+Kernel: Linux 4.14  Arch: mipsel
+Services: dnsmasq, udhcpc, hostapd
