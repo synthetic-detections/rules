@@ -59,11 +59,10 @@ rule stays silent on the synthetic ELFs (real hashes only).
 
 ## Corpus FP test
 
-Status: **PENDING** — the highest-FP-risk rule (`Zbtlink_Backdoor_IOC`, the string/`any of`
-match) was submitted to the corpus scanner (label `zbtlink-backdoor-ioc`,
-`--max-hits 40 --budget 15m`). Any corpus hit on this recent family is a candidate FP to
-investigate and tighten; result to be recorded here when the scan completes. The Behaviour
-and Specimen-Pin rules are ELF-magic + filesize gated, so broad FPs are unlikely.
+Status: **CLEAN** — the highest-FP-risk rule (`Zbtlink_Backdoor_IOC`, the string/`any of`
+match) was run against a broad corpus slice of **6,458 samples → 0 matches, 0 read-errors**.
+No false positives; no tightening required. The Behaviour and Specimen-Pin rules are
+ELF-magic + filesize gated, so broad FPs are unlikely.
 
 ## Coverage caveats
 
