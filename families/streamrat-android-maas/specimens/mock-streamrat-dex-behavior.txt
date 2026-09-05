@@ -1,0 +1,6 @@
+Lio/base/one887/ws/RpcClient; wss://45.147.28.59/ws
+X-Device-Id X-Device-Model X-Api-Level
+Landroid/media/projection/MediaProjection; Landroid/accessibilityservice/AccessibilityService; takeScreenshot
+Landroid/net/VpnService; injections/ .html
+index.html set_launcher.html vpn_required.html r1edmi.html app.apk update_
+adler32 opcode 0x0020 0x0023

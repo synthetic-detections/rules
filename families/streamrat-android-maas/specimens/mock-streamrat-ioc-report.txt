@@ -1,0 +1,6 @@
+StreamRat IOC summary
+packages: io.base.one887 (StrεαmTV Pro), io.meat.hint (Sistema de vídeo)
+ad campaign: "Steamtv Esp." Meta/TikTok
+C2: 45.147.28.59 193.32.2.245
+sha256: e0714788b4e2518b0d9d4cbf18c7217bb97718e01689d77338f1cc4a230fcb6c
+sha256: ba83cc3c9535690191018edf73ca5c6001609df9919462796aa2e551f142e4d3
