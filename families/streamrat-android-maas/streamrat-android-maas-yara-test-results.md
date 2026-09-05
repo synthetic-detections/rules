@@ -33,9 +33,16 @@ one header — every path stays below threshold.
 
 ## Corpus false-positive test
 
-Corpus FP scan pending for StreamRat_Behavior and StreamRat_IOC (queued
-2026-09-05). StreamRat_Specimen_Pin is an exact SHA-256 text pin, zero-FP by
-construction.
+Each rule was scanned separately against a real-malware corpus slice (2026-09-05):
+
+| Rule | Samples scanned | Matches | Read errors | Verdict |
+|------|-----------------|---------|-------------|---------|
+| StreamRat_Behavior | 5,056 | 0 | 0 | clean |
+| StreamRat_IOC | 9,470 | 0 | 0 | clean |
+| StreamRat_Specimen_Pin | not scanned | — | — | exact SHA-256 pins, zero-FP by construction |
+
+No corpus hits on either the behavioural or IOC rule — no candidate false
+positives, no tightening required.
 
 ## Rule design notes
 
