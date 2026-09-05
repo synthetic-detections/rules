@@ -1,0 +1,1 @@
+{"transport":"wss://api.example-analytics.com/v2/stream","headers":{"X-Device-Id":"{{uuid}}","X-App-Version":"3.4.1","Authorization":"Bearer {{token}}"},"reconnect":{"backoff_ms":2000,"max":5},"features":["screen_share_opt_in","push"]}

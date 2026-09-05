@@ -1,0 +1,6 @@
+package: com.example.screenmirror  label: Screen Mirror Pro
+uses-permission android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION
+service .CastService (android.media.projection.MediaProjection)
+service .RemoteInputService (android.accessibilityservice.AccessibilityService)
+assets: index.html help.html update_notes.html
+network: wss://cast.example.com/session  header X-Device-Model
