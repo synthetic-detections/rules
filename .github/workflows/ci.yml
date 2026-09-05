@@ -163,7 +163,7 @@ jobs:
             files=$(git grep -lIiE -e "$pat" -- . ':(exclude).github/**' 2>/dev/null || true)
             if [ -n "$files" ]; then
               echo "::error::Release blocked — a denylisted internal identifier appears in:"
-              printf '  %s\n' $files
+              printf '%s\n' "$files" | sed 's/^/  /'
               fail=1
             fi
           done <<< "$DENYLIST"
