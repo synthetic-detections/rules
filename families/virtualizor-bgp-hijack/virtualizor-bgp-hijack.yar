@@ -100,8 +100,8 @@ rule Virtualizor_BGP_Hijack_IOC
         $d2 = "connect.ne-rat.xyz" ascii nocase
         $d3 = "nerat.cc" ascii nocase
         $d4 = "ne-rat.xyz" ascii nocase
-        $ip = "193.32.127.248" ascii
-        $ipp = "31.77.220.138:2025" ascii
+        $ip = "193.32.127.248" ascii fullword
+        $ipp = "31.77.220.138:2025" ascii fullword
 
     condition:
         any of them

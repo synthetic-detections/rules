@@ -74,13 +74,13 @@ rule CoreRAT_C2_IOC {
         $d5 = "msgntfsys.link" ascii wide nocase
         $d6 = "arendelle.ru" ascii wide nocase
         $d7 = "sgpsib.ru" ascii wide nocase
-        $i1 = "185.102.139.30" ascii wide
-        $i2 = "130.49.181.212" ascii wide
-        $i3 = "138.124.76.77" ascii wide
-        $i4 = "95.81.125.145" ascii wide
-        $i5 = "178.253.39.45" ascii wide
-        $i6 = "104.128.129.184" ascii wide
-        $i7 = "95.215.108.140" ascii wide
+        $i1 = "185.102.139.30" ascii wide fullword
+        $i2 = "130.49.181.212" ascii wide fullword
+        $i3 = "138.124.76.77" ascii wide fullword
+        $i4 = "95.81.125.145" ascii wide fullword
+        $i5 = "178.253.39.45" ascii wide fullword
+        $i6 = "104.128.129.184" ascii wide fullword
+        $i7 = "95.215.108.140" ascii wide fullword
     condition:
         2 of them
 }

@@ -108,7 +108,6 @@ rule Zbtlink_Backdoor_IOC
         and (
             any of ($proto*, $salt, $exec, $bin*, $oem, $cfg, $d*)
             or ( $ip and 1 of ($g1, $g2) )
-            or ( all of ($g1, $g2) )
         )
 }
 
