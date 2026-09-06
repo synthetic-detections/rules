@@ -186,8 +186,8 @@ rule DynoWiper_Campaign_IOCs
         $s7 = "f4e9a3ddb83c53f5b7717af737ab0885abd2f1b89b2c676d3441a793f65ffaee" ascii nocase
         $s8 = "68192ca0fde951d973eb41a07814f402f2b46e610889224bd54583d8a332a464" ascii nocase
         // C2 / relay IPs (Static Tundra infra)
-        $ip1 = "185.200.177.10" ascii wide
-        $ip2 = "31.172.71.5" ascii wide
+        $ip1 = "185.200.177.10" ascii wide fullword
+        $ip2 = "31.172.71.5" ascii wide fullword
 
     condition:
         // Full SHA-256 hashes are unambiguous and may fire alone; the two C2

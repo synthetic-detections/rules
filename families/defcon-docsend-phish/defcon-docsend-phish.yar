@@ -212,8 +212,8 @@ rule DefconDocsendPhish_Specimen
         $x_cache    = "Cache_328189ho" ascii
         $x_2rms     = "\\2RMS\\client32u.ini" ascii nocase
 
-        $c_panel    = "86.54.25.213" ascii wide
-        $c_bot      = "192.253.248.181" ascii wide
+        $c_panel    = "86.54.25.213" ascii wide fullword
+        $c_bot      = "192.253.248.181" ascii wide fullword
         $c_launch   = "web12api.com" ascii wide nocase
         $c_hub      = "eu03hub.com" ascii wide nocase
         $c_ledger   = "eu07connect.com" ascii wide nocase
