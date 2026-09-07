@@ -1,0 +1,12 @@
+# Reconstructed StyleSmuggler Rust backdoor host artifacts (from Sansec IOC list; no live sample)
+process masquerade: [kworker/u:8:0]
+drop: /tmp/.kw_a1b2c3d4e5
+drop: /tmp/.fc-0f1e2d3c/fc-cache
+persistence dir: /home/www/.local/share/.gvfsd/gvfsd-user
+lock: /home/www/.local/share/.gvfsd/.gvfsd_0a1b2c3d.lock
+crontab: */5 * * * * exec /home/www/.local/share/.gvfsd/gvfsd-user
+crontab: 13,43 * * * * /home/www/.cache/fontconfig/fc-cache >/dev/null 2>&1
+c2 ws-tls: windwsecurity.run:443
+c2 ntp: ntp.timesysnc.net:123
+c2 ntp: pool.microsft.studio:123
+dl host: 247.cdnflare.xyz
