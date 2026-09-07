@@ -1,0 +1,8 @@
+# Legitimate font cache maintenance log — benign
+Running /usr/bin/fc-cache -f -v to rebuild the font cache
+caching directory /usr/share/fonts for family "DejaVu Sans"
+writing cache to /var/cache/fontconfig/
+fc-cache: succeeded, 4123 fonts cached
+cron: 0 3 * * 0 root /usr/bin/fc-cache -f
+temp workdir under /tmp/fontbuild-1234 cleaned up
+kworker kernel threads [kworker/0:1] observed in ps output (kernel-owned, normal)

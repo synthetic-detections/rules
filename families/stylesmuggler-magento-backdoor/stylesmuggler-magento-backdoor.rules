@@ -1,0 +1,4 @@
+# StyleSmuggler — Magento/Adobe Commerce unauthenticated RCE 0-day (Sansec, 2026-09-05)
+# Network exploit signatures. Private SID range. See stylesmuggler-magento-backdoor.yar.
+alert http any any -> any any (msg:"StyleSmuggler Magento styles[] GraphQL PHP injection attempt"; flow:established,to_server; http.method; content:"POST"; http.uri; content:"/graphql"; content:"styles["; distance:0; content:"eval"; nocase; reference:url,sansec.io/research/stylesmuggler; classtype:web-application-attack; sid:9500131; rev:1;)
+alert http any any -> any any (msg:"StyleSmuggler Magento paypal transparent response eval(base64_decode) webshell payload"; flow:established,to_server; http.method; content:"POST"; http.uri; content:"/paypal/transparent/response/"; http.request_body; content:"eval"; nocase; content:"base64_decode"; nocase; distance:0; reference:url,sansec.io/research/stylesmuggler; classtype:web-application-attack; sid:9500132; rev:1;)
