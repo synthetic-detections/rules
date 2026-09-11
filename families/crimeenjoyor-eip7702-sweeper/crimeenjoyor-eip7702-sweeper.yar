@@ -332,6 +332,10 @@ rule CrimeEnjoyor_IOC
         // the live contract scanner at block 25943206 on 2026-09-09
         $addr18 = "0x7e7dd63e2d42993ce84060c594b52631fbb0505b" ascii nocase
         $addr19 = "0x4ab75558aa4a348f7e936ac0c8adc9c9eae098ed" ascii nocase
+        // v3c clone (identical fingerprints to 0x7e7dd63e, new deployer 0x277622cd)
+        // caught by live contract scanner at block 25956136 on 2026-09-11
+        $addr20 = "0xd8e252367271923f556c3f3a0790bd1740f005b2" ascii nocase
+        $addr21 = "0x277622cd50eccb9007f2e1e84399831249c43b74" ascii nocase
 
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01 = "CrimeEnjoyor" ascii
@@ -350,7 +354,8 @@ rule CrimeEnjoyor_IOC
         and (
             // Any known CrimeEnjoyor contract or operator address
             any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10,
-                    $addr11, $addr12, $addr13, $addr14, $addr15, $addr16, $addr17, $addr18, $addr19)
+                    $addr11, $addr12, $addr13, $addr14, $addr15, $addr16, $addr17, $addr18, $addr19,
+                    $addr20, $addr21)
             or
             // Polymarket attacker wallet + any contract name
             ($addr05 and any of ($name*))
