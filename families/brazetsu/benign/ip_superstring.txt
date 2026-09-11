@@ -1,0 +1,4 @@
+Benign telemetry export — addresses that contain the BraZetsu C2 IP
+only as a substring; must never alert (fullword guard):
+peer=138.242.246.176 port=443
+probe=38.242.246.1760
