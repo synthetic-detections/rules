@@ -23,12 +23,13 @@ Specimens (mock reconstructions from public reporting — inert):
 | combined_strings.bin | match | — | — |
 | c2_domain.bin | — | match | — |
 
-Benign controls (must NOT match) — both clean:
+Benign controls (must NOT match) — all clean:
 
 | Benign | Result | Purpose |
 |--------|--------|---------|
 | clean.txt | no match | generic text with no malware indicators |
 | partial_match.txt | no match | lone "MonitorSystem" without CNAB must not trigger |
+| ip_superstring.txt | no match | `138.242.246.176` / `38.242.246.1760` must not trigger the `fullword` C2 IP string |
 
 ## FP-avoidance notes
 

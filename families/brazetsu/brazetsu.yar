@@ -48,7 +48,7 @@ rule BraZetsu_IOC {
         $c2_2 = "infectonline.store" ascii wide nocase
         $c2_3 = "infect.online" ascii wide nocase
         $c2_4 = "caixaentradas1inboxshop.site" ascii wide nocase
-        $c2_ip = "38.242.246.176" ascii
+        $c2_ip = "38.242.246.176" ascii fullword
 
     condition:
         any of them
