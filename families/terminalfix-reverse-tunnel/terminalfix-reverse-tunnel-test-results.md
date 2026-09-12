@@ -43,4 +43,10 @@ YARA 4.5.2, Linux x86_64, 2026-09-12.
 
 ## MalShare corpus FP test
 
-Pending — launched via `corpus-scan --detach`.
+| Rule | Samples scanned | Matches | Duration | Result |
+|------|-----------------|---------|----------|--------|
+| DLL_Sideload | 5,934 | 0 | 10m55s | PASS |
+| IOC | 8,295 | 0 | 14m43s | PASS |
+| Lure_Page | 6,834 | 0 | 14m22s | PASS |
+
+Zero false positives across all three rules. Scanned 2026-09-12 via corpus-scan --detach.
