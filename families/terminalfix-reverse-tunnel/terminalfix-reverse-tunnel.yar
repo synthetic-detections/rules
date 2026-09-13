@@ -55,7 +55,7 @@ rule TerminalFix_DLL_Sideload
         $steg_func = "Extract-RawFileFromImage" ascii wide
 
         // Persistence artifacts
-        $persist_bat = "1.bat" ascii wide
+        $persist_bat = "1.bat" ascii wide fullword
         $persist_lockscreen = "LockScreenContentServer_" ascii wide
 
         // Reverse tunnel implant indicators
@@ -78,8 +78,8 @@ rule TerminalFix_DLL_Sideload
     condition:
         filesize < 10MB
         and (
-            // DLL sideload: dui70 name + DirectUI description + sideload host
-            (2 of ($name_dui70, $desc_directui, $sideload_host))
+            // DLL sideload: sideload host reference + masquerade name/description
+            ($sideload_host and ($name_dui70 or $desc_directui))
             or
             // Steganography + persistence combo
             ($steg_func and any of ($persist_*))
