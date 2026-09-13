@@ -160,7 +160,7 @@ jobs:
           while IFS= read -r pat; do
             [ -z "$pat" ] && continue
             # -l: paths only (never echo matched lines — logs are public and would re-leak)
-            files=$(git grep -lIiE -e "$pat" -- . ':(exclude).github/**' 2>/dev/null || true)
+            files=$(git grep -liE -e "$pat" -- . ':(exclude).github/**' 2>/dev/null || true)
             if [ -n "$files" ]; then
               echo "::error::Release blocked — a denylisted internal identifier appears in:"
               printf '%s\n' "$files" | sed 's/^/  /'
