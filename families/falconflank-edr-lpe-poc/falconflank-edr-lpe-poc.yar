@@ -47,20 +47,23 @@ rule FalconFlank_EDR_LPE_PoC_Behaviour
         reference   = "https://thehackernews.com/2026/09/researcher-releases-falconflank-poc.html"
 
     strings:
-        $pipe   = "\\??\\pipe\\FALCONFLANK" ascii wide
-        $dll    = "\\WindowsPowerShell\\v1.0\\bcrypt.dll" ascii wide
-        $flank  = "Flanker_" ascii wide
-        $task   = "\\Microsoft\\Windows\\Application Experience" ascii wide
-        $mare   = "MareBackup" ascii wide
-        $m1     = "Exploit succeeded, loading dll, please wait" ascii wide
-        $m2     = "Failed to create oplock, error" ascii wide
-        $m3     = "creating system32 directory" ascii wide
-        $m4     = "Failed to connect to task scheduler service" ascii wide
+        $pipe       = "\\??\\pipe\\FALCONFLANK" ascii wide
+        $pipe_src   = "\\\\??\\\\pipe\\\\FALCONFLANK" ascii
+        $dll        = "\\WindowsPowerShell\\v1.0\\bcrypt.dll" ascii wide
+        $dll_src    = "\\\\WindowsPowerShell\\\\v1.0\\\\bcrypt.dll" ascii
+        $flank      = "Flanker_" ascii wide
+        $task       = "\\Microsoft\\Windows\\Application Experience" ascii wide
+        $task_src   = "\\\\Microsoft\\\\Windows\\\\Application Experience" ascii
+        $mare       = "MareBackup" ascii wide
+        $m1         = "Exploit succeeded, loading dll, please wait" ascii wide
+        $m2         = "Failed to create oplock, error" ascii wide
+        $m3         = "creating system32 directory" ascii wide
+        $m4         = "Failed to connect to task scheduler service" ascii wide
 
     condition:
-        $pipe
-        or ($dll and $mare)
-        or (2 of ($flank, $task, $m1, $m2, $m3, $m4))
+        any of ($pipe*)
+        or (any of ($dll*) and $mare)
+        or (2 of ($flank, $task, $task_src, $m1, $m2, $m3, $m4))
 }
 
 rule FalconFlank_EDR_LPE_PoC_IOC
