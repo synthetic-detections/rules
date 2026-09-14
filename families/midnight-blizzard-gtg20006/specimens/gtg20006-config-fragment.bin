@@ -1,0 +1,11 @@
+GTG-20006 campaign configuration fragment (synthetic specimen)
+C2 endpoints:
+  primary: https://ms365-live.com/auth/token
+  fallback: https://m365-owa.com/api/sync
+  relay: https://owa-ms365.com/connect
+  stats: https://statistic-ms.live/beacon
+Payload drop: msedgeupdate_v3.exe
+Persistence module: WUEngine.exe
+Mobile dropper: fix_network.apk
+IP fallback: 104.145.210.184
+Secondary IP: 31.57.243.154

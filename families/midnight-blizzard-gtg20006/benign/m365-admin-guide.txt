@@ -1,0 +1,19 @@
+Microsoft 365 Administration Quick Reference
+=============================================
+Tenant configuration endpoints:
+  admin.microsoft.com
+  portal.office.com
+  compliance.microsoft.com
+  security.microsoft.com
+
+Common diagnostic tools:
+  DiagHost.exe - Windows built-in diagnostic data collector
+  msdt.exe - Microsoft Support Diagnostic Tool
+
+For connectivity testing, verify access to:
+  login.microsoftonline.com
+  outlook.office365.com
+  teams.microsoft.com
+
+IP ranges documented in Microsoft 365 URLs and IP address ranges:
+  13.107.6.152/31, 13.107.18.10/31, 52.108.0.0/14
