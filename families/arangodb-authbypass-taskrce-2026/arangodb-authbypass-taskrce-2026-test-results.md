@@ -1,9 +1,8 @@
 # Test transcript — `arangodb-authbypass-taskrce-2026.rules`
 
 ## Environment
-- Rule syntax: **Snort 3** (delivered). Detection logic validated with the equivalent
-  Suricata 7.0.10 rule (Suricata uses `http.uri.raw`/`http.request_body` sticky buffers;
-  Snort 3 uses `http_raw_uri`/`http_client_body` — same match logic).
+- Engine: **Snort 3.10.0.0** (validated directly; also cross-checked with Suricata 7.0.10).
+  221 rules loaded including these two; run per PCAP with `-A alert_fast`.
 - Platform: `Linux 6.12.101+deb13-amd64`
 - Date: 2026-09-19
 - Source: <https://remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture/>
