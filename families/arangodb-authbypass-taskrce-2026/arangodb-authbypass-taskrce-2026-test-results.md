@@ -66,3 +66,23 @@ the two benign PCAPs staying clean.
 - Double-encoded (`%25%35api`) and `%2f_api` variants exist in the patch tests; sid 2026091901
   targets the primary single-encoded `%5f` vector. Add a companion content for `%25%35api` if
   double-encoding is seen in the wild.
+
+## Real-traffic validation (live vulnerable ArangoDB 3.12.10.1)
+
+Beyond the synthetic PCAPs, the rule was validated against **real traffic captured with
+tcpdump** from a live ArangoDB 3.12.10.1 (auth enabled). The pre-auth exploit
+`PUT /%5fapi/simple/remove-by-example` with a bogus bearer token returned
+`{"deleted":1,"code":200}` — an unauthenticated delete from `_users`, confirming the bug.
+`pcaps/real-capture-arango-8529.pcap` is that capture (internal IPs sanitized to 10.99.0.0/24).
+
+Snort 3.10.0.0 result: **sid 2026091901 fired on both `%5fapi` requests** in the real flow;
+the baseline `/_api/simple` (401) and the benign authed `/_api/version` (200) stayed clean.
+
+**Deployment notes learned from the live capture (not rule defects):**
+- ArangoDB listens on the non-standard port **8529**. A sensor must map 8529 to HTTP
+  inspection (add 8529 to `HTTP_PORTS` / the `http_inspect` binder), or `http_raw_uri` is
+  never populated and the rule cannot match. On the default config, remapping the capture to
+  port 80 (or binding 8529→http_inspect) is required.
+- Captures taken on a host with NIC checksum offload carry incomplete TCP checksums; run the
+  sensor with checksum verification disabled (`network.checksum_eval = 'none'`) or the packets
+  are dropped before inspection.
