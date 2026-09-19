@@ -86,3 +86,16 @@ the baseline `/_api/simple` (401) and the benign authed `/_api/version` (200) st
 - Captures taken on a host with NIC checksum offload carry incomplete TCP checksums; run the
   sensor with checksum verification disabled (`network.checksum_eval = 'none'`) or the packets
   are dropped before inspection.
+
+## sid 2026091903 — single chained-request rule
+
+A single rule cannot fire on EITHER stage alone: Stage 1 lives in the request URI and Stage 2 in the request body, and Snort conditions are AND-ed across buffers (no rule-level OR). sid 2026091903 covers the one case where a single rule suffices — the chained unauth->root request `POST /%5fapi/tasks` with `"isSystem": true` (both indicators in one request). It complements, not replaces, 901/902. Snort 3.10.0.0:
+```
+tp8 chained (POST /%5fapi/tasks isSystem)  : 2026091901 2026091902 2026091903
+tp1 stage-1 only (/%5fapi/simple/...)       : 2026091901
+tp6 stage-2 only (POST /_api/tasks isSystem): 2026091902
+```
+
+## Full-chain capture (live)
+
+Captured the complete unauth->root chain against the live 3.12.10.1: the `%5fapi` bypass request, then a NON-superuser user's `POST /_api/tasks isSystem:true` returning 200 whose task created a collection and wrote a file in the elevated (root) context, proving privilege escalation. Snort fired both 2026091901 and 2026091902 on the real chain capture.
