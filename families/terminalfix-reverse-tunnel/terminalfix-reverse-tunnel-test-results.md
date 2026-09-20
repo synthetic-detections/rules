@@ -49,4 +49,4 @@ YARA 4.5.2, Linux x86_64, 2026-09-12.
 | IOC | 8,295 | 0 | 14m43s | PASS |
 | Lure_Page | 6,834 | 0 | 14m22s | PASS |
 
-Zero false positives across all three rules. Scanned 2026-09-12 via corpus-scan --detach.
+Zero false positives across all three rules. Scanned 2026-09-12 against the MalShare corpus (~497k samples).
