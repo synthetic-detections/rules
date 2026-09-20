@@ -1,4 +1,4 @@
-# arangodb-authbypass-taskrce-2026.rules  (Snort 3)
+# arangodb-authbypass-taskrce-2026.rules  (Suricata)
 # ----------------------------------------------------------------------------
 # ArangoDB unauthenticated-to-root exploitation chain against internet-facing
 # ArangoDB. Two GitHub advisories, 2026-09-06,
@@ -19,47 +19,40 @@
 # would defeat detection of the very bypass being attempted.
 #   sid 2026091901 — Stage 1: %5f/%5F before an internal _-endpoint (raw uri)
 #   sid 2026091902 — Stage 2: POST to (_)api/tasks with isSystem:true in body
+#   sid 2026091903 — chained one-request %5f-bypass to task API + isSystem:true
 # reference: https://remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture/
 # ----------------------------------------------------------------------------
 
-alert http (
-    msg:"ARANGODB-EXPLOIT pre-auth _api URL-encoding auth bypass attempt (GHSA-rrgq-978q-36mq)";
-    flow:to_server,established;
-    http_raw_uri; content:"%5",nocase;
-    pcre:"/%5[fF](?:api|admin|db|system|users)/i";
-    service:http;
-    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture;
-    classtype:web-application-attack;
-    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical;
-    sid:2026091901; rev:1;
-)
+alert http any any -> any any ( \
+    msg:"ARANGODB-EXPLOIT pre-auth _api URL-encoding auth bypass attempt (GHSA-rrgq-978q-36mq)"; \
+    flow:to_server,established; \
+    http.uri.raw; content:"%5"; nocase; \
+    pcre:"/%5[fF](?:api|admin|db|system|users)/i"; \
+    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture; \
+    classtype:web-application-attack; \
+    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical; \
+    sid:2026091901; rev:2;)
 
-alert http (
-    msg:"ARANGODB-EXPLOIT system task privilege escalation (isSystem:true) - possible root RCE (GHSA-rvhw-4hpw-9vrx)";
-    flow:to_server,established;
-    http_method; content:"POST";
-    http_raw_uri; content:"api/tasks",nocase;
-    http_client_body; content:"isSystem",nocase; pcre:"/\x22isSystem\x22\s*:\s*true/i";
-    service:http;
-    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture;
-    classtype:attempted-admin;
-    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical;
-    sid:2026091902; rev:1;
-)
+alert http any any -> any any ( \
+    msg:"ARANGODB-EXPLOIT system task privilege escalation (isSystem:true) - possible root RCE (GHSA-rvhw-4hpw-9vrx)"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.uri.raw; content:"api/tasks"; nocase; \
+    http.request_body; content:"isSystem"; nocase; \
+    pcre:"/\x22isSystem\x22\s*:\s*true/i"; \
+    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture; \
+    classtype:attempted-admin; \
+    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical; \
+    sid:2026091902; rev:2;)
 
-# Optional single high-confidence rule for the CHAINED one-request unauth->root:
-# a bypass (%5f) request straight to the task API carrying isSystem:true. Both
-# indicators in one request -> very low FP. Complements (does not replace) sids
-# 2026091901/902, which cover each stage used on its own.
-alert http (
-    msg:"ARANGODB-EXPLOIT chained unauth->root: %5f-bypass to task API with isSystem:true";
-    flow:to_server,established;
-    http_method; content:"POST";
-    http_raw_uri; content:"%5",nocase; pcre:"/%5[fF]api\x2ftasks/i";
-    http_client_body; content:"isSystem",nocase; pcre:"/\x22isSystem\x22\s*:\s*true/i";
-    service:http;
-    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture;
-    classtype:attempted-admin;
-    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical;
-    sid:2026091903; rev:1;
-)
+alert http any any -> any any ( \
+    msg:"ARANGODB-EXPLOIT chained unauth->root: %5f-bypass to task API with isSystem:true"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.uri.raw; content:"%5"; nocase; pcre:"/%5[fF]api\x2ftasks/i"; \
+    http.request_body; content:"isSystem"; nocase; \
+    pcre:"/\x22isSystem\x22\s*:\s*true/i"; \
+    reference:url,remedio.io/blog/trust-me-im-the-system-arango-db-bugs-secure-system-architecture; \
+    classtype:attempted-admin; \
+    metadata:author synthetic-detections, date 2026-09-19, family arangodb-exploit, severity critical; \
+    sid:2026091903; rev:2;)

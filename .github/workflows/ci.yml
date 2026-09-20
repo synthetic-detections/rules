@@ -99,6 +99,28 @@ jobs:
               (cd "$fam" && python3 pcap-gen.py)
             fi
 
+            # Rule-load validation. A .rules file that Suricata parses to zero
+            # rules (e.g. Snort-only multi-line "alert http (" syntax) would
+            # otherwise pass the smoke test silently: every pcap just yields 0
+            # alerts and any tp/attack case with "no expectation" never fails.
+            # Require >=1 rule loaded and 0 failed.
+            loadout=$(mktemp -d)
+            if suricata -T -S "$rul" -l "$loadout" >/dev/null 2>&1; then
+              loaded=$(grep -oE '[0-9]+ rules successfully loaded' "$loadout/suricata.log" | grep -oE '^[0-9]+' | tail -1)
+              failed=$(grep -oE '[0-9]+ rules failed' "$loadout/suricata.log" | grep -oE '^[0-9]+' | tail -1)
+              echo "rules: ${loaded:-0} loaded, ${failed:-0} failed"
+              if [ "${failed:-0}" -gt 0 ]; then
+                echo "::error file=$rul::${failed} rule(s) failed to load in Suricata"
+                grep -iE 'error parsing' "$loadout/suricata.log" | head -5
+                fail=1
+              fi
+            else
+              echo "::error file=$rul::Suricata loaded 0 rules from this file (Snort-only syntax? each rule must be one logical line: 'alert proto src port -> dst port ( ... )' with backslash line-continuations)"
+              grep -iE 'error parsing|no rules were loaded' "$loadout/suricata.log" | head -5
+              fail=1
+            fi
+            rm -rf "$loadout"
+
             for pcap in "$fam"/pcaps/*.pcap; do
               [ -f "$pcap" ] || continue
               tag=$(basename "$pcap" .pcap)
@@ -107,7 +129,7 @@ jobs:
               alerts=$(wc -l < "$out/fast.log" 2>/dev/null || echo 0)
 
               case "$tag" in
-                benign*)
+                benign*|fp*)
                   if [ "$alerts" -eq 0 ]; then
                     echo "$tag: clean"
                   else
@@ -116,7 +138,7 @@ jobs:
                     fail=1
                   fi
                   ;;
-                attack*|bomb*)
+                attack*|bomb*|tp*)
                   if [ "$alerts" -gt 0 ]; then
                     echo "$tag: $alerts alerts"
                   else
@@ -125,7 +147,7 @@ jobs:
                   fi
                   ;;
                 *)
-                  echo "$tag: $alerts alerts (no expectation — filename prefix not benign/attack/bomb)"
+                  echo "$tag: $alerts alerts (no expectation — filename prefix not benign/fp/attack/bomb/tp)"
                   ;;
               esac
             done
