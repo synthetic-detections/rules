@@ -99,3 +99,36 @@ tp6 stage-2 only (POST /_api/tasks isSystem): 2026091902
 ## Full-chain capture (live)
 
 Captured the complete unauth->root chain against the live 3.12.10.1: the `%5fapi` bypass request, then a NON-superuser user's `POST /_api/tasks isSystem:true` returning 200 whose task created a collection and wrote a file in the elevated (root) context, proving privilege escalation. Snort fired both 2026091901 and 2026091902 on the real chain capture.
+
+## NSE active-check revision (2026-09-22)
+
+`arangodb-authbypass.nse` reviewed and hardened. Changes:
+
+- **Fronting-proxy false positive fixed.** The old logic declared VULNERABLE on
+  *any* non-401 from the encoded path. A reverse proxy that simply 404s the
+  literal `%5fapi` path would read as a false positive. The verdict now also
+  requires the encoded response to be **ArangoDB-shaped** (Server: ArangoDB, or
+  a JSON body with `errorNum`/`error`/`code`). Proxy 404s now report
+  INCONCLUSIVE.
+- **Probe endpoint changed** from the deprecated `/_api/simple/first-example`
+  (which 404s when the simple-query API is disabled, faking a no-auth verdict)
+  to the read-only, always-auth-gated `GET /_api/user`. No side effects.
+- **Version corroboration.** `/_api/version` is parsed and compared to the
+  3.12.11 fix line, so a TLS- or proxy-blocked instance is still flagged
+  (`VULNERABLE_BY_VERSION`) and every verdict carries a version assessment.
+- **Uppercase `%5F`** tested as a second encoding when the lowercase probe is
+  blocked.
+- **TLS/plaintext scheme auto-selected**; per-request 7 s timeout; redirects and
+  caching disabled. Data returned by a live bypass is never printed.
+
+### Verdict matrix (mock-server validated, nmap 7.95)
+```
+raw /_api  encoded /%5fapi   version    -> state
+401        404 arango-shaped 3.12.10.1  -> VULNERABLE
+401        401               3.12.11    -> not vulnerable (patched)
+401        404 plain HTML    3.12.10.1  -> INCONCLUSIVE (proxy, not a live bypass)
+200        200               3.12.10.1  -> LIKELY_NO_AUTH
+401        401               3.12.10.1  -> VULNERABLE_BY_VERSION (probe blocked, version old)
+```
+All five discriminate correctly. Read-only throughout: only GET, only a
+non-existent/list endpoint, nothing created or deleted.
