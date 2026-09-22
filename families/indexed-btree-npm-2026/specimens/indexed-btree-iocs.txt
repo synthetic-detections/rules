@@ -1,0 +1,7 @@
+Sepolia C2 contract: 0xE390863Dac96a7118C71227C2b099B50cF602D31
+Attacker X25519 pubkey: bad013df6eec5d686f4cc8551e0a5c87a0135164bdd1dafb1c75141d1b526702
+Telegram bot: 8961878831:AA[REDACTED-revoked-see-Checkmarx]  chat -1003952553968
+Slack bot: xoxb-11307403103236-[REDACTED-revoked-see-Checkmarx]  channel C0B8XPGCKQS
+RPC: https://eth-sepolia.g.alchemy.com/v2/D2-TbkB2m05WXSnSDOCDI
+RPC: https://sepolia.infura.io/v3/dc7257d09fab42eca2c354c32fec1938
+Loader location: BTree.prototype.set
