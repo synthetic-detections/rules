@@ -1,0 +1,9 @@
+cdn2.sendibt1.com
+cdn4.sendibt1.com
+cdn9.sendibt1.com
+cdn10.sendibt1.com
+cdn11.sendibt1.com
+/f.js
+/api/v1/0044d4a  /api/v1/e08a3c4  /api/v1/8e4c615  /api/v1/f659473
+/api/v1/4aff112?tk=  /api/v1/b832c14?e=  /api/v1/4ead0ff?tk=
+/p/wm.zip

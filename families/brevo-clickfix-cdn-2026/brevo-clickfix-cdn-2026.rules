@@ -1,0 +1,21 @@
+# brevo-clickfix-cdn-2026.rules  (Suricata)
+# ----------------------------------------------------------------------------
+# Brevo (Sendinblue) CDN-edge supply-chain compromise, 2026-09-14. A stolen
+# Cloudflare API key drove a malicious Worker that injected ClickFix + a
+# WordPress-backdoor dropper into pages embedding the Brevo widget. Payload +
+# C2 staged on look-alike CDNs under sendibt1.com (NXDOMAIN after 2026-09-15).
+# Network signatures: DNS/TLS-SNI to the sendibt1.com staging infra, the
+# injected /f.js loader fetch, and the /api/v1/<hex> C2 endpoints.
+#   sid 2026092201 — DNS query for a sendibt1.com host
+#   sid 2026092202 — TLS SNI = sendibt1.com staging CDN
+#   sid 2026092203 — HTTP GET /f.js injected-loader fetch from sendibt1.com
+#   sid 2026092204 — HTTP /api/v1/<hex> C2 beacon/command endpoint
+#   sid 2026092205 — HTTP fetch of the wm.zip WordPress backdoor plugin
+# references:
+#   https://sansec.io/research/brevo-supply-chain-attack
+# ----------------------------------------------------------------------------
+alert dns any any -> any any (msg:"BREVO-CLICKFIX DNS query for sendibt1.com staging CDN"; dns.query; content:"sendibt1.com"; nocase; endswith; reference:url,sansec.io/research/brevo-supply-chain-attack; classtype:trojan-activity; sid:2026092201; rev:1;)
+alert tls any any -> any any (msg:"BREVO-CLICKFIX TLS SNI to sendibt1.com staging CDN"; flow:to_server,established; tls.sni; content:"sendibt1.com"; nocase; endswith; reference:url,sansec.io/research/brevo-supply-chain-attack; classtype:trojan-activity; sid:2026092202; rev:1;)
+alert http any any -> any any (msg:"BREVO-CLICKFIX injected loader /f.js fetch from sendibt1.com"; flow:to_server,established; http.host; content:"sendibt1.com"; endswith; http.uri; content:"/f.js"; reference:url,sansec.io/research/brevo-supply-chain-attack; classtype:trojan-activity; sid:2026092203; rev:1;)
+alert http any any -> any any (msg:"BREVO-CLICKFIX C2 /api/v1/<hex> endpoint"; flow:to_server,established; http.host; content:"sendibt1.com"; endswith; http.uri; content:"/api/v1/"; pcre:"/\/api\/v1\/(?:0044d4a|e08a3c4|8e4c615|f659473|4aff112|b832c14|4ead0ff)/"; reference:url,sansec.io/research/brevo-supply-chain-attack; classtype:trojan-activity; sid:2026092204; rev:1;)
+alert http any any -> any any (msg:"BREVO-CLICKFIX WordPress backdoor plugin wm.zip fetch"; flow:to_server,established; http.host; content:"sendibt1.com"; endswith; http.uri; content:"/p/wm.zip"; reference:url,sansec.io/research/brevo-supply-chain-attack; classtype:trojan-activity; sid:2026092205; rev:1;)
