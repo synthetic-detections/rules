@@ -1,0 +1,14 @@
+# Sauron Loader indicator list (DCSO CyTec, 2026-09-24)
+family: Sauron Loader (forum alias S4ur0n)
+c2: https://api.namsb-show.com
+c2: https://api.quinlantours.com
+c2: https://api.virtual-magic.com
+c2: https://api.lahaina-shores.com
+c2: https://api.mythicinsights.com
+path: C:\ProgramData\keyroll\rnpkeys.exe   (legitimate side-load host)
+path: C:\ProgramData\keyroll\rnp.dll       (loader)
+path: C:\ProgramData\keyroll\tdwp.dll      (decrypter / scheduler)
+scheduled_task: keyroll
+sha256: 5606afdc5191d42f38d3c4f1692eda0a629c88810e29bfe78528733284ad1bf8
+sha256: 6551293e996d19755ba497f50b30a18c178f0d6e2a73b29ae742b8171e2985b7
+sha256: ee727d639eaa4ee2e0d7cafbe496e14aaac8df0955d9fb599f2c11dfa1d0f8f2
