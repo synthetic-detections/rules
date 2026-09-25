@@ -1,0 +1,34 @@
+# sauron-loader.rules  (Suricata)
+# ----------------------------------------------------------------------------
+# Network C2 for Sauron Loader (DCSO CyTec, disclosed 2026-09-24), a MaaS
+# loader side-loaded as rnp.dll by a legitimate rnpkeys.exe under
+# C:\ProgramData\keyroll\. The loader beacons over HTTPS POST (Salsa20 +
+# RSA-signed TLV body) to api.<domain> hosts from its encrypted config, so
+# the payload is not visible on the wire: DNS resolution and TLS SNI of the
+# C2 hostnames are the network tells. All five C2 domains were registered
+# 2026-06/07 behind Cloudflare, so each rule matches the registrable domain
+# and any subdomain (dot-anchored, so look-alike names do not match).
+#
+#   C2: api.namsb-show.com, api.quinlantours.com, api.virtual-magic.com,
+#       api.lahaina-shores.com, api.mythicinsights.com
+#
+#   sid 9001401-9001405 -- DNS query for a Sauron Loader C2 domain
+#   sid 9001406-9001410 -- TLS SNI to a Sauron Loader C2 domain
+#
+# Companion to the YARA rules in this dir (sauron-loader.yar). Related repo
+# families: golden-chickens-tag195, asyncrat-screenconnect-seo,
+# bluemoon-exploit-kit. Domains are disposable; expire these rules if the
+# domains are re-registered by a new owner.
+# Sources: medium.com/@DCSO_CyTec/sauron-loader-a-new-loader-lurking-in-underground-forums-e91fa70db537,
+# github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader
+# ----------------------------------------------------------------------------
+alert dns $HOME_NET any -> any any (msg:"SAURON LOADER DNS lookup of C2 domain namsb-show.com"; dns.query; content:"namsb-show.com"; nocase; endswith; pcre:"/(?:^|\.)namsb-show\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001401; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert dns $HOME_NET any -> any any (msg:"SAURON LOADER DNS lookup of C2 domain quinlantours.com"; dns.query; content:"quinlantours.com"; nocase; endswith; pcre:"/(?:^|\.)quinlantours\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001402; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert dns $HOME_NET any -> any any (msg:"SAURON LOADER DNS lookup of C2 domain virtual-magic.com"; dns.query; content:"virtual-magic.com"; nocase; endswith; pcre:"/(?:^|\.)virtual-magic\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001403; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert dns $HOME_NET any -> any any (msg:"SAURON LOADER DNS lookup of C2 domain lahaina-shores.com"; dns.query; content:"lahaina-shores.com"; nocase; endswith; pcre:"/(?:^|\.)lahaina-shores\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001404; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert dns $HOME_NET any -> any any (msg:"SAURON LOADER DNS lookup of C2 domain mythicinsights.com"; dns.query; content:"mythicinsights.com"; nocase; endswith; pcre:"/(?:^|\.)mythicinsights\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001405; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SAURON LOADER TLS SNI to C2 domain namsb-show.com"; flow:to_server,established; tls.sni; content:"namsb-show.com"; nocase; endswith; pcre:"/(?:^|\.)namsb-show\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001406; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SAURON LOADER TLS SNI to C2 domain quinlantours.com"; flow:to_server,established; tls.sni; content:"quinlantours.com"; nocase; endswith; pcre:"/(?:^|\.)quinlantours\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001407; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SAURON LOADER TLS SNI to C2 domain virtual-magic.com"; flow:to_server,established; tls.sni; content:"virtual-magic.com"; nocase; endswith; pcre:"/(?:^|\.)virtual-magic\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001408; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SAURON LOADER TLS SNI to C2 domain lahaina-shores.com"; flow:to_server,established; tls.sni; content:"lahaina-shores.com"; nocase; endswith; pcre:"/(?:^|\.)lahaina-shores\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001409; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"SAURON LOADER TLS SNI to C2 domain mythicinsights.com"; flow:to_server,established; tls.sni; content:"mythicinsights.com"; nocase; endswith; pcre:"/(?:^|\.)mythicinsights\.com$/i"; reference:url,github.com/DCSO/Blog_CyTec/tree/main/2026_09__sauron_loader; classtype:trojan-activity; sid:9001410; rev:1; metadata:author synthetic-detections, created_at 2026_09_25, severity high, family sauron-loader;)
