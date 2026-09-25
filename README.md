@@ -61,6 +61,7 @@ statistics recorded in each transcript.
 | `rust-proc-macro1-crate-dropper` | ✅ | — | 2026-08-20 crates.io / Rust Security WG / StepSecurity / Aikido — `arrayref` 0.3.10 / `internment` 0.8.7 / `append-only-vec` 0.1.9 poisoned to depend on `proc-macro1` typosquat whose build.rs drops+runs a build-time payload (`/tmp/rust-setup`), infostealer stage-2 |
 | `zbtlink-backdoor` | ✅ | ✅ | 2026-08-27 VulnCheck — SPEAKINGSTONE (`yunmgrd`) + DARKLANTERN (`infosrvd`) ELF implants in Zbtlink router firmware; UDP/9992 + UDP/10000 proto C2, salt `mqonu.com`, C2 `ac-link[.]com` |
 | `toxnetv2` | — | ✅ | 2026-08-25 Joe Security — AArch64 P2P botnet, Tox-protocol C2, LLM-integrated controller (NVIDIA NIM / `z-ai/glm-5.2`); `kaf.sh` payload delivery + Tox C2 `45.130.151[.]214` |
+| `sauron-loader` | ✅ | ✅ | 2026-09-24 DCSO CyTec — Sauron Loader MaaS: MSI drops `C:\ProgramData\keyroll\` (legit `rnpkeys.exe` side-loads 64-bit `rnp.dll` + `tdwp.dll`), task `keyroll`, Salsa20 config magic `0xBAADF00D`, HTTPS C2 `api.namsb-show[.]com` et al. |
 
 ## Layout
 
