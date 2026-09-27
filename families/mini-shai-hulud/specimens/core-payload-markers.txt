@@ -1,0 +1,7 @@
+// Synthetic specimen: Mini Shai-Hulud core payload markers
+// Contains the hardcoded strings identified across multiple delivery variants
+var salt = "svksjrhjkcejg";
+var deadman = "IfYouRevokeThisTokenItWillWipeTheComputerOfTheOwner";
+var c2 = "FIRESCALE";
+process.env.AWS_ACCESS_KEY_ID;
+process.env.ACTIONS_RUNTIME_TOKEN;

@@ -1,0 +1,11 @@
+# Synthetic specimen: GitHub Actions workflow referencing hijacked actions
+name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-cool/issues-helper@v3
+      - uses: actions-cool/maintain-one-comment@v3
+      # exfil to t.m-kosche.com via DNS
+      # TeamPCP / Shai-Hulud supply chain
