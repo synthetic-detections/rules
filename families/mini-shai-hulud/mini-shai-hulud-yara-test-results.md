@@ -29,7 +29,7 @@ All 3 benign files clean. **PASS**
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+5,678 files scanned, 0 matches, 0 errors. Clean. Duration: 12m04s (692s).
 
 ## Design notes
 
