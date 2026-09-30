@@ -20,7 +20,7 @@ for WHIPSHOT/SLAPSHOT were released; the SpecimenPin uses the one GreyNoise web-
 - `NetScaler_WHIPSHOT_SLAPSHOT_Behavior`: recent-corpus slice (~1,000 samples), 0 matches — no
   candidate false positives; the co-occurrence guards (header dispatch + `/tmp/.uxd*` IPC + socket,
   or the UXD env marker + IPC + ≥3 SLAPSHOT verbs) hold up.
-- `NetScaler_WebShell_httpd_Handler_Abuse`: corpus FP scan in progress at time of writing.
+- `NetScaler_WebShell_httpd_Handler_Abuse`: recent-corpus slice (~1,600 samples), 0 matches — no candidate false positives; the `.deb`/`.sig`→PHP handler + NetScaler-path scoping avoids normal Apache configs.
 - `NetScaler_WHIPSHOT_WebShell_SpecimenPin`: exact-hash rule, no false-positive surface.
 
 Notes: rules bound by `filesize` (< 80KB / 64KB); the handler-abuse rule is scoped to the
