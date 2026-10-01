@@ -1,0 +1,2 @@
+This is an ordinary business document with no malware indicators.
+Yandex Browser version 25 release notes.

@@ -1,0 +1,16 @@
+Mimbrob specimen stubs — mock reconstructions from public IOCs (inert).
+
+No live malware is stored here.  Files are minimal byte strings assembled
+from indicators published in the F6 report (2026-09-29) so that the YARA
+rules can be smoke-tested without access to the original binaries.
+
+Known sample MD5 hashes (from F6 reporting):
+
+  4a1c0fe99341908b2930de2ad2ec2522  Dogovor_01.04.rar
+  900ce1d4bcd1510276c4263d4aa3d78d  Yandex Browser (legitimate, sideloading host)
+  4ca176d7f26664fc0f03c8289762f1c4  browser.dll (FBULoader DLL)
+  0426d58893826924324fd95ad76f4c97  browser.dll payload
+  25334e01a65c5bb07048ad6d74592d8a  Novye.rar
+  9282c4a105f1b6d32212f836debf21b2  Zarplaty.rar
+  512f4350aee7eb50adf509008a3ad3ce  Notepad++ (legitimate, sideloading host)
+  9a0901dc40fb4695672cb21681c94bf6  MSASN1.dll (RAT-Go loader)
