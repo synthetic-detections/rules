@@ -1,0 +1,26 @@
+Star Blizzard RedFlick delivery chain specimen — synthetic file for YARA validation
+
+Registry persistence:
+  HKCU\Software\Classes\.mollis
+
+Scheduled tasks:
+  Internet Quality Test Connection
+  Network Configuration Manager
+  System Health Monitor
+
+Delivery chain:
+  conhost.exe -> cmd.exe /c -> download.msi
+  CPL applet via CPlApplet export
+
+Backdoor markers:
+  CosmicPulse
+  YESROBOT
+  BAITSWITCH
+
+Bundled runtime:
+  python38.dll
+  python38.zip
+
+WebDAV C2:
+  \\@SSL\DavWWWRoot\share\payload
+  \\@SSL@443\DavWWWRoot

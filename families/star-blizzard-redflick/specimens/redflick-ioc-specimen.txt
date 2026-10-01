@@ -1,0 +1,23 @@
+Star Blizzard RedFlick IOC specimen — synthetic file for YARA validation
+
+C2 domains:
+  etia.ca
+  groy.cc
+  muvb.net
+  divekickspolic.org
+  secure-dns-hub.com
+  cyrna.top
+
+C2 IPs:
+  103.245.231.248
+  2.57.241.246
+  89.125.209.168
+  45.84.59.66
+
+Registry key:
+  Software\Classes\.mollis
+
+Scheduled tasks:
+  Internet Quality Test Connection
+  Network Configuration Manager
+  System Health Monitor
