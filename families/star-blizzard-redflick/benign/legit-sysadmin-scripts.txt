@@ -1,0 +1,33 @@
+Enterprise System Administration Toolkit v4.2
+Copyright 2026 IT Solutions GmbH
+
+Scheduled tasks managed by this tool:
+  Windows Update Health Check
+  Disk Cleanup Service
+  Certificate Auto-Enrollment
+
+Registry keys used:
+  HKCU\Software\Classes\.myapp
+  HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+
+Network monitoring:
+  ping -t gateway.internal.corp
+  curl https://healthcheck.internal.corp/api/status
+
+Python runtime:
+  python311.dll
+  python311.zip
+
+DLL exports:
+  ServiceMain
+  DllRegisterServer
+  DllUnregisterServer
+
+WebDAV shares:
+  \\fileserver\shared\documents
+  \\nas01\projects\archive
+
+This legitimate system administration script package uses scheduled
+tasks, registry keys, Python runtimes, and WebDAV shares — but NONE of
+the specific Star Blizzard RedFlick campaign indicators or the
+campaign-specific task names.
