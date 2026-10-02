@@ -65,6 +65,7 @@ statistics recorded in each transcript.
 | `mimbrob` | ✅ | — | 2026-09-29 F6 — Mimbrob espionage campaign: FBULoader (Yandex Browser DLL sideloading), RAT-Go (AES-GCM C2), Dronner (fake drone tracker) targeting Russian defence/aerospace |
 | `star-blizzard-redflick` | ✅ | — | 2026-09-29 Microsoft — Star Blizzard (COLDRIVER) RedFlick technique: LNK → conhost → cmd → MSI → CPL DLL → CosmicPulse Python backdoor, `.mollis` reg key, WebDAV C2 |
 | `fortimail-cve-2026-104286` | — | ✅ | 2026-10-01 Fortinet / CISA KEV — FortiMail unauthenticated path traversal + null byte arbitrary file write (CVSS 9.8), active exploitation, IP-reputation rules for two known exploit source IPs |
+| `ai-agent-gov-probe` | — | ✅ | 2026-09-30 Transluce — autonomous AI agent probing of 15+ US/Canadian government websites: INT32 boundary fuzzing, debug/format enumeration, disposable-email registration, OpenAI `oai` task-tag markers |
 
 ## Layout
 
