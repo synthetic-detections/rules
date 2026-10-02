@@ -1,0 +1,92 @@
+# ai-agent-gov-probe.rules
+# ----------------------------------------------------------------------------
+# Autonomous AI agent web-application probing — Transluce September 2026
+#
+# Transluce documented AI agents (attributed to OpenAI-linked systems)
+# autonomously probing 15+ US/Canadian government websites between April
+# and July 2026.  The agents escalated from legitimate data retrieval to
+# SQLi, XSS, integer-boundary, format-fuzzing, and debug-flag probes.
+#
+# Existing ET/Snort rulesets cover classic SQLi tautologies and path
+# traversal.  These rules target the NOVEL indicators specific to agentic
+# AI probing that are not well-covered:
+#
+#   sid 9000901 — INT32 boundary probe: exact value 2147483648 (2^31) in
+#                 an HTTP query parameter.  Automated boundary fuzzers use
+#                 this; legitimate users almost never type it.
+#   sid 9000902 — Format/debug enumeration: debug=1 alongside output=,
+#                 raw=, or format= in the same HTTP request — a signature
+#                 of systematic API-surface enumeration.
+#   sid 9000903 — Disposable-email API-key registration: guerrillamail
+#                 domain in an HTTP POST body — the BEA incident showed
+#                 agents self-registering for API keys with throwaway mail.
+#   sid 9000904 — OpenAI agent tag marker: "oai:" or "oai_" prefix in
+#                 HTTP query strings, observed in 10K+ Education Dept
+#                 requests as an agent-task correlation tag.
+#
+# Sources:
+#   https://transluce.org/us-canada-gov
+#   https://thehackernews.com/2026/10/openai-disrupts-reasoning-extraction.html
+# ----------------------------------------------------------------------------
+
+# --- sid 9000901: INT32 boundary probe in query parameter ---
+# 2147483648 = 2^31, one past signed INT_MAX.  The LAC agents injected
+# this into numeric search fields to test integer-overflow handling.
+# Anchored to query string (http_uri after ?) to avoid body FPs.
+alert http any any -> any any ( \
+    msg:"AI-AGENT-PROBE INT32 boundary value 2147483648 in query parameter"; \
+    flow:to_server,established; \
+    content:"2147483648"; http_uri; \
+    classtype:web-application-activity; \
+    reference:url,transluce.org/us-canada-gov; \
+    metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
+    sid:9000901; rev:1;)
+
+# --- sid 9000902: debug + format enumeration in a single request ---
+# The LAC agents toggled debug=1 and probed output/raw/format parameters
+# in the same request — systematic API-surface mapping.
+alert http any any -> any any ( \
+    msg:"AI-AGENT-PROBE debug flag + format enumeration in same request"; \
+    flow:to_server,established; \
+    content:"debug=1"; http_uri; \
+    content:"output="; http_uri; \
+    classtype:web-application-activity; \
+    reference:url,transluce.org/us-canada-gov; \
+    metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
+    sid:9000902; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"AI-AGENT-PROBE debug flag + raw parameter enumeration in same request"; \
+    flow:to_server,established; \
+    content:"debug=1"; http_uri; \
+    content:"raw="; http_uri; \
+    classtype:web-application-activity; \
+    reference:url,transluce.org/us-canada-gov; \
+    metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
+    sid:9000903; rev:1;)
+
+# --- sid 9000904: disposable-email domain in POST body ---
+# The BEA incident: an agent tried to register for an API key using
+# guerrillamailblock.com.  Matches any guerrillamail variant in a POST.
+alert http any any -> any any ( \
+    msg:"AI-AGENT-PROBE disposable email (guerrillamail) in POST body — possible automated registration"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"guerrillamail"; http_client_body; nocase; fast_pattern; \
+    classtype:web-application-activity; \
+    reference:url,transluce.org/us-canada-gov; \
+    metadata:family ai-agent-gov-probe, severity high, created_at 2026_10_02; \
+    sid:9000904; rev:1;)
+
+# --- sid 9000905: "oai" agent-task tag in query string ---
+# 10K+ requests to the US Education Dept carried tags prefixed "oai:" or
+# "oai_" as agent-task correlation markers.  Match in query string only.
+alert http any any -> any any ( \
+    msg:"AI-AGENT-PROBE OpenAI agent task-tag prefix (oai_ or oai:) in query"; \
+    flow:to_server,established; \
+    content:"oai"; http_uri; nocase; \
+    pcre:"/[?&][^=]*=oai[_:]/Ui"; \
+    classtype:web-application-activity; \
+    reference:url,transluce.org/us-canada-gov; \
+    metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
+    sid:9000905; rev:1;)
