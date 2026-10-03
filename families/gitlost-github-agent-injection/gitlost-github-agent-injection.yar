@@ -40,7 +40,6 @@ rule GitLost_IssueBody_Injection_Exfil
         severity    = "high"
         family      = "gitlost-github-agent-injection"
         reference   = "https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/"
-
     strings:
         // (1) agent-directed injection framing
         $inj1 = "ignore previous instructions" ascii wide nocase
@@ -50,7 +49,6 @@ rule GitLost_IssueBody_Injection_Exfil
         $inj5 = "you are the github agent" ascii wide nocase
         $inj6 = "as the agent" ascii wide nocase
         $inj7 = "disregard prior" ascii wide nocase
-
         // (2) private-data target
         $tgt1 = "private repo" ascii wide nocase
         $tgt2 = "private repositor" ascii wide nocase
@@ -59,7 +57,6 @@ rule GitLost_IssueBody_Injection_Exfil
         $tgt5 = "actions/secrets" ascii wide nocase
         $tgt6 = "repository secret" ascii wide nocase
         $tgt7 = "access token" ascii wide nocase
-
         // (3) exfiltrate-via-public-comment action
         $exf1 = "post a comment" ascii wide nocase
         $exf2 = "create a comment" ascii wide nocase
@@ -67,9 +64,10 @@ rule GitLost_IssueBody_Injection_Exfil
         $exf4 = "comment on this issue" ascii wide nocase
         $exf5 = "add a comment" ascii wide nocase
         $exf6 = "gh issue comment" ascii wide nocase
-
     condition:
-        any of ($inj*) and any of ($tgt*) and any of ($exf*)
+        any of ($inj*) and
+        any of ($tgt*) and
+        any of ($exf*)
 }
 
 rule GitLost_AgenticWorkflow_Context
@@ -81,23 +79,22 @@ rule GitLost_AgenticWorkflow_Context
         severity    = "high"
         family      = "gitlost-github-agent-injection"
         reference   = "https://thehackernews.com/2026/07/public-github-issue-could-trick-github.html"
-
     strings:
         $ctx1 = "agentic workflow" ascii wide nocase
         $ctx2 = "github agent" ascii wide nocase
         $ctx3 = "copilot agent" ascii wide nocase
         $ctx4 = ".github/workflows" ascii wide nocase
-
         $inj  = "instructions" ascii wide nocase
         $act1 = "read the file" ascii wide nocase
         $act2 = "print the contents" ascii wide nocase
         $act3 = "output the contents" ascii wide nocase
         $act4 = "cat " ascii wide nocase
-
         $exf1 = "post a comment" ascii wide nocase
         $exf2 = "create a comment" ascii wide nocase
         $exf3 = "reply to this issue" ascii wide nocase
-
     condition:
-        any of ($ctx*) and $inj and any of ($act*) and any of ($exf*)
+        any of ($ctx*) and
+        $inj and
+        any of ($act*) and
+        any of ($exf*)
 }

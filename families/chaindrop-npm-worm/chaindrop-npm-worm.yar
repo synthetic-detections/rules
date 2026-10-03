@@ -55,25 +55,22 @@ rule ChainDrop_NpmManifest
         severity    = "critical"
         family      = "chaindrop-npm-worm"
         reference   = "https://www.stepsecurity.io/blog/chaindrop-npm-worm"
-
     strings:
         // package.json structural anchors
-        $pkg_name    = "\"name\"" ascii
-        $pkg_scripts = "\"scripts\"" ascii
-
+        $pkg_name    = "\"name\""
+        $pkg_scripts = "\"scripts\""
         // The ChainDrop preinstall command — bounded regex tolerant of spacing
         // and quoting; pins the "node setup.mjs" invocation observed across the
         // jaredwray primary wave and the second-wave propagation.
-        $preinst = /"preinstall"\s*:\s*"[^"]{0,20}node\s+\.?\/?setup\.mjs[^"]{0,20}"/ ascii
-
+        $preinst     = /"preinstall"\s*:\s*"[^"]{0,20}node\s+\.?\/?setup\.mjs[^"]{0,20}"/
     condition:
         // Small JSON manifest carrying the exact preinstall wiring. The command
         // "node setup.mjs" as a preinstall hook is the ChainDrop dropper anchor;
         // a benign package using a differently-named setup script will not match.
+        $pkg_name and
+        $pkg_scripts and
+        $preinst and
         filesize < 128KB
-        and $pkg_name
-        and $pkg_scripts
-        and $preinst
 }
 
 rule ChainDrop_IOC
@@ -85,37 +82,32 @@ rule ChainDrop_IOC
         severity    = "high"
         family      = "chaindrop-npm-worm"
         reference   = "https://www.stepsecurity.io/blog/chaindrop-npm-worm"
-
     strings:
         // Globally-unique campaign indicators — safe to fire standalone.
-        $eth_contract = "0xE1f2395ee43e45A1556EC6438a88c31B83493103" ascii nocase
-        $c2_http      = "npm-cache.com" ascii nocase
-        $dd1          = "thebeautifulsnadsoftime" ascii nocase
-        $dd2          = "thebeautifulmarchoftime" ascii nocase
-        $dd3          = "IfYouBlockThisAPIKeyItWillCrashTheLiveProductionServersOfAllThirdPartyClients" ascii
-
+        $eth_contract = "0xE1f2395ee43e45A1556EC6438a88c31B83493103" nocase
+        $c2_http      = "npm-cache.com" nocase
+        $dd1          = "thebeautifulsnadsoftime" nocase
+        $dd2          = "thebeautifulmarchoftime" nocase
+        $dd3          = "IfYouBlockThisAPIKeyItWillCrashTheLiveProductionServersOfAllThirdPartyClients"
         // Family-level / corroborating tokens — generic enough to require a
         // cluster or a unique indicator alongside them.
-        $eth_selector = "0x53ed5143" ascii nocase          // eth_call selector, not unique alone
-        $marker       = "Shai-Hulud: Here We Go Again" ascii  // shared across Mini Shai-Hulud waves
-        $f1           = "Math_Symbol.js" ascii
-        $f2           = "math_init.js" ascii
-        $f3           = "router_runtime.js" ascii
-        $imds         = "169.254.169.254" ascii
-
+        // eth_call selector, not unique alone
+        $eth_selector = "0x53ed5143" nocase
+        // shared across Mini Shai-Hulud waves
+        $marker       = "Shai-Hulud: Here We Go Again"
+        $f1           = "Math_Symbol.js"
+        $f2           = "math_init.js"
+        $f3           = "router_runtime.js"
+        $imds         = "169.254.169.254"
     condition:
+        // Unique ChainDrop indicators fire on their own.
+        // Otherwise require a corroborating cluster: the shared Shai-Hulud
+        // marker plus at least one payload-filename or the IMDS+selector pair.
+        (
+            any of ($eth_contract, $c2_http, $dd1, $dd2, $dd3) or
+            ($marker and (2 of ($f1, $f2, $f3) or ($imds and $eth_selector)))
+        ) and
         filesize < 50MB
-        and (
-            // Unique ChainDrop indicators fire on their own.
-            any of ($eth_contract, $c2_http, $dd1, $dd2, $dd3)
-            or
-            // Otherwise require a corroborating cluster: the shared Shai-Hulud
-            // marker plus at least one payload-filename or the IMDS+selector pair.
-            (
-                $marker
-                and ( 2 of ($f1, $f2, $f3) or ($imds and $eth_selector) )
-            )
-        )
 }
 
 rule ChainDrop_Stage2_Specimen
@@ -127,22 +119,16 @@ rule ChainDrop_Stage2_Specimen
         severity    = "critical"
         family      = "chaindrop-npm-worm"
         reference   = "https://www.stepsecurity.io/blog/chaindrop-npm-worm"
-
     strings:
-        $imds     = "169.254.169.254" ascii
-        $math     = "Math_Symbol" ascii
-        $marker   = "Shai-Hulud: Here We Go Again" ascii
-
+        $imds   = "169.254.169.254"
+        $math   = "Math_Symbol"
+        $marker = "Shai-Hulud: Here We Go Again"
     condition:
         // Exact SHA-256 pins for the known specimens (zero-FP).
-        hash.sha256(0, filesize) == "9fc2570b7cef51c1b8df116d144d11ff4096357be7d2c4c6367cfc2509cf1bcc"  // Math_Symbol.js / math_init.js stage-2
-        or hash.sha256(0, filesize) == "54dc7ea54a1317cca0e890a2770630cf7fa6c97813e0cb9d2caa93012b350668"  // setup.mjs loader A (jaredwray wave)
-        or hash.sha256(0, filesize) == "fd3ca4007b225fdf8de7af4345a19179d5efa8c4bb9205f88cda806e5684b1eb"  // setup.mjs loader B (second wave)
+        // Math_Symbol.js / math_init.js stage-2
+        // setup.mjs loader A (jaredwray wave)
+        // setup.mjs loader B (second wave)
         // Heuristic fallback for repacked stage-2 variants: the ~727,680-byte
         // harvester band carrying the AWS-IMDS host and a Bun/self reference.
-        or (
-            filesize >= 680KB and filesize <= 800KB
-            and $imds
-            and ($math or $marker)
-        )
+        hash.sha256(0, filesize) == "9fc2570b7cef51c1b8df116d144d11ff4096357be7d2c4c6367cfc2509cf1bcc" or hash.sha256(0, filesize) == "54dc7ea54a1317cca0e890a2770630cf7fa6c97813e0cb9d2caa93012b350668" or hash.sha256(0, filesize) == "fd3ca4007b225fdf8de7af4345a19179d5efa8c4bb9205f88cda806e5684b1eb" or ($imds and ($math or $marker) and filesize >= 680KB and filesize <= 800KB)
 }

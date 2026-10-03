@@ -27,37 +27,31 @@ rule FamousChollima_Packagist_TailwindJS_Loader
         date        = "2026-06-01"
         severity    = "critical"
         family      = "BeaverTail/DEV#POPPER"
-        actor       = "Famous Chollima (DPRK)"
         reference   = "https://socket.dev/blog/famous-chollima-targets-php-developers-through-compromised-packagist-package"
-
+        actor       = "Famous Chollima (DPRK)"
     strings:
         // Campaign markers (global-alias bootstrap + obfuscator id + artefact)
-        $m_global1 = "global['!']='9-0264-2'" ascii
-        $m_global2 = "global['_V']='A9-0264-2'" ascii
-        $m_obf_id  = "_$_1e42" ascii
-        $m_artef   = "rmcej%otb%" ascii
-
+        $m_global1 = "global['!']='9-0264-2'"
+        $m_global2 = "global['_V']='A9-0264-2'"
+        $m_obf_id  = "_$_1e42"
+        $m_artef   = "rmcej%otb%"
         // Blockchain-RPC-as-C2 anchors
-        $rpc_tron  = "trongrid" ascii
-        $rpc_aptos = "aptoslabs" ascii
-        $rpc_bsc1  = "bsc-dataseed" ascii
-        $rpc_bsc2  = "bsc-rpc" ascii
-        $rpc_eth   = "eth_getTransactionByHash" ascii
-
+        $rpc_tron  = "trongrid"
+        $rpc_aptos = "aptoslabs"
+        $rpc_bsc1  = "bsc-dataseed"
+        $rpc_bsc2  = "bsc-rpc"
+        $rpc_eth   = "eth_getTransactionByHash"
         // Stealth-spawn tells — detached hidden Node child
-        $spawn1    = "windowsHide" ascii
-        $spawn2    = "detached" ascii
-
+        $spawn1    = "windowsHide"
+        $spawn2    = "detached"
         // Dynamic execution of fetched payload
         $eval      = /eval\s*\(\s*[A-Za-z_$][\w$]{0,32}\s*\)/
-
     condition:
+        (
+            any of ($m_*) or
+            (2 of ($rpc_*) and all of ($spawn*) and $eval)
+        ) and
         filesize < 2MB
-        and (
-            any of ($m_*)
-            or
-            ( 2 of ($rpc_*) and all of ($spawn*) and $eval )
-        )
 }
 
 rule FamousChollima_Packagist_TailwindJS_IOC
@@ -68,29 +62,24 @@ rule FamousChollima_Packagist_TailwindJS_IOC
         date        = "2026-06-01"
         severity    = "high"
         family      = "BeaverTail/DEV#POPPER"
-        actor       = "Famous Chollima (DPRK)"
         reference   = "https://socket.dev/blog/famous-chollima-targets-php-developers-through-compromised-packagist-package"
         hash        = "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3"
-
+        actor       = "Famous Chollima (DPRK)"
     strings:
-        $pkg     = "roberts/leads" ascii
-        $branch  = "drewroberts/feature/test-case" ascii
-        $commit  = "6c5c3c7655ce76399af11126b7e9a9058eb2e45d" ascii nocase
-
-        $tron1   = "TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP" ascii
-        $tron2   = "TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG" ascii
-
-        $apt1    = "0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e" ascii nocase
-        $apt2    = "0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3" ascii nocase
-
-        $xor1    = "2[gWfGj;<:-93Z^C" ascii
-        $xor2    = "m6:tTh^D)cBz?NM]" ascii
-
-        $h_file  = "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3" ascii nocase
-        $h_arch  = "522b28a2f78771715497ba53729d4ab9a50e982322c391379f3bddf7c8cb363f" ascii nocase
-
+        $pkg    = "roberts/leads"
+        $branch = "drewroberts/feature/test-case"
+        $commit = "6c5c3c7655ce76399af11126b7e9a9058eb2e45d" nocase
+        $tron1  = "TMfKQEd7TJJa5xNZJZ2Lep838vrzrs7mAP"
+        $tron2  = "TXfxHUet9pJVU1BgVkBAbrES4YUc1nGzcG"
+        $apt1   = "0xbe037400670fbf1c32364f762975908dc43eeb38759263e7dfcdabc76380811e" nocase
+        $apt2   = "0x3f0e5781d0855fb460661ac63257376db1941b2bb522499e4757ecb3ebd5dce3" nocase
+        $xor1   = "2[gWfGj;<:-93Z^C"
+        $xor2   = "m6:tTh^D)cBz?NM]"
+        $h_file = "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3" nocase
+        $h_arch = "522b28a2f78771715497ba53729d4ab9a50e982322c391379f3bddf7c8cb363f" nocase
     condition:
-        filesize < 50MB and any of them
+        any of them and
+        filesize < 50MB
 }
 
 rule FamousChollima_Packagist_TailwindJS_Specimen
@@ -101,16 +90,14 @@ rule FamousChollima_Packagist_TailwindJS_Specimen
         date        = "2026-06-01"
         severity    = "critical"
         family      = "BeaverTail/DEV#POPPER"
-        actor       = "Famous Chollima (DPRK)"
         reference   = "https://socket.dev/blog/famous-chollima-targets-php-developers-through-compromised-packagist-package"
         hash        = "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3"
-
+        actor       = "Famous Chollima (DPRK)"
     strings:
-        $tailwind = "tailwind" ascii nocase
-
+        $tailwind = "tailwind" nocase
     condition:
-        filesize > 4KB and filesize < 2MB
-        and $tailwind
-        and hash.sha256(0, filesize) ==
-            "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3"
+        $tailwind and
+        filesize > 4KB and
+        filesize < 2MB and
+        hash.sha256(0, filesize) == "96afdba882046385242cbed46871e41147c8055c5d9eff7460847b2c01a77dc3"
 }

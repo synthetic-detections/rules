@@ -49,54 +49,36 @@ rule SleeperGem_Backdoor_Behavior
         severity    = "critical"
         family      = "sleepergem-rubygems"
         reference   = "https://www.stepsecurity.io/blog/sleepergem-compromised-rubygems-drop-persistent-backdoor"
-
     strings:
         // Drop path for the native daemon
-        $gcm_dir   = ".local/share/gcm" ascii wide nocase
-
+        $gcm_dir         = ".local/share/gcm" ascii wide nocase
         // Privilege artifact — setuid root shell
-        $setuid6   = "/usr/local/sbin/ping6" ascii wide nocase
-
+        $setuid6         = "/usr/local/sbin/ping6" ascii wide nocase
         // CI/CD evasion — only detonate off a build system
-        $ci_gha    = "GITHUB_ACTIONS" ascii wide
-        $ci_glci   = "GITLAB_CI" ascii wide
-        $ci_runner = "RUNNER_OS" ascii wide
-        $ci_ci     = "ENV['CI']" ascii wide nocase
-
+        $ci_gha          = "GITHUB_ACTIONS" ascii wide
+        $ci_glci         = "GITLAB_CI" ascii wide
+        $ci_runner       = "RUNNER_OS" ascii wide
+        $ci_ci           = "ENV['CI']" ascii wide nocase
         // Persistence
         $persist_cron    = "crontab" ascii wide nocase
         $persist_systemd = "systemctl" ascii wide nocase
         $persist_unit    = ".service" ascii wide nocase
-
         // Second-stage staging / exec primitives seen in the loader
-        $fetch1    = "Net::HTTP" ascii wide
-        $fetch2    = "open-uri" ascii wide nocase
-        $chmod_suid= "chmod" ascii wide nocase
-        $spawn     = "Process.detach" ascii wide nocase
-
+        $fetch1          = "Net::HTTP" ascii wide
+        $fetch2          = "open-uri" ascii wide nocase
+        $chmod_suid      = "chmod" ascii wide nocase
+        $spawn           = "Process.detach" ascii wide nocase
     condition:
+        // Core signature: the daemon drop path OR the setuid shell path —
+        // both are highly specific to this backdoor.
+        // Alternate: CI-evasion decision + persistence + a staging/exec
+        // primitive co-occurring (the loader's shape without needing the
+        // exact drop path literal).
+        (
+            (any of ($gcm_dir, $setuid6) and (any of ($ci_gha, $ci_glci, $ci_runner, $ci_ci) or any of ($persist_cron, $persist_systemd))) or
+            (any of ($ci_gha, $ci_glci, $ci_runner, $ci_ci) and any of ($persist_cron, $persist_systemd, $persist_unit) and any of ($fetch1, $fetch2) and any of ($chmod_suid, $spawn, $setuid6, $gcm_dir))
+        ) and
         filesize < 5MB
-        and (
-            // Core signature: the daemon drop path OR the setuid shell path —
-            // both are highly specific to this backdoor.
-            (
-                any of ($gcm_dir, $setuid6)
-                and (
-                    any of ($ci_gha, $ci_glci, $ci_runner, $ci_ci)
-                    or any of ($persist_cron, $persist_systemd)
-                )
-            )
-            or
-            // Alternate: CI-evasion decision + persistence + a staging/exec
-            // primitive co-occurring (the loader's shape without needing the
-            // exact drop path literal).
-            (
-                any of ($ci_gha, $ci_glci, $ci_runner, $ci_ci)
-                and any of ($persist_cron, $persist_systemd, $persist_unit)
-                and any of ($fetch1, $fetch2)
-                and any of ($chmod_suid, $spawn, $setuid6, $gcm_dir)
-            )
-        )
 }
 
 rule SleeperGem_Malicious_Gem_IOC
@@ -108,43 +90,32 @@ rule SleeperGem_Malicious_Gem_IOC
         severity    = "high"
         family      = "sleepergem-rubygems"
         reference   = "https://thehackernews.com/2026/07/sleepergem-uses-three-malicious.html"
-
     strings:
         // Gem names (individually collide with legit software -> guarded below)
-        $gem_gcm    = "git_credential_manager" ascii wide nocase
-        $gem_dendreo= "Dendreo" ascii wide
-        $gem_fl     = "fastlane-plugin-run_tests_firebase_testlab" ascii wide nocase
-
+        $gem_gcm     = "git_credential_manager" ascii wide nocase
+        $gem_dendreo = "Dendreo" ascii wide
+        $gem_fl      = "fastlane-plugin-run_tests_firebase_testlab" ascii wide nocase
         // Malicious version pins
-        $v_gcm_280  = "2.8.0" ascii wide
-        $v_gcm_281  = "2.8.1" ascii wide
-        $v_gcm_282  = "2.8.2" ascii wide
-        $v_gcm_283  = "2.8.3" ascii wide
-        $v_den_113  = "1.1.3" ascii wide
-        $v_den_114  = "1.1.4" ascii wide
-
+        $v_gcm_280   = "2.8.0" ascii wide
+        $v_gcm_281   = "2.8.1" ascii wide
+        $v_gcm_282   = "2.8.2" ascii wide
+        $v_gcm_283   = "2.8.3" ascii wide
+        $v_den_113   = "1.1.3" ascii wide
+        $v_den_114   = "1.1.4" ascii wide
         // Payload artifacts that confirm maliciousness
-        $gcm_dir    = ".local/share/gcm" ascii wide nocase
-        $setuid6    = "/usr/local/sbin/ping6" ascii wide nocase
-
+        $gcm_dir     = ".local/share/gcm" ascii wide nocase
+        $setuid6     = "/usr/local/sbin/ping6" ascii wide nocase
     condition:
+        // A payload artifact alone is a strong signal
+        // A named gem pinned to a known-malicious version
+        // Any named gem co-occurring with a payload artifact
+        (
+            any of ($gcm_dir, $setuid6) or
+            ($gem_gcm and any of ($v_gcm_280, $v_gcm_281, $v_gcm_282, $v_gcm_283)) or
+            ($gem_dendreo and any of ($v_den_113, $v_den_114)) or
+            (any of ($gem_gcm, $gem_dendreo, $gem_fl) and any of ($gcm_dir, $setuid6))
+        ) and
         filesize < 5MB
-        and (
-            // A payload artifact alone is a strong signal
-            any of ($gcm_dir, $setuid6)
-            or
-            // A named gem pinned to a known-malicious version
-            (
-                ($gem_gcm and any of ($v_gcm_280, $v_gcm_281, $v_gcm_282, $v_gcm_283))
-                or ($gem_dendreo and any of ($v_den_113, $v_den_114))
-            )
-            or
-            // Any named gem co-occurring with a payload artifact
-            (
-                any of ($gem_gcm, $gem_dendreo, $gem_fl)
-                and any of ($gcm_dir, $setuid6)
-            )
-        )
 }
 
 rule SleeperGem_Malicious_Gemspec_Specimen
@@ -156,23 +127,24 @@ rule SleeperGem_Malicious_Gemspec_Specimen
         severity    = "critical"
         family      = "sleepergem-rubygems"
         reference   = "https://www.stepsecurity.io/blog/sleepergem-compromised-rubygems-drop-persistent-backdoor"
-
     strings:
-        $spec       = "Gem::Specification.new" ascii wide
-        $ext        = "extensions" ascii wide nocase
-        $extconf    = "extconf.rb" ascii wide nocase
-
-        $gcm_dir    = ".local/share/gcm" ascii wide nocase
-        $setuid6    = "/usr/local/sbin/ping6" ascii wide nocase
-        $ci_gha     = "GITHUB_ACTIONS" ascii wide
-        $ci_glci    = "GITLAB_CI" ascii wide
-        $fetch1     = "Net::HTTP" ascii wide
-        $fetch2     = "open-uri" ascii wide nocase
-
+        $spec    = "Gem::Specification.new" ascii wide
+        $ext     = "extensions" ascii wide nocase
+        $extconf = "extconf.rb" ascii wide nocase
+        $gcm_dir = ".local/share/gcm" ascii wide nocase
+        $setuid6 = "/usr/local/sbin/ping6" ascii wide nocase
+        $ci_gha  = "GITHUB_ACTIONS" ascii wide
+        $ci_glci = "GITLAB_CI" ascii wide
+        $fetch1  = "Net::HTTP" ascii wide
+        $fetch2  = "open-uri" ascii wide nocase
     condition:
+        (
+            $spec or
+            $ext or
+            $extconf
+        ) and
+        any of ($gcm_dir, $setuid6) and
+        any of ($ci_gha, $ci_glci) and
+        any of ($fetch1, $fetch2) and
         filesize < 2MB
-        and ($spec or $ext or $extconf)
-        and any of ($gcm_dir, $setuid6)
-        and any of ($ci_gha, $ci_glci)
-        and any of ($fetch1, $fetch2)
 }

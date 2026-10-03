@@ -49,29 +49,28 @@ rule Zbtlink_Backdoor_Behaviour
         severity    = "critical"
         family      = "zbtlink-backdoor"
         reference   = "https://www.vulncheck.com/blog/zbt-darklantern-speakingstone"
-
     strings:
         // implant protocol vocabulary
-        $proto1 = "revProto" ascii
-        $proto2 = "zbtProtocol" ascii
+        $proto1 = "revProto"
+        $proto2 = "zbtProtocol"
         // MD5 fingerprint salt
-        $salt   = "mqonu.com" ascii
+        $salt   = "mqonu.com"
         // command-dispatch exec prefix
-        $exec   = "/etc/exec/cmd" ascii
+        $exec   = "/etc/exec/cmd"
         // implant binary / service names
-        $bin1   = "yunmgrd" ascii
-        $bin2   = "infosrvd" ascii
-        $bin3   = "inetdetect" ascii
+        $bin1   = "yunmgrd"
+        $bin2   = "infosrvd"
+        $bin3   = "inetdetect"
         // implant-specific config path
-        $cfg    = "/tmp/yunclient.conf" ascii
-
+        $cfg    = "/tmp/yunclient.conf"
     condition:
-        uint32(0) == 0x464c457f and filesize < 8MB
-        and (
-            ( 1 of ($proto*) and 1 of ($salt, $exec, $bin1, $bin2, $bin3, $cfg) )
-            or ( $salt and $exec )
-            or ( 2 of ($bin1, $bin2, $bin3) )
-        )
+        uint32(0) == 1179403647 and
+        (
+            (any of ($proto*) and any of ($salt, $exec, $bin1, $bin2, $bin3, $cfg)) or
+            ($salt and $exec) or
+            2 of ($bin1, $bin2, $bin3)
+        ) and
+        filesize < 8MB
 }
 
 rule Zbtlink_Backdoor_IOC
@@ -83,32 +82,30 @@ rule Zbtlink_Backdoor_IOC
         severity    = "high"
         family      = "zbtlink-backdoor"
         reference   = "https://www.vulncheck.com/blog/zbt-darklantern-speakingstone"
-
     strings:
         // high-signal, implant-specific tokens
-        $proto1 = "revProto" ascii
-        $proto2 = "zbtProtocol" ascii
-        $salt   = "mqonu.com" ascii
-        $exec   = "/etc/exec/cmd" ascii
-        $bin1   = "yunmgrd" ascii
-        $bin2   = "infosrvd" ascii
-        $bin3   = "inetdetect" ascii
-        $oem    = "sales03@zbt-china.com" ascii nocase
-        $cfg    = "/tmp/yunclient.conf" ascii
+        $proto1 = "revProto"
+        $proto2 = "zbtProtocol"
+        $salt   = "mqonu.com"
+        $exec   = "/etc/exec/cmd"
+        $bin1   = "yunmgrd"
+        $bin2   = "infosrvd"
+        $bin3   = "inetdetect"
+        $oem    = "sales03@zbt-china.com" nocase
+        $cfg    = "/tmp/yunclient.conf"
         // C2 domains
-        $d1     = "ac-link.com" ascii nocase
-        $d2     = "findmyipaddr.com" ascii nocase
+        $d1     = "ac-link.com" nocase
+        $d2     = "findmyipaddr.com" nocase
         // generic router paths / shared-hoster IP -- only credited when paired
-        $g1     = "/tmp/info.txt" ascii
-        $g2     = "/tmp/mac.txt" ascii
-        $ip     = "47.107.224.89" ascii
-
+        $g1     = "/tmp/info.txt"
+        $g2     = "/tmp/mac.txt"
+        $ip     = "47.107.224.89"
     condition:
+        (
+            any of ($proto*, $salt, $exec, $bin*, $oem, $cfg, $d*) or
+            ($ip and any of ($g1, $g2))
+        ) and
         filesize < 50MB
-        and (
-            any of ($proto*, $salt, $exec, $bin*, $oem, $cfg, $d*)
-            or ( $ip and 1 of ($g1, $g2) )
-        )
 }
 
 rule Zbtlink_Backdoor_Specimen_Pin
@@ -120,15 +117,15 @@ rule Zbtlink_Backdoor_Specimen_Pin
         severity    = "critical"
         family      = "zbtlink-backdoor"
         reference   = "https://www.vulncheck.com/blog/zbt-darklantern-speakingstone"
-
     condition:
-        uint32(0) == 0x464c457f and filesize < 8MB
-        and (
-            // yunmgrd / SPEAKINGSTONE
-            hash.sha256(0, filesize) == "b77811db4d218c65670a6c9a5b33c30ff81c6d779e15d658643138771178a818"
-            // infosrvd / DARKLANTERN
-            or hash.sha256(0, filesize) == "7e2e036fec2fe7ab4bbd43978d9296563894c92a112f5ac2f39957f12108e245"
-            // inetdetect
-            or hash.sha256(0, filesize) == "ae6c356f1f09260b859f84d994ef8423540a6c0bdf98510d86b85834283e4926"
+        // yunmgrd / SPEAKINGSTONE
+        // infosrvd / DARKLANTERN
+        // inetdetect
+        uint32(0) == 1179403647 and
+        filesize < 8MB and
+        (
+            hash.sha256(0, filesize) == "b77811db4d218c65670a6c9a5b33c30ff81c6d779e15d658643138771178a818" or
+            hash.sha256(0, filesize) == "7e2e036fec2fe7ab4bbd43978d9296563894c92a112f5ac2f39957f12108e245" or
+            hash.sha256(0, filesize) == "ae6c356f1f09260b859f84d994ef8423540a6c0bdf98510d86b85834283e4926"
         )
 }
