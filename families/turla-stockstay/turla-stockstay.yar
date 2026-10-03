@@ -48,175 +48,137 @@
      b287347a5bff8af360ce0e6500c336b6fe6d97920abc26202c9d843ffebc5f89 (ms-lib-math-core.dll)
 */
 
-rule Turla_STOCKSTAY_Component_Strings
-{
+rule Turla_STOCKSTAY_Component_Strings {
     meta:
         description = "STOCKSTAY component class/method names, SQL schema, and window names"
-        author      = "synthetic-detections"
-        date        = "2026-06-28"
-        severity    = "critical"
-        family      = "STOCKSTAY"
-        reference   = "https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering"
-
+        author = "synthetic-detections"
+        date = "2026-06-28"
+        severity = "critical"
+        family = "STOCKSTAY"
+        reference = "https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering"
     strings:
         // STOCKMARKET orchestrator -- protocol methods
-        $sm_connect  = "ProtocolMessageConnect" wide ascii
-        $sm_task     = "ProtocolMessageTask" wide ascii
-        $sm_sysinfo  = "ProtocolMessageTaskSysinfo" wide ascii
-        $sm_tmr_eng  = "TMR_Engine_Tick" wide ascii
-        $sm_tmr_ka   = "TMR_KeepAlive_Tick" wide ascii
-        $sm_trade    = "GetDataTrade" wide ascii
-        $sm_news     = "InsertDataNews" wide ascii
-
+        $sm_connect = "ProtocolMessageConnect" ascii wide
+        $sm_task = "ProtocolMessageTask" ascii wide
+        $sm_sysinfo = "ProtocolMessageTaskSysinfo" ascii wide
+        $sm_tmr_eng = "TMR_Engine_Tick" ascii wide
+        $sm_tmr_ka = "TMR_KeepAlive_Tick" ascii wide
+        $sm_trade = "GetDataTrade" ascii wide
+        $sm_news = "InsertDataNews" ascii wide
         // STOCKMARKET SQL schema strings
-        $sql_news    = "CREATE TABLE IF NOT EXISTS News (" wide ascii
-        $sql_trade   = "CREATE TABLE IF NOT EXISTS Trade (" wide ascii
-        $sql_market  = "INSERT INTO Market ( Guid, Version, Config, Status, Launch, Type )" wide ascii
-
+        $sql_news = "CREATE TABLE IF NOT EXISTS News (" ascii wide
+        $sql_trade = "CREATE TABLE IF NOT EXISTS Trade (" ascii wide
+        $sql_market = "INSERT INTO Market ( Guid, Version, Config, Status, Launch, Type )" ascii wide
         // STOCKBROKER tunneler
-        $sb_status   = "ProtocolMessageStatusConnection" wide ascii
-        $sb_server   = "OnGetDataFromServer" wide ascii
-        $sb_wm       = "wmCopyData" wide ascii
-        $sb_temp     = "tempStorage" wide ascii
-
+        $sb_status = "ProtocolMessageStatusConnection" ascii wide
+        $sb_server = "OnGetDataFromServer" ascii wide
+        $sb_wm = "wmCopyData" ascii wide
+        $sb_temp = "tempStorage" ascii wide
         // STOCKTRADER backdoor commands
-        $st_del      = "AppDeleteRegistryValue" wide ascii
-        $st_unreg    = "AppRegistryKeyExists" wide ascii
-        $st_unpack   = "AppUnpackArchive" wide ascii
-        $st_sysinfo  = "Sysinfo" wide ascii
-
+        $st_del = "AppDeleteRegistryValue" ascii wide
+        $st_unreg = "AppRegistryKeyExists" ascii wide
+        $st_unpack = "AppUnpackArchive" ascii wide
+        $st_sysinfo = "Sysinfo" ascii wide
         // MARKETMAKER downloader
-        $mm_autorun  = "CheckAutoRun" wide ascii
-        $mm_setup    = "SetupAutoRun" wide ascii
-        $mm_dlzip    = "DownloadAndExtractZip" wide ascii
-
+        $mm_autorun = "CheckAutoRun" ascii wide
+        $mm_setup = "SetupAutoRun" ascii wide
+        $mm_dlzip = "DownloadAndExtractZip" ascii wide
         // Window/form names
-        $wn_editor   = "SMEditorPage" wide
-        $wn_net      = "SMNetPage" wide
-        $wn_view     = "StockMarketViewPage" wide
-        $wn_x128     = "window_system32_x128" wide
-        $wn_x64      = "window_system32_x64" wide
-
+        $wn_editor = "SMEditorPage" wide
+        $wn_net = "SMNetPage" wide
+        $wn_view = "StockMarketViewPage" wide
+        $wn_x128 = "window_system32_x128" wide
+        $wn_x64 = "window_system32_x64" wide
         // Crypto container
-        $crypto_build = "BuildCryptoContainer" wide ascii
-        $crypto_parse = "ParseCryptoContainer" wide ascii
-
+        $crypto_build = "BuildCryptoContainer" ascii wide
+        $crypto_parse = "ParseCryptoContainer" ascii wide
         // Codepage marker
-        $codepage    = "Windows-1251" wide
-
+        $codepage = "Windows-1251" wide
     condition:
-        filesize < 15MB
-        and (
-            // STOCKMARKET: orchestrator protocol + SQL
-            (2 of ($sm_*) and 1 of ($sql_*))
-            // STOCKBROKER: tunneler strings
-            or (2 of ($sb_*))
-            // STOCKTRADER: backdoor commands
-            or (2 of ($st_*))
-            // MARKETMAKER: downloader
-            or ($mm_autorun and ($mm_setup or $mm_dlzip))
-            // Window names (any two is high-signal)
-            or (2 of ($wn_*))
-            // Crypto container builders + codepage
-            or ($crypto_build and $crypto_parse and $codepage)
-        )
+        // STOCKMARKET: orchestrator protocol + SQL
+        // STOCKBROKER: tunneler strings
+        // STOCKTRADER: backdoor commands
+        // MARKETMAKER: downloader
+        // Window names (any two is high-signal)
+        // Crypto container builders + codepage
+        (2 of ($sm_*) and any of ($sql_*) or 2 of ($sb_*) or 2 of ($st_*) or $mm_autorun and ($mm_setup or $mm_dlzip) or 2 of ($wn_*) or $crypto_build and $crypto_parse and $codepage) and filesize < 15MB
 }
 
-rule Turla_STOCKSTAY_IOCs
-{
+rule Turla_STOCKSTAY_IOCs {
     meta:
         description = "STOCKSTAY IOCs — C2 WebSocket endpoints, staging URLs, delivery artifacts, persistence"
-        author      = "synthetic-detections"
-        date        = "2026-06-28"
-        severity    = "high"
-        family      = "STOCKSTAY"
-        hash1       = "9164054d0bf0b7c8820da4f742860940998984555e65820e4fa8dd07b6bd67ec"
-        hash2       = "da8a96bc74e265f945f1cc6992c6dc0f9ea36ed1991f7b8d312db79d9bf78c40"
-        hash3       = "a40bf9c75d1bfa6d66f1179f2321de6589f80d3089d992797a9cb0e84f6196ce"
-
+        author = "synthetic-detections"
+        date = "2026-06-28"
+        severity = "high"
+        family = "STOCKSTAY"
+        hash1 = "9164054d0bf0b7c8820da4f742860940998984555e65820e4fa8dd07b6bd67ec"
+        hash2 = "da8a96bc74e265f945f1cc6992c6dc0f9ea36ed1991f7b8d312db79d9bf78c40"
+        hash3 = "a40bf9c75d1bfa6d66f1179f2321de6589f80d3089d992797a9cb0e84f6196ce"
     strings:
         // C2 WebSocket endpoints
-        $c2_glitch   = "wool-basalt-clock.glitch.me" ascii nocase
-        $c2_workpc   = "weatherdataai.theworkpc.com" ascii nocase
-        $c2_canal    = "canal1zac1a.onrender.com" ascii nocase
-        $c2_driver   = "driverx86-adobe.onrender.com" ascii nocase
-        $c2_google   = "google-ai-labs-it.onrender.com" ascii nocase
-
+        $c2_glitch = "wool-basalt-clock.glitch.me" nocase
+        $c2_workpc = "weatherdataai.theworkpc.com" nocase
+        $c2_canal = "canal1zac1a.onrender.com" nocase
+        $c2_driver = "driverx86-adobe.onrender.com" nocase
+        $c2_google = "google-ai-labs-it.onrender.com" nocase
         // Compromised staging URLs (Ukrainian government / .ua sites)
-        $stage_drs   = "drs.gov.ua/wp-content/themes/twentytwentyfive/docs.zip" ascii nocase
-        $stage_zp    = "online.zp.ua/wp-content/uploads/Tools/EditorToolsPdf.zip" ascii nocase
-        $stage_base  = "basecon.com.ua/calculator.rar" ascii nocase
-        $stage_it    = "circoloesteri.elezioni.idnet.it/admin-election/riepilogo.php" ascii nocase
-
+        $stage_drs = "drs.gov.ua/wp-content/themes/twentytwentyfive/docs.zip" nocase
+        $stage_zp = "online.zp.ua/wp-content/uploads/Tools/EditorToolsPdf.zip" nocase
+        $stage_base = "basecon.com.ua/calculator.rar" nocase
+        $stage_it = "circoloesteri.elezioni.idnet.it/admin-election/riepilogo.php" nocase
         // Actor GitHub accounts
-        $gh_roberto  = "Roberto1983-ai" ascii
-        $gh_chiken   = "ChikenFresh" ascii
-
+        $gh_roberto = "Roberto1983-ai"
+        $gh_chiken = "ChikenFresh"
         // Delivery filenames
-        $fn_msi1     = "Copia.msi" ascii nocase
-        $fn_msi2     = "DiplomacyEduAI.msi" ascii nocase
-        $fn_drivers  = "DriversPrinterGraphic.rar" ascii nocase
-        $fn_viewer   = "MSViewer.exe" ascii nocase
-        $fn_driver   = "MSDriver.exe" ascii nocase
-        $fn_render   = "MSRender.exe" ascii nocase
-        $fn_onedrive = "MicrosoftUpdateOneDrive.exe" ascii nocase
-
+        $fn_msi1 = "Copia.msi" nocase
+        $fn_msi2 = "DiplomacyEduAI.msi" nocase
+        $fn_drivers = "DriversPrinterGraphic.rar" nocase
+        $fn_viewer = "MSViewer.exe" nocase
+        $fn_driver = "MSDriver.exe" nocase
+        $fn_render = "MSRender.exe" nocase
+        $fn_onedrive = "MicrosoftUpdateOneDrive.exe" nocase
         // Component DLLs (November 2025 variant)
-        $dll_math    = "ms-lib-math-core.dll" ascii nocase
-        $dll_wmcpdt  = "ms-api-wmcpdt.dll" ascii nocase
-        $dll_render  = "ms-api-win-render.dll" ascii nocase
-
+        $dll_math = "ms-lib-math-core.dll" nocase
+        $dll_wmcpdt = "ms-api-wmcpdt.dll" nocase
+        $dll_render = "ms-api-win-render.dll" nocase
         // Config directory
-        $cfg_dir     = "Programs\\SMN\\" ascii nocase
-
+        $cfg_dir = "Programs\\SMN\\" nocase
         // Config description (unique fake app description in JSON config)
-        $cfg_desc    = "An application for getting information about current events on trading platforms" ascii
-
+        $cfg_desc = "An application for getting information about current events on trading platforms"
     condition:
-        filesize < 50MB
-        and any of them
+        any of them and filesize < 50MB
 }
 
-rule Turla_STOCKSTAY_K1Morpher
-{
+rule Turla_STOCKSTAY_K1Morpher {
     meta:
         description = "K1MORPHER Squirrel3 string obfuscation — shared between STOCKSTAY and KAZUAR"
-        author      = "synthetic-detections"
-        date        = "2026-06-28"
-        severity    = "critical"
-        family      = "STOCKSTAY"
-        reference   = "https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering"
-
+        author = "synthetic-detections"
+        date = "2026-06-28"
+        severity = "critical"
+        family = "STOCKSTAY"
+        reference = "https://cloud.google.com/blog/topics/threat-intelligence/stockstay-turla-intelligence-gathering"
     strings:
         // K1MORPHER namespace.class (wide for .NET metadata)
         $ns_k1morpher = "K1.Morpher" wide
-
         // Squirrel3 PRNG method names
-        $fn_sq3      = "Squirrel3" wide ascii
-        $fn_dec_str  = "DecryptStringSimple" wide ascii
-        $fn_dec_arr  = "DecryptArraySimple" wide ascii
-        $fn_dec_int  = "DecryptIntSimple" wide ascii
-        $fn_dec_lng  = "DecryptLongSimple" wide ascii
-        $fn_dec_flt  = "DecryptFloatSimple" wide ascii
-        $fn_dec_dbl  = "DecryptDoubleSimple" wide ascii
-        $fn_inject   = "InjectedSeedCipher" wide ascii
-        $fn_squ1     = "_squ_ui1" wide ascii
-        $fn_squ2     = "_squ_ui2" wide ascii
-        $fn_squ3     = "_squ_ui3" wide ascii
-
+        $fn_sq3 = "Squirrel3" ascii wide
+        $fn_dec_str = "DecryptStringSimple" ascii wide
+        $fn_dec_arr = "DecryptArraySimple" ascii wide
+        $fn_dec_int = "DecryptIntSimple" ascii wide
+        $fn_dec_lng = "DecryptLongSimple" ascii wide
+        $fn_dec_flt = "DecryptFloatSimple" ascii wide
+        $fn_dec_dbl = "DecryptDoubleSimple" ascii wide
+        $fn_inject = "InjectedSeedCipher" ascii wide
+        $fn_squ1 = "_squ_ui1" ascii wide
+        $fn_squ2 = "_squ_ui2" ascii wide
+        $fn_squ3 = "_squ_ui3" ascii wide
         // Squirrel3 constants (little-endian 32-bit)
-        $noise1      = { 4d 7a 29 b5 }
-        $noise2      = { a4 1d e3 68 }
-        $noise3      = { e9 c4 56 1b }
-
+        $noise1 = { 4D 7A 29 B5 }
+        $noise2 = { A4 1D E3 68 }
+        $noise3 = { E9 C4 56 1B }
     condition:
-        filesize < 15MB
-        and (
-            // Method-name based: Squirrel3 + any decrypt method
-            ($fn_sq3 and 2 of ($fn_dec_*))
-            // Namespace + methods
-            or ($ns_k1morpher and 1 of ($fn_*))
-            // Constant-based: all three Squirrel3 PRNG noise constants
-            or (all of ($noise*) and 1 of ($fn_sq3, $fn_inject, $fn_squ*))
-        )
+        // Method-name based: Squirrel3 + any decrypt method
+        // Namespace + methods
+        // Constant-based: all three Squirrel3 PRNG noise constants
+        ($fn_sq3 and 2 of ($fn_dec_*) or $ns_k1morpher and any of ($fn_*) or all of ($noise*) and any of ($fn_sq3, $fn_inject, $fn_squ*)) and filesize < 15MB
 }

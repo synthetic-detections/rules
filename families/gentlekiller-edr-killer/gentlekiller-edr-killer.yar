@@ -35,204 +35,153 @@
 
 import "pe"
 
-rule GentleKiller_EDR_KillList
-{
+rule GentleKiller_EDR_KillList {
     meta:
         description = "GentleKiller EDR-killer — high density of security vendor process names targeted for termination (post-unpack / memory)"
-        author      = "synthetic-detections"
-        date        = "2026-06-22"
-        severity    = "critical"
-        family      = "gentlekiller-edr-killer"
-        reference   = "https://www.welivesecurity.com/en/eset-research/killing-me-gently-inside-gentlemens-edr-killer-framework/"
-
+        author = "synthetic-detections"
+        date = "2026-06-22"
+        severity = "critical"
+        family = "gentlekiller-edr-killer"
+        reference = "https://www.welivesecurity.com/en/eset-research/killing-me-gently-inside-gentlemens-edr-killer-framework/"
     strings:
         // CrowdStrike processes
         $edr_cs1 = "CSFalconService" ascii wide nocase fullword
         $edr_cs2 = "csfalconcontainer" ascii wide nocase fullword
         $edr_cs3 = "CSAgent" ascii wide nocase fullword
-
         // SentinelOne processes
         $edr_s1a = "SentinelAgent" ascii wide nocase fullword
         $edr_s1b = "SentinelHelperService" ascii wide nocase fullword
         $edr_s1c = "SentinelStaticEngine" ascii wide nocase fullword
-
         // Microsoft Defender processes
         $edr_def1 = "MsMpEng" ascii wide nocase fullword
         $edr_def2 = "MsSense" ascii wide nocase fullword
         $edr_def3 = "SenseIR" ascii wide nocase fullword
-
         // Sophos processes
         $edr_soph1 = "SophosHealth" ascii wide nocase fullword
         $edr_soph2 = "SophosCleanM" ascii wide nocase fullword
         $edr_soph3 = "SophosFileScanner" ascii wide nocase fullword
-
         // Palo Alto Cortex XDR
         $edr_pa1 = "CylanceSvc" ascii wide nocase fullword
         $edr_pa2 = "cyserver" ascii wide nocase fullword
         $edr_pa3 = "Traps" ascii wide nocase fullword
-
         // Carbon Black
         $edr_cb1 = "RepMgr" ascii wide nocase fullword
         $edr_cb2 = "CbDefense" ascii wide nocase fullword
-
         // ESET
         $edr_eset1 = "ekrn" ascii wide nocase fullword
         $edr_eset2 = "egui" ascii wide nocase fullword
-
         // Bitdefender
         $edr_bd1 = "bdagent" ascii wide nocase fullword
         $edr_bd2 = "bdservicehost" ascii wide nocase fullword
-
         // Kaspersky
         $edr_kas1 = "avpui" ascii wide nocase fullword
         $edr_kas2 = "avp" ascii wide nocase fullword
-
         // Elastic
         $edr_el1 = "elastic-agent" ascii wide nocase fullword
         $edr_el2 = "elastic-endpoint" ascii wide nocase fullword
-
         // Trend Micro
         $edr_tm1 = "Ntrtscan" ascii wide nocase fullword
         $edr_tm2 = "PccNTMon" ascii wide nocase fullword
-
         // Qualys
         $edr_ql1 = "QualysAgent" ascii wide nocase fullword
-
         // Huntress
         $edr_hu1 = "HuntressAgent" ascii wide nocase fullword
-
         // Generic AV service enumeration pattern — DeviceIoControl
         // for kernel driver interaction (BYOVD exploitation)
-        $api_ioctl = "DeviceIoControl" ascii
-
+        $api_ioctl = "DeviceIoControl"
     condition:
         // PE binary, reasonable size for an EDR killer
-        uint16(0) == 0x5A4D
-        and filesize > 20KB and filesize < 10MB
-        and (
-            // 8+ distinct EDR vendor process names = kill-list behavior;
-            // no legitimate application references this many competing
-            // security products by their internal process names
-            8 of ($edr_*)
-            or
-            // 5+ EDR names + kernel driver interaction API
-            (5 of ($edr_*) and $api_ioctl)
-        )
+        // 8+ distinct EDR vendor process names = kill-list behavior;
+        // no legitimate application references this many competing
+        // security products by their internal process names
+        // 5+ EDR names + kernel driver interaction API
+        uint16(0) == 23117 and (8 of ($edr_*) or 5 of ($edr_*) and $api_ioctl) and filesize > 20KB and filesize < 10MB
 }
 
-rule GentleKiller_Variant_Artifacts
-{
+rule GentleKiller_Variant_Artifacts {
     meta:
         description = "GentleKiller variant — impersonated vendor PE with BYOVD driver filenames embedded"
-        author      = "synthetic-detections"
-        date        = "2026-06-22"
-        severity    = "critical"
-        family      = "gentlekiller-edr-killer"
-        reference   = "https://github.com/eset/malware-ioc/blob/master/gentlemen/README.adoc"
-
+        author = "synthetic-detections"
+        date = "2026-06-22"
+        severity = "critical"
+        family = "gentlekiller-edr-killer"
+        reference = "https://github.com/eset/malware-ioc/blob/master/gentlemen/README.adoc"
     strings:
         // BYOVD driver filenames embedded in the killer binaries
         // (loaded as Windows services for kernel access)
-        $drv_eb       = "eb.sys" ascii
-        $drv_nsec     = "nseckrnl.sys" ascii
-        $drv_vgk      = "vgk.sys" ascii wide
-        $drv_stpm_old = "stpm_old.sys" ascii
-        $drv_stpm_new = "stpm_new.sys" ascii
-        $drv_dmx      = "dmx.sys" ascii
-        $drv_360      = "360netmon_wfp.sys" ascii
-        $drv_imf      = "IMFForceDelete" ascii
-        $drv_g11      = "G11.sys" ascii
-        $drv_throttle = "ThrottleBlood.sys" ascii
-        $drv_havoc    = "havoc.sys" ascii
-        $drv_baidu    = "googleApiUtil64.sys" ascii
-
+        $drv_eb = "eb.sys"
+        $drv_nsec = "nseckrnl.sys"
+        $drv_vgk = "vgk.sys" ascii wide
+        $drv_stpm_old = "stpm_old.sys"
+        $drv_stpm_new = "stpm_new.sys"
+        $drv_dmx = "dmx.sys"
+        $drv_360 = "360netmon_wfp.sys"
+        $drv_imf = "IMFForceDelete"
+        $drv_g11 = "G11.sys"
+        $drv_throttle = "ThrottleBlood.sys"
+        $drv_havoc = "havoc.sys"
+        $drv_baidu = "googleApiUtil64.sys"
         // Variant executable naming patterns
-        $var_kasp    = "Kasps.exe" ascii wide
-        $var_faceit  = "FaceIT1.exe" ascii wide
-        $var_valo    = "Valorant2.exe" ascii wide
+        $var_kasp = "Kasps.exe" ascii wide
+        $var_faceit = "FaceIT1.exe" ascii wide
+        $var_valo = "Valorant2.exe" ascii wide
         $var_javelin = "EAAntiCheatLight.exe" ascii wide
-        $var_bitd    = "BitD1.exe" ascii wide
-        $var_mb2     = "MB2.exe" ascii wide
+        $var_bitd = "BitD1.exe" ascii wide
+        $var_mb2 = "MB2.exe" ascii wide
         $var_deletor = "Deletor.exe" ascii wide
         $var_symantec = "Symantec.exe" ascii wide
-
         // OxideHarvest credential stealer (affiliate tooling)
         $oxide1 = "buildx641.exe" ascii wide
         $oxide2 = "buildx64.exe" ascii wide
-
     condition:
-        uint16(0) == 0x5A4D
-        and filesize > 20KB and filesize < 10MB
-        and (
-            // Any BYOVD driver filename + any variant executable name
-            (any of ($drv_*) and any of ($var_*))
-            or
-            // 2+ driver filenames in a single binary (loader or config)
-            2 of ($drv_*)
-            or
-            // OxideHarvest alongside any driver (affiliate kit bundle)
-            (any of ($oxide*) and any of ($drv_*))
-        )
+        // Any BYOVD driver filename + any variant executable name
+        // 2+ driver filenames in a single binary (loader or config)
+        // OxideHarvest alongside any driver (affiliate kit bundle)
+        uint16(0) == 23117 and (any of ($drv_*) and any of ($var_*) or 2 of ($drv_*) or any of ($oxide*) and any of ($drv_*)) and filesize > 20KB and filesize < 10MB
 }
 
-rule GentleKiller_IOC
-{
+rule GentleKiller_IOC {
     meta:
         description = "Static IOC sweep — GentlemenCollection staging, known filenames, driver artifacts, OxideHarvest"
-        author      = "synthetic-detections"
-        date        = "2026-06-22"
-        severity    = "high"
-        family      = "gentlekiller-edr-killer"
-        reference   = "https://www.welivesecurity.com/en/eset-research/killing-me-gently-inside-gentlemens-edr-killer-framework/"
-
+        author = "synthetic-detections"
+        date = "2026-06-22"
+        severity = "high"
+        family = "gentlekiller-edr-killer"
+        reference = "https://www.welivesecurity.com/en/eset-research/killing-me-gently-inside-gentlemens-edr-killer-framework/"
     strings:
         // Primary staging directory — consistent across unrelated
         // intrusions; high-confidence triage artifact
         $staging = "GentlemenCollection" ascii wide nocase
-
         // GentleKiller variant filenames (all detected as Win64/KillAV.EA)
-        $fn_kasps      = "Kasps" ascii wide
-        $fn_faceit     = "FaceIT1" ascii wide
-        $fn_valorant   = "Valorant2" ascii wide
-        $fn_easolo     = "EASolo2Light" ascii wide
-        $fn_easolo1    = "EASOLO1clear" ascii wide
+        $fn_kasps = "Kasps" ascii wide
+        $fn_faceit = "FaceIT1" ascii wide
+        $fn_valorant = "Valorant2" ascii wide
+        $fn_easolo = "EASolo2Light" ascii wide
+        $fn_easolo1 = "EASOLO1clear" ascii wide
         $fn_eaanticheat = "EAAntiCheatLight" ascii wide
-        $fn_bitd       = "BitD1" ascii wide
-        $fn_mb2        = "MB2" ascii wide fullword
-        $fn_deletor    = "Deletor" ascii wide
+        $fn_bitd = "BitD1" ascii wide
+        $fn_mb2 = "MB2" ascii wide fullword
+        $fn_deletor = "Deletor" ascii wide
         $fn_symantec_v = "Symantec.exe" ascii wide
-
         // Third-party EDR killers bundled by Gentlemen
-        $fn_hexkiller  = "Avast.exe" ascii wide
-        $fn_throttle   = "Sent.exe" ascii wide
-        $fn_havockill  = "Sophos.exe" ascii wide
-
+        $fn_hexkiller = "Avast.exe" ascii wide
+        $fn_throttle = "Sent.exe" ascii wide
+        $fn_havockill = "Sophos.exe" ascii wide
         // BYOVD driver names (less specific individually, but
         // together indicate the GentleKiller ecosystem)
-        $drv_eb       = "eb.sys" ascii
-        $drv_nsec     = "nseckrnl.sys" ascii
-        $drv_g11      = "G11.sys" ascii
-        $drv_throttle = "ThrottleBlood.sys" ascii
-        $drv_havoc    = "havoc.sys" ascii
-        $drv_baidu    = "googleApiUtil64.sys" ascii
-
+        $drv_eb = "eb.sys"
+        $drv_nsec = "nseckrnl.sys"
+        $drv_g11 = "G11.sys"
+        $drv_throttle = "ThrottleBlood.sys"
+        $drv_havoc = "havoc.sys"
+        $drv_baidu = "googleApiUtil64.sys"
         // OxideHarvest credential stealer
         $oxide = "buildx641.exe" ascii wide
-
     condition:
-        filesize < 50MB
-        and (
-            // Staging directory name (strongest single indicator)
-            $staging
-            or
-            // 3+ variant filenames in same file (incident report,
-            // config, or toolkit archive)
-            3 of ($fn_*)
-            or
-            // 3+ driver names co-occurring
-            3 of ($drv_*)
-            or
-            // OxideHarvest + any staging or variant indicator
-            ($oxide and ($staging or any of ($fn_*) or any of ($drv_*)))
-        )
+        // Staging directory name (strongest single indicator)
+        // 3+ variant filenames in same file (incident report,
+        // config, or toolkit archive)
+        // 3+ driver names co-occurring
+        // OxideHarvest + any staging or variant indicator
+        ($staging or 3 of ($fn_*) or 3 of ($drv_*) or $oxide and ($staging or any of ($fn_*) or any of ($drv_*))) and filesize < 50MB
 }

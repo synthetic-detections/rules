@@ -33,125 +33,89 @@
      https://gbhackers.com/malicious-152-chrome-extensions-google-search/
 */
 
-rule WallpaperAdfraud_ServiceWorkerBehavior
-{
+rule WallpaperAdfraud_ServiceWorkerBehavior {
     meta:
         description = "Service worker JS matching the 152-extension wallpaper ad-fraud family — IndexedDB wipe-all loop, forged Google organic install attribution, and setUninstallURL SERP cloaking"
-        author      = "synthetic-detections"
-        date        = "2026-06-15"
-        severity    = "high"
-        family      = "wallpaper-chrome-adfraud"
-        reference   = "https://cybersecuritynews.com/chrome-extensions-hide-ad-tracking/"
-
+        author = "synthetic-detections"
+        date = "2026-06-15"
+        severity = "high"
+        family = "wallpaper-chrome-adfraud"
+        reference = "https://cybersecuritynews.com/chrome-extensions-hide-ad-tracking/"
     strings:
         // Anti-forensic IndexedDB wipe — enumerate then delete every DB
-        $idb_enum    = "indexedDB.databases()" ascii
-        $idb_delete  = "deleteDatabase" ascii
-        $idb_log     = "Deleted IndexedDB database:" ascii
-
+        $idb_enum = "indexedDB.databases()"
+        $idb_delete = "deleteDatabase"
+        $idb_log = "Deleted IndexedDB database:"
         // Install handler opens tab with forged Google organic attribution
-        $oninstalled = "onInstalled" ascii
-        $utm_forge   = "utm_source=google&utm_medium=organic" ascii
-
+        $oninstalled = "onInstalled"
+        $utm_forge = "utm_source=google&utm_medium=organic"
         // Uninstall URL cloaked as a Google SERP click
-        $uninstall   = "setUninstallURL" ascii
-        $serp_cloak  = /google\.com\/url\?sa=t[^"]{0,120}(ved=|usg=)/ ascii
-
+        $uninstall = "setUninstallURL"
+        $serp_cloak = /google\.com\/url\?sa=t[^"]{0,120}(ved=|usg=)/
         // Operator backend domains embedded in the JS
-        $dom_tab     = "tabplugins.com" ascii nocase
-        $dom_yow     = "yowgames.com" ascii nocase
-        $dom_cw      = "chromewallpaper.com" ascii nocase
-        $dom_owhit   = "owhit.com" ascii nocase
-
+        $dom_tab = "tabplugins.com" nocase
+        $dom_yow = "yowgames.com" nocase
+        $dom_cw = "chromewallpaper.com" nocase
+        $dom_owhit = "owhit.com" nocase
     condition:
-        filesize < 1MB
-        and (
-            // Core behavioural triad: IDB wipe + organic spoof + SERP cloak
-            ($idb_enum and $idb_delete and $utm_forge and $uninstall)
-            or
-            // IDB wipe log string + any operator domain — high confidence
-            ($idb_log and any of ($dom_*))
-            or
-            // Google SERP cloaking in setUninstallURL targeting an operator domain
-            ($uninstall and $serp_cloak and any of ($dom_*))
-            or
-            // Forged organic attribution + install handler + operator domain
-            ($oninstalled and $utm_forge and any of ($dom_*))
-        )
+        // Core behavioural triad: IDB wipe + organic spoof + SERP cloak
+        // IDB wipe log string + any operator domain — high confidence
+        // Google SERP cloaking in setUninstallURL targeting an operator domain
+        // Forged organic attribution + install handler + operator domain
+        ($idb_enum and $idb_delete and $utm_forge and $uninstall or $idb_log and any of ($dom_*) or $uninstall and $serp_cloak and any of ($dom_*) or $oninstalled and $utm_forge and any of ($dom_*)) and filesize < 1MB
 }
 
-rule WallpaperAdfraud_ExtensionManifest
-{
+rule WallpaperAdfraud_ExtensionManifest {
     meta:
         description = "Chrome extension manifest.json matching the wallpaper ad-fraud family — MV3 with service_worker and newtab override pointing to an operator domain"
-        author      = "synthetic-detections"
-        date        = "2026-06-15"
-        severity    = "medium"
-        family      = "wallpaper-chrome-adfraud"
-        reference   = "https://gbhackers.com/malicious-152-chrome-extensions-google-search/"
-
+        author = "synthetic-detections"
+        date = "2026-06-15"
+        severity = "medium"
+        family = "wallpaper-chrome-adfraud"
+        reference = "https://gbhackers.com/malicious-152-chrome-extensions-google-search/"
     strings:
         // MV3 manifest structure
-        $mv3         = /\"manifest_version\"\s*:\s*3/ ascii
-        $sw          = "\"service_worker\"" ascii
-        $newtab      = "\"newtab\"" ascii
-        $bg_js       = "js/bg.js" ascii
-
+        $mv3 = /\"manifest_version\"\s*:\s*3/
+        $sw = "\"service_worker\""
+        $newtab = "\"newtab\""
+        $bg_js = "js/bg.js"
         // Operator domains in the manifest (permissions, externally_connectable, etc.)
-        $dom_tab     = "tabplugins.com" ascii nocase
-        $dom_yow     = "yowgames.com" ascii nocase
-        $dom_cw      = "chromewallpaper.com" ascii nocase
-        $dom_owhit   = "owhit.com" ascii nocase
-
+        $dom_tab = "tabplugins.com" nocase
+        $dom_yow = "yowgames.com" nocase
+        $dom_cw = "chromewallpaper.com" nocase
+        $dom_owhit = "owhit.com" nocase
     condition:
-        filesize < 64KB
-        and $mv3
-        and $newtab
-        and ($sw or $bg_js)
-        and any of ($dom_*)
+        $mv3 and $newtab and ($sw or $bg_js) and any of ($dom_*) and filesize < 64KB
 }
 
-rule WallpaperAdfraud_IOC
-{
+rule WallpaperAdfraud_IOC {
     meta:
         description = "Static IOC sweep — operator domains, Hostinger origin IPs, Advergic header-bidding domain, and forensic log string for the 152-extension wallpaper ad-fraud campaign"
-        author      = "synthetic-detections"
-        date        = "2026-06-15"
-        severity    = "medium"
-        family      = "wallpaper-chrome-adfraud"
-        reference   = "https://cybersecuritynews.com/chrome-extensions-hide-ad-tracking/"
-
+        author = "synthetic-detections"
+        date = "2026-06-15"
+        severity = "medium"
+        family = "wallpaper-chrome-adfraud"
+        reference = "https://cybersecuritynews.com/chrome-extensions-hide-ad-tracking/"
     strings:
         // Operator domains
-        $dom_tab     = "tabplugins.com" ascii nocase
-        $dom_yow     = "yowgames.com" ascii nocase
-        $dom_cw      = "chromewallpaper.com" ascii nocase
-        $dom_owhit   = "owhit.com" ascii nocase
-
+        $dom_tab = "tabplugins.com" nocase
+        $dom_yow = "yowgames.com" nocase
+        $dom_cw = "chromewallpaper.com" nocase
+        $dom_owhit = "owhit.com" nocase
         // Advergic header-bidding domain used for monetisation
-        $dom_avads   = "avads.live" ascii nocase
-
+        $dom_avads = "avads.live" nocase
         // Hostinger origin server IPs
-        $ip1         = "147.79.120.202" ascii
-        $ip2         = "92.112.198.22" ascii
-
+        $ip1 = "147.79.120.202"
+        $ip2 = "92.112.198.22"
         // Forensic fingerprint left by the service worker
-        $idb_log     = "Deleted IndexedDB database:" ascii
-
+        $idb_log = "Deleted IndexedDB database:"
         // Forged Google SERP attribution pattern
-        $serp_spoof  = /google\.com\/url\?sa=t&source=web/ ascii
-
+        $serp_spoof = /google\.com\/url\?sa=t&source=web/
     condition:
-        filesize < 50MB and (
-            // Two or more operator domains — IOC dump or writeup
-            2 of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit)
-            // Or any operator domain co-occurring with the ad-fraud infra
-            or (any of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit) and ($dom_avads or any of ($ip*)))
-            // Or the forensic log string — unique to this family
-            or $idb_log
-            // Or an origin IP with ad-fraud domain
-            or (any of ($ip*) and $dom_avads)
-            // Or SERP spoofing pattern with any operator domain
-            or ($serp_spoof and any of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit))
-        )
+        // Two or more operator domains — IOC dump or writeup
+        // Or any operator domain co-occurring with the ad-fraud infra
+        // Or the forensic log string — unique to this family
+        // Or an origin IP with ad-fraud domain
+        // Or SERP spoofing pattern with any operator domain
+        (2 of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit) or any of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit) and ($dom_avads or any of ($ip*)) or $idb_log or any of ($ip*) and $dom_avads or $serp_spoof and any of ($dom_tab, $dom_yow, $dom_cw, $dom_owhit)) and filesize < 50MB
 }

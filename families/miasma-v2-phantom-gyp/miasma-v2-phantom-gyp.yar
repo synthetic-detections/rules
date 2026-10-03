@@ -51,157 +51,109 @@
      https://thehackernews.com/2026/06/ironworm-and-new-miasma-worm-variant.html
 */
 
-rule MiasmaV2_PhantomGyp_BindingGypTrigger
-{
+rule MiasmaV2_PhantomGyp_BindingGypTrigger {
     meta:
         description = "binding.gyp with a `<!(<cmd>)` command-substitution action that triggers code execution during npm install — Phantom Gyp delivery primitive"
-        author      = "synthetic-detections"
-        date        = "2026-06-06"
-        severity    = "critical"
-        family      = "miasma-v2-phantom-gyp"
-        reference   = "https://semgrep.dev/blog/2026/miasma-v2-self-spreading-npm-worm-now-uses-malicious-bindinggyp-file-and-compromises-57-packages/"
-
+        author = "synthetic-detections"
+        date = "2026-06-06"
+        severity = "critical"
+        family = "miasma-v2-phantom-gyp"
+        reference = "https://semgrep.dev/blog/2026/miasma-v2-self-spreading-npm-worm-now-uses-malicious-bindinggyp-file-and-compromises-57-packages/"
     strings:
         // node-gyp action expansion + a JS / shell binary as the substituted command
-        $action_node  = /<!\s*\(\s*node\s+[A-Za-z0-9._\/-]{1,80}\.(m?js|cjs)/ ascii
-        $action_bash  = /<!\s*\(\s*(bash|sh|curl|wget|python3?)\s+[^)]{1,200}\)/ ascii
-
+        $action_node = /<!\s*\(\s*node\s+[A-Za-z0-9._\/-]{1,80}\.(m?js|cjs)/
+        $action_bash = /<!\s*\(\s*(bash|sh|curl|wget|python3?)\s+[^)]{1,200}\)/
         // The verbatim Phantom Gyp shape Semgrep / Corgea published
-        $phantom_pattern = /<!\s*\(\s*node\s+index\.(m?js|cjs)\s*>\s*\/dev\/null/ ascii
-
+        $phantom_pattern = /<!\s*\(\s*node\s+index\.(m?js|cjs)\s*>\s*\/dev\/null/
         // sources/inputs/actions fields where node-gyp will expand <!(...)
-        $field_sources = /"sources"\s*:\s*\[/ ascii
-        $field_inputs  = /"inputs"\s*:\s*\[/ ascii
-        $field_actions = /"actions"\s*:\s*\[/ ascii
-
+        $field_sources = /"sources"\s*:\s*\[/
+        $field_inputs = /"inputs"\s*:\s*\[/
+        $field_actions = /"actions"\s*:\s*\[/
     condition:
         // binding.gyp files are typically tiny — campaign sample is 157 bytes.
         // Cap at 8 KiB to skip large legitimate node-gyp build manifests
         // and to keep the rule cheap to evaluate.
-        filesize < 8KB
-        and (
-            $phantom_pattern
-            or (
-                any of ($field_sources, $field_inputs, $field_actions)
-                and any of ($action_node, $action_bash)
-            )
-        )
+        ($phantom_pattern or any of ($field_sources, $field_inputs, $field_actions) and any of ($action_node, $action_bash)) and filesize < 8KB
 }
 
-rule MiasmaV2_PhantomGyp_ObfuscatedPayload
-{
+rule MiasmaV2_PhantomGyp_ObfuscatedPayload {
     meta:
         description = "Obfuscated index.js root payload — Phantom Gyp campaign-unique markers + credential-sweep co-occurrence"
-        author      = "synthetic-detections"
-        date        = "2026-06-06"
-        severity    = "critical"
-        family      = "miasma-v2-phantom-gyp"
-        reference   = "https://corgea.com/research/miasma-phantom-gyp-npm-worm-vapi-ai-sdk-ollama-june-2026"
-
+        author = "synthetic-detections"
+        date = "2026-06-06"
+        severity = "critical"
+        family = "miasma-v2-phantom-gyp"
+        reference = "https://corgea.com/research/miasma-phantom-gyp-npm-worm-vapi-ai-sdk-ollama-june-2026"
     strings:
         // Verbatim campaign markers Corgea + Semgrep recovered from the payload
-        $marker_beacon = "thebeautifulmarchoftime" ascii nocase
-        $marker_nuke   = "IfYouInvalidateThisTokenItWillNukeTheComputerOfTheOwner" ascii
-
+        $marker_beacon = "thebeautifulmarchoftime" nocase
+        $marker_nuke = "IfYouInvalidateThisTokenItWillNukeTheComputerOfTheOwner"
         // Bun bootstrap chain — downloads pinned Bun version then runs payload
-        $bun_release  = "github.com/oven-sh/bun/releases/download/" ascii nocase
-        $bun_run      = /bun\s+run\s+\/tmp\/p[^"'\s]{1,40}\.(m?js|cjs)/ ascii
-        $tmp_b        = /\/tmp\/b-[A-Za-z0-9._-]{1,40}/ ascii
-
+        $bun_release = "github.com/oven-sh/bun/releases/download/" nocase
+        $bun_run = /bun\s+run\s+\/tmp\/p[^"'\s]{1,40}\.(m?js|cjs)/
+        $tmp_b = /\/tmp\/b-[A-Za-z0-9._-]{1,40}/
         // Exfil shape — POSTs results to attacker GitHub repos
-        $exfil_path   = /\/contents\/results\/results-[0-9]{1,16}\.json/ ascii
-        $exfil_repo   = "liuende501" ascii nocase
-
+        $exfil_path = /\/contents\/results\/results-[0-9]{1,16}\.json/
+        $exfil_repo = "liuende501" nocase
         // Credential-target tokens — at least two co-occurring indicate a
         // genuine credential sweep, not a piece of documentation
-        $cred_aws     = "AWS_ACCESS_KEY_ID" ascii
-        $cred_gcp     = "GOOGLE_APPLICATION_CREDENTIALS" ascii
-        $cred_az      = "AZURE_CLIENT_SECRET" ascii
-        $cred_npm     = "NPM_TOKEN" ascii
-        $cred_gha     = "ACTIONS_RUNTIME_TOKEN" ascii
-        $cred_vault   = "VAULT_TOKEN" ascii
-        $cred_kube    = "/.kube/config" ascii
-        $cred_ssh     = "/.ssh/" ascii
-        $cred_1pwd    = "OP_SERVICE_ACCOUNT_TOKEN" ascii
-        $cred_slack   = "SLACK_BOT_TOKEN" ascii
-
+        $cred_aws = "AWS_ACCESS_KEY_ID"
+        $cred_gcp = "GOOGLE_APPLICATION_CREDENTIALS"
+        $cred_az = "AZURE_CLIENT_SECRET"
+        $cred_npm = "NPM_TOKEN"
+        $cred_gha = "ACTIONS_RUNTIME_TOKEN"
+        $cred_vault = "VAULT_TOKEN"
+        $cred_kube = "/.kube/config"
+        $cred_ssh = "/.ssh/"
+        $cred_1pwd = "OP_SERVICE_ACCOUNT_TOKEN"
+        $cred_slack = "SLACK_BOT_TOKEN"
     condition:
         // Real payload is ~4.5 MiB obfuscated; band catches mid-build variants too
-        filesize > 256KB
-        and filesize < 20MB
-        and (
-            // Campaign-unique anchor (singleton)
-            $marker_beacon
-            or $marker_nuke
-            // Or Bun-chain co-occurrence + credential sweep
-            or (
-                ($bun_release or $bun_run or $tmp_b)
-                and 3 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm, $cred_gha,
-                          $cred_vault, $cred_kube, $cred_ssh, $cred_1pwd, $cred_slack)
-            )
-            // Or exfil-path + repo + credential sweep
-            or (
-                $exfil_path and $exfil_repo
-                and 2 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm, $cred_gha,
-                          $cred_vault, $cred_kube, $cred_ssh)
-            )
-        )
+        // Campaign-unique anchor (singleton)
+        // Or Bun-chain co-occurrence + credential sweep
+        // Or exfil-path + repo + credential sweep
+        ($marker_beacon or $marker_nuke or ($bun_release or $bun_run or $tmp_b) and 3 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm, $cred_gha, $cred_vault, $cred_kube, $cred_ssh, $cred_1pwd, $cred_slack) or $exfil_path and $exfil_repo and 2 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm, $cred_gha, $cred_vault, $cred_kube, $cred_ssh)) and filesize > 256KB and filesize < 20MB
 }
 
-rule MiasmaV2_PhantomGyp_IOC
-{
+rule MiasmaV2_PhantomGyp_IOC {
     meta:
         description = "Static IOCs for Miasma v2 / Phantom Gyp — campaign markers, attacker GitHub account, backdoor file paths, representative compromised package coordinates"
-        author      = "synthetic-detections"
-        date        = "2026-06-06"
-        severity    = "high"
-        family      = "miasma-v2-phantom-gyp"
-        reference   = "https://semgrep.dev/blog/2026/miasma-v2-self-spreading-npm-worm-now-uses-malicious-bindinggyp-file-and-compromises-57-packages/"
-
+        author = "synthetic-detections"
+        date = "2026-06-06"
+        severity = "high"
+        family = "miasma-v2-phantom-gyp"
+        reference = "https://semgrep.dev/blog/2026/miasma-v2-self-spreading-npm-worm-now-uses-malicious-bindinggyp-file-and-compromises-57-packages/"
     strings:
         // High-confidence campaign anchors
-        $marker_beacon   = "thebeautifulmarchoftime" ascii nocase
-        $marker_nuke     = "IfYouInvalidateThisTokenItWillNukeTheComputerOfTheOwner" ascii
-        $exfil_repo      = "liuende501" ascii nocase
-        $technique_name  = "Phantom Gyp" ascii nocase
-
+        $marker_beacon = "thebeautifulmarchoftime" nocase
+        $marker_nuke = "IfYouInvalidateThisTokenItWillNukeTheComputerOfTheOwner"
+        $exfil_repo = "liuende501" nocase
+        $technique_name = "Phantom Gyp" nocase
         // Backdoor file paths reported by Corgea
-        $bd_claude_mjs  = ".claude/setup.mjs" ascii
-        $bd_claude_json = ".claude/settings.json" ascii
-        $bd_cursor      = ".cursor/rules/setup.mdc" ascii
-        $bd_vscode      = ".vscode/tasks.json" ascii
-        $bd_github_setup = ".github/setup.js" ascii
-
+        $bd_claude_mjs = ".claude/setup.mjs"
+        $bd_claude_json = ".claude/settings.json"
+        $bd_cursor = ".cursor/rules/setup.mdc"
+        $bd_vscode = ".vscode/tasks.json"
+        $bd_github_setup = ".github/setup.js"
         // Representative compromised npm coordinates (largest victims; full
         // list of 57 / 286 versions is published by Semgrep + Corgea)
-        $pkg_vapi_1 = "@vapi-ai/server-sdk@0.11.1" ascii
-        $pkg_vapi_2 = "@vapi-ai/server-sdk@0.11.2" ascii
-        $pkg_vapi_3 = "@vapi-ai/server-sdk@1.2.1" ascii
-        $pkg_vapi_4 = "@vapi-ai/server-sdk@1.2.2" ascii
-        $pkg_ollama_1 = "ai-sdk-ollama@0.13.1" ascii
-        $pkg_ollama_2 = "ai-sdk-ollama@1.1.1" ascii
-        $pkg_ollama_3 = "ai-sdk-ollama@2.2.1" ascii
-        $pkg_ollama_4 = "ai-sdk-ollama@3.8.5" ascii
-        $pkg_autotel  = "autotel" ascii
-        $pkg_awaitly  = "awaitly" ascii
-        $pkg_estories = "executable-stories" ascii
-        $pkg_envresolver = "node-env-resolver" ascii
-
+        $pkg_vapi_1 = "@vapi-ai/server-sdk@0.11.1"
+        $pkg_vapi_2 = "@vapi-ai/server-sdk@0.11.2"
+        $pkg_vapi_3 = "@vapi-ai/server-sdk@1.2.1"
+        $pkg_vapi_4 = "@vapi-ai/server-sdk@1.2.2"
+        $pkg_ollama_1 = "ai-sdk-ollama@0.13.1"
+        $pkg_ollama_2 = "ai-sdk-ollama@1.1.1"
+        $pkg_ollama_3 = "ai-sdk-ollama@2.2.1"
+        $pkg_ollama_4 = "ai-sdk-ollama@3.8.5"
+        $pkg_autotel = "autotel"
+        $pkg_awaitly = "awaitly"
+        $pkg_estories = "executable-stories"
+        $pkg_envresolver = "node-env-resolver"
     condition:
-        filesize < 50MB
-        and (
-            // High-confidence anchors fire alone
-            $marker_beacon
-            or $marker_nuke
-            or $exfil_repo
-            or $technique_name
-            // A specific pinned vulnerable version
-            or any of ($pkg_vapi_*, $pkg_ollama_*)
-            // Backdoor-path co-occurrence (≥2 paths together is a strong signal;
-            // any single path can appear legitimately in dev environments)
-            or 2 of ($bd_claude_mjs, $bd_claude_json, $bd_cursor, $bd_vscode, $bd_github_setup)
-            // Family-name + at least one package name (catches IOC writeups)
-            or (any of ($pkg_autotel, $pkg_awaitly, $pkg_estories, $pkg_envresolver)
-                and ($marker_beacon or $marker_nuke or $technique_name))
-        )
+        // High-confidence anchors fire alone
+        // A specific pinned vulnerable version
+        // Backdoor-path co-occurrence (≥2 paths together is a strong signal;
+        // any single path can appear legitimately in dev environments)
+        // Family-name + at least one package name (catches IOC writeups)
+        ($marker_beacon or $marker_nuke or $exfil_repo or $technique_name or any of ($pkg_vapi_*, $pkg_ollama_*) or 2 of ($bd_claude_mjs, $bd_claude_json, $bd_cursor, $bd_vscode, $bd_github_setup) or any of ($pkg_autotel, $pkg_awaitly, $pkg_estories, $pkg_envresolver) and ($marker_beacon or $marker_nuke or $technique_name)) and filesize < 50MB
 }

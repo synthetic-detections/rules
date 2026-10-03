@@ -41,82 +41,68 @@
      https://www.securityweek.com/brevo-supply-chain-attack-injects-malware-into-100000-websites/
 */
 
-rule BREVO_ClickFix_Injected_Loader
-{
+rule BREVO_ClickFix_Injected_Loader {
     meta:
         description = "Brevo supply-chain injected loader — dynamic createElement script pointing at a sendibt1.com CDN /f.js payload"
-        author      = "synthetic-detections"
-        date        = "2026-09-22"
-        severity    = "critical"
-        family      = "brevo-clickfix-cdn-2026"
-        reference   = "https://sansec.io/research/brevo-supply-chain-attack"
-
+        author = "synthetic-detections"
+        date = "2026-09-22"
+        severity = "critical"
+        family = "brevo-clickfix-cdn-2026"
+        reference = "https://sansec.io/research/brevo-supply-chain-attack"
     strings:
-        $ce   = "document.createElement(\"script\")" ascii
-        $ce2  = "document.createElement('script')" ascii
-        $host = "sendibt1.com" ascii nocase
-        $fjs  = "/f.js" ascii
-        $app  = "appendChild" ascii
-        $async = ".async" ascii
-
+        $ce = "document.createElement(\"script\")"
+        $ce2 = "document.createElement('script')"
+        $host = "sendibt1.com" nocase
+        $fjs = "/f.js"
+        $app = "appendChild"
+        $async = ".async"
     condition:
-        filesize < 300KB and
-        $host and $fjs and
-        1 of ($ce, $ce2) and
-        1 of ($app, $async)
+        $host and $fjs and any of ($ce, $ce2) and any of ($app, $async) and filesize < 300KB
 }
 
-rule BREVO_IOC
-{
+rule BREVO_IOC {
     meta:
         description = "Brevo supply-chain hard IOCs — sendibt1.com staging CDNs, /api/v1/<hex> C2 endpoints, wm.zip WordPress plugin path (>=2 co-occurring to avoid IOC-doc FPs)"
-        author      = "synthetic-detections"
-        date        = "2026-09-22"
-        severity    = "high"
-        family      = "brevo-clickfix-cdn-2026"
-        reference   = "https://www.bleepingcomputer.com/news/security/brevo-supply-chain-attack-injected-clickfix-scripts-on-customer-sites/"
-
+        author = "synthetic-detections"
+        date = "2026-09-22"
+        severity = "high"
+        family = "brevo-clickfix-cdn-2026"
+        reference = "https://www.bleepingcomputer.com/news/security/brevo-supply-chain-attack-injected-clickfix-scripts-on-customer-sites/"
     strings:
-        $h1 = "cdn2.sendibt1.com" ascii nocase
-        $h2 = "cdn4.sendibt1.com" ascii nocase
-        $h3 = "cdn9.sendibt1.com" ascii nocase
-        $h4 = "cdn10.sendibt1.com" ascii nocase
-        $h5 = "cdn11.sendibt1.com" ascii nocase
+        $h1 = "cdn2.sendibt1.com" nocase
+        $h2 = "cdn4.sendibt1.com" nocase
+        $h3 = "cdn9.sendibt1.com" nocase
+        $h4 = "cdn10.sendibt1.com" nocase
+        $h5 = "cdn11.sendibt1.com" nocase
         // distinctive C2 API endpoints (hex-named)
-        $a1 = "/api/v1/0044d4a" ascii
-        $a2 = "/api/v1/e08a3c4" ascii
-        $a3 = "/api/v1/8e4c615" ascii
-        $a4 = "/api/v1/f659473" ascii
-        $a5 = "/api/v1/4aff112?tk=" ascii
-        $a6 = "/api/v1/b832c14?e=" ascii
-        $a7 = "/api/v1/4ead0ff?tk=" ascii
+        $a1 = "/api/v1/0044d4a"
+        $a2 = "/api/v1/e08a3c4"
+        $a3 = "/api/v1/8e4c615"
+        $a4 = "/api/v1/f659473"
+        $a5 = "/api/v1/4aff112?tk="
+        $a6 = "/api/v1/b832c14?e="
+        $a7 = "/api/v1/4ead0ff?tk="
         // WordPress backdoor plugin drop
-        $wp = "/p/wm.zip" ascii
-
+        $wp = "/p/wm.zip"
     condition:
-        filesize < 300KB and 2 of them
+        2 of them and filesize < 300KB
 }
 
-rule BREVO_WP_Admin_Plugin_Drop
-{
+rule BREVO_WP_Admin_Plugin_Drop {
     meta:
         description = "Brevo injection WordPress stage — admin-session check plus wp-admin plugin upload/activate chain dropping wm.zip"
-        author      = "synthetic-detections"
-        date        = "2026-09-22"
-        severity    = "critical"
-        family      = "brevo-clickfix-cdn-2026"
-        reference   = "https://www.securityweek.com/brevo-supply-chain-attack-injects-malware-into-100000-websites/"
-
+        author = "synthetic-detections"
+        date = "2026-09-22"
+        severity = "critical"
+        family = "brevo-clickfix-cdn-2026"
+        reference = "https://www.securityweek.com/brevo-supply-chain-attack-injects-malware-into-100000-websites/"
     strings:
-        $up  = "/wp-admin/update.php?action=upload-plugin" ascii
-        $act = "action=activate" ascii
-        $zip = "wm.zip" ascii
-        $admin1 = "wp-admin" ascii
-        $admin2 = "is_admin" ascii nocase
-        $admin3 = "adminbar" ascii nocase
-
+        $up = "/wp-admin/update.php?action=upload-plugin"
+        $act = "action=activate"
+        $zip = "wm.zip"
+        $admin1 = "wp-admin"
+        $admin2 = "is_admin" nocase
+        $admin3 = "adminbar" nocase
     condition:
-        filesize < 300KB and
-        $up and $zip and
-        1 of ($act, $admin1, $admin2, $admin3)
+        $up and $zip and any of ($act, $admin1, $admin2, $admin3) and filesize < 300KB
 }

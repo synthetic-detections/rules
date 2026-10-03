@@ -47,76 +47,61 @@
 
 import "hash"
 
-rule Virtualizor_BGP_Hijack_Implant_Behaviour
-{
+rule Virtualizor_BGP_Hijack_Implant_Behaviour {
     meta:
         description = "Injected Virtualizor update loader: ne-rat payload fetch + java-jre-update.service persistence + proxyuser/root-SSH backdoor constellation"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "critical"
-        family      = "virtualizor-bgp-hijack"
-        reference   = "https://thehackernews.com/2026/09/bgp-hijack-delivers-malicious.html"
-
+        author = "synthetic-detections"
+        date = "2026-09-04"
+        severity = "critical"
+        family = "virtualizor-bgp-hijack"
+        reference = "https://thehackernews.com/2026/09/bgp-hijack-delivers-malicious.html"
     strings:
         // persistence: attacker systemd unit masquerading as a JRE updater
-        $svc     = "java-jre-update.service" ascii
+        $svc = "java-jre-update.service"
         // attacker-created local account
-        $acct    = "proxyuser" ascii
+        $acct = "proxyuser"
         // Virtualizor host-side files the loader tampers with
-        $vf1     = "/usr/local/virtualizor/globals.php" ascii
-        $vf2     = "/usr/local/virtualizor/_universal.php" ascii
-        $vf3     = "zzvirtservice" ascii
+        $vf1 = "/usr/local/virtualizor/globals.php"
+        $vf2 = "/usr/local/virtualizor/_universal.php"
+        $vf3 = "zzvirtservice"
         // C2 / delivery vocabulary
-        $c2a     = "nerat.cc" ascii nocase
-        $c2b     = "ne-rat.xyz" ascii nocase
+        $c2a = "nerat.cc" nocase
+        $c2b = "ne-rat.xyz" nocase
         // root SSH persistence
-        $ssh     = "authorized_keys" ascii
-
+        $ssh = "authorized_keys"
     condition:
         // ne-rat C2 anchor with any Virtualizor/persistence artifact, OR
         // the local persistence constellation without needing the C2 string
-        (
-            (any of ($c2a, $c2b)) and
-            (any of ($svc, $acct, $vf1, $vf2, $vf3))
-        )
-        or
-        (
-            $svc and $acct and $ssh
-        )
+        any of ($c2a, $c2b) and any of ($svc, $acct, $vf1, $vf2, $vf3) or $svc and $acct and $ssh
 }
 
-rule Virtualizor_BGP_Hijack_IOC
-{
+rule Virtualizor_BGP_Hijack_IOC {
     meta:
         description = "ne-rat C2 / delivery domains and attacker SSH source from the 2026-08 Virtualizor BGP-hijack supply-chain compromise"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "high"
-        family      = "virtualizor-bgp-hijack"
-        reference   = "https://hard2bit.com/en/blog/bgp-hijack-virtualizor-malicious-update-root-hypervisors/"
-
+        author = "synthetic-detections"
+        date = "2026-09-04"
+        severity = "high"
+        family = "virtualizor-bgp-hijack"
+        reference = "https://hard2bit.com/en/blog/bgp-hijack-virtualizor-malicious-update-root-hypervisors/"
     strings:
-        $d1 = "cdn.nerat.cc" ascii nocase
-        $d2 = "connect.ne-rat.xyz" ascii nocase
-        $d3 = "nerat.cc" ascii nocase
-        $d4 = "ne-rat.xyz" ascii nocase
-        $ip = "193.32.127.248" ascii fullword
-        $ipp = "31.77.220.138:2025" ascii fullword
-
+        $d1 = "cdn.nerat.cc" nocase
+        $d2 = "connect.ne-rat.xyz" nocase
+        $d3 = "nerat.cc" nocase
+        $d4 = "ne-rat.xyz" nocase
+        $ip = "193.32.127.248" fullword
+        $ipp = "31.77.220.138:2025" fullword
     condition:
         any of them
 }
 
-rule Virtualizor_BGP_Hijack_Payload_Pin
-{
+rule Virtualizor_BGP_Hijack_Payload_Pin {
     meta:
         description = "Hash pin for the published Virtualizor BGP-hijack Java payload (SHA-256)"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "critical"
-        family      = "virtualizor-bgp-hijack"
-        reference   = "https://hard2bit.com/en/blog/bgp-hijack-virtualizor-malicious-update-root-hypervisors/"
-
+        author = "synthetic-detections"
+        date = "2026-09-04"
+        severity = "critical"
+        family = "virtualizor-bgp-hijack"
+        reference = "https://hard2bit.com/en/blog/bgp-hijack-virtualizor-malicious-update-root-hypervisors/"
     condition:
         hash.sha256(0, filesize) == "b81a4e1fab9fc4e404d57224fe71e2c143aa93942bd46998789bdc944a7870c7"
 }
