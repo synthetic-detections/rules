@@ -49,4 +49,8 @@ identifiers. These names are campaign-specific and do not collide with legitimat
 
 ## Corpus FP test
 
-PENDING — corpus scan scheduled.
+| Rule                      | Slice | Hits | Verdict |
+|---------------------------|------:|-----:|---------|
+| DirtyBlanket_NpmManifest  | 6,385 |    0 | Clean   |
+
+DirtyBlanket_IOC and DirtyBlanket_Specimen scans pending.
