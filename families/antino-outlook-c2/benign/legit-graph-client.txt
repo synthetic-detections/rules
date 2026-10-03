@@ -1,0 +1,11 @@
+// Legitimate Microsoft Graph API client for calendar sync
+const GRAPH_URL = "https://graph.microsoft.com";
+async function getCalendar() {
+    const resp = await fetch(GRAPH_URL + "/me/messages");
+    return resp.json();
+}
+async function getDrive() {
+    const resp = await fetch(GRAPH_URL + "/me/drive/root/children");
+    return resp.json();
+}
+module.exports = { getCalendar, getDrive };

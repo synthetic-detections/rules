@@ -1,0 +1,9 @@
+Synthetic benign Rust binary metadata stub.
+Contains Rust compiler artifacts but no Antino indicators.
+
+.rustc
+rust_panic
+/rustc/nightly-2026-09-15
+
+This binary reads configuration from config.toml and logs to stdout.
+No Graph API references, no campaign-specific DLL names.
