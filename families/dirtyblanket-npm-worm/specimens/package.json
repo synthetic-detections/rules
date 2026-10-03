@@ -1,0 +1,12 @@
+{
+  "name": "xeprews",
+  "version": "5.2.1",
+  "description": "Fast, unopinionated, minimalist web framework for node.",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "node scripts/setup.js",
+    "test": "jest"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}
