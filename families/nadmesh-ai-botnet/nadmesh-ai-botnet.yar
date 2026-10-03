@@ -41,29 +41,25 @@ rule NadMesh_Botnet_Behavior
         severity    = "critical"
         family      = "nadmesh-ai-botnet"
         reference   = "https://thehackernews.com/2026/07/new-nadmesh-botnet-hunts-exposed-ai.html"
-
     strings:
         // Control-layer marker the family is named after
-        $marker1 = "n4d mesh controller" ascii nocase
-        $marker2 = "n4d mesh" ascii nocase
-        $marker3 = "nadmesh" ascii nocase
-
+        $marker1     = "n4d mesh controller" nocase
+        $marker2     = "n4d mesh" nocase
+        $marker3     = "nadmesh" nocase
         // AI / MCP platform targets discovered via Shodan
-        $ai_comfy  = "ComfyUI" ascii nocase
-        $ai_ollama = "ollama" ascii nocase
-        $ai_gradio = "Gradio" ascii nocase
-        $ai_shodan = "shodan" ascii nocase
-
+        $ai_comfy    = "ComfyUI" nocase
+        $ai_ollama   = "ollama" nocase
+        $ai_gradio   = "Gradio" nocase
+        $ai_shodan   = "shodan" nocase
         // Exposed-service exploitation surface
-        $svc_redis   = "redis" ascii nocase
-        $svc_docker  = "/v1.24/containers" ascii
-        $svc_kubelet = "kubelet" ascii nocase
-        $svc_k8s     = "serviceaccount/token" ascii nocase
-        $svc_etcd    = "etcd" ascii nocase
-
+        $svc_redis   = "redis" nocase
+        $svc_docker  = "/v1.24/containers"
+        $svc_kubelet = "kubelet" nocase
+        $svc_k8s     = "serviceaccount/token" nocase
+        $svc_etcd    = "etcd" nocase
     condition:
         // the distinctive mesh marker plus real targeting/exploitation context
-        (any of ($marker*))
+        any of ($marker*)
         and 2 of ($ai_*)
         and 2 of ($svc_*)
         and filesize < 40MB
@@ -78,19 +74,18 @@ rule NadMesh_IOC
         severity    = "high"
         family      = "nadmesh-ai-botnet"
         reference   = "https://gbhackers.com/new-nadmesh-botnet/"
-
     strings:
-        $c2_ip     = "209.99.186.235" ascii
-        $c2_domain = "cdnorigin.net" ascii nocase
-
+        $c2_ip     = "209.99.186.235"
+        $c2_domain = "cdnorigin.net" nocase
         // co-occurrence guards (suppress FP on shared/benign infra references)
-        $g_marker1 = "n4d mesh" ascii nocase
-        $g_marker2 = "nadmesh" ascii nocase
-        $g_ai      = "ComfyUI" ascii nocase
-        $g_shodan  = "shodan" ascii nocase
-
+        $g_marker1 = "n4d mesh" nocase
+        $g_marker2 = "nadmesh" nocase
+        $g_ai      = "ComfyUI" nocase
+        $g_shodan  = "shodan" nocase
     condition:
-        (any of ($c2_*)) and (any of ($g_*)) and filesize < 40MB
+        any of ($c2_*)
+        and any of ($g_*)
+        and filesize < 40MB
 }
 
 rule NadMesh_Agent_Specimen
@@ -103,14 +98,13 @@ rule NadMesh_Agent_Specimen
         family      = "nadmesh-ai-botnet"
         reference   = "https://thehackernews.com/2026/07/new-nadmesh-botnet-hunts-exposed-ai.html"
         hash        = "31c69b3e12936abca770d430066f379ec1d997ec"
-
     strings:
-        $s1 = "n4d mesh controller" ascii nocase
-        $s2 = "ComfyUI" ascii nocase
-        $s3 = "ollama" ascii nocase
-        $s4 = "shodan" ascii nocase
-        $s5 = "cdnorigin.net" ascii nocase
-
+        $s1 = "n4d mesh controller" nocase
+        $s2 = "ComfyUI" nocase
+        $s3 = "ollama" nocase
+        $s4 = "shodan" nocase
+        $s5 = "cdnorigin.net" nocase
     condition:
-        3 of them and filesize < 40MB
+        3 of them
+        and filesize < 40MB
 }

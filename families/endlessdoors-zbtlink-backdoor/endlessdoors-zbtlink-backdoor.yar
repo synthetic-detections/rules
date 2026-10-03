@@ -43,29 +43,25 @@ rule ENDLESSDOORS_Implant_Behavior
         severity    = "critical"
         family      = "endlessdoors-zbtlink-backdoor"
         reference   = "https://thehackernews.com/2026/08/chinese-made-zbtlink-routers-ship-with.html"
-
     strings:
         // rctl-derived protocol vocabulary (implant-specific)
-        $p1 = "rctlbash" ascii
-        $p2 = "run this as root" ascii
-        $lib = "librctl.so" ascii
-
+        $p1   = "rctlbash"
+        $p2   = "run this as root"
+        $lib  = "librctl.so"
         // kworker-masquerade filesystem artifacts
-        $a1 = "/etc/init.d/skworker" ascii
-        $a2 = "/etc/kworker.cfg" ascii
-        $a3 = "/usr/sbin/kworker" ascii
-        $a4 = "/usr/lib/librctl.so" ascii
-
+        $a1   = "/etc/init.d/skworker"
+        $a2   = "/etc/kworker.cfg"
+        $a3   = "/usr/sbin/kworker"
+        $a4   = "/usr/lib/librctl.so"
         // command execution
-        $exec = "popen" ascii
-
+        $exec = "popen"
     condition:
         // ELF, with the rctl protocol OR two masquerade paths, plus a corroborator
-        uint32(0) == 0x464c457f
+        uint32(0) == 1179403647
         and (
-            1 of ($p1, $p2)
-            or ( $lib and 1 of ($a*) )
-            or ( 2 of ($a*) and $exec )
+            any of ($p1, $p2) or
+            ($lib and any of ($a*)) or
+            (2 of ($a*) and $exec)
         )
 }
 
@@ -78,19 +74,16 @@ rule ENDLESSDOORS_IOC
         severity    = "high"
         family      = "endlessdoors-zbtlink-backdoor"
         reference   = "https://thehackernews.com/2026/08/chinese-made-zbtlink-routers-ship-with.html"
-
     strings:
         // C2 domains
-        $d1 = "zbtctl.epplink.net" ascii nocase
-        $d2 = "online-string.com" ascii nocase
-        $d3 = "rbdg4nzqadui.wikaba.com" ascii nocase
-
+        $d1  = "zbtctl.epplink.net" nocase
+        $d2  = "online-string.com" nocase
+        $d3  = "rbdg4nzqadui.wikaba.com" nocase
         // C2 IPs
-        $ip1 = "47.100.190.96" ascii
-        $ip2 = "47.107.224.89" ascii
-        $ip3 = "45.32.81.152" ascii
-        $ip4 = "43.248.136.125" ascii
-
+        $ip1 = "47.100.190.96"
+        $ip2 = "47.107.224.89"
+        $ip3 = "45.32.81.152"
+        $ip4 = "43.248.136.125"
     condition:
         any of ($d*) or 2 of ($ip*)
 }
@@ -104,13 +97,11 @@ rule ENDLESSDOORS_Artifacts
         severity    = "critical"
         family      = "endlessdoors-zbtlink-backdoor"
         reference   = "https://blog.gridinsoft.com/endlessdoors-zbtlink-router-backdoor/"
-
     strings:
-        $init = "/etc/init.d/skworker" ascii
-        $lib  = "/usr/lib/librctl.so" ascii
-        $cfg  = "/etc/kworker.cfg" ascii
-        $sbin = "/usr/sbin/kworker" ascii
-
+        $init = "/etc/init.d/skworker"
+        $lib  = "/usr/lib/librctl.so"
+        $cfg  = "/etc/kworker.cfg"
+        $sbin = "/usr/sbin/kworker"
     condition:
         3 of them
 }

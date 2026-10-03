@@ -45,42 +45,33 @@ rule Miasma_ObfuscatedIndexJS
         severity    = "critical"
         family      = "miasma-redhat-npm"
         reference   = "https://www.wiz.io/blog/miasma-supply-chain-attack-targeting-redhat-npm-packages"
-
     strings:
         // eval() over a decoded string — the headline obfuscation tell
-        $eval_call = /eval\s*\(\s*[A-Za-z_$][\w$]{0,32}\s*\)/ ascii
-
+        $eval_call    = /eval\s*\(\s*[A-Za-z_$][\w$]{0,32}\s*\)/
         // ROT-13 / ROT-N character-rotation helpers (Wiz: "ROT-based decoding")
-        $rot_helper_a = /String\.fromCharCode\s*\([^)]{0,80}\+\s*1?3\s*\)/ ascii
-        $rot_helper_b = /charCodeAt\s*\([^)]{0,40}\)\s*[-+]\s*1?3\b/ ascii
-
+        $rot_helper_a = /String\.fromCharCode\s*\([^)]{0,80}\+\s*1?3\s*\)/
+        $rot_helper_b = /charCodeAt\s*\([^)]{0,40}\)\s*[-+]\s*1?3\b/
         // Distinctive GCP UA observed in Miasma traffic
-        $gcp_ua = "google-api-nodejs-client/7.0.0 gl-node/20.11.0 gccl/7.0.0" ascii
-
+        $gcp_ua       = "google-api-nodejs-client/7.0.0 gl-node/20.11.0 gccl/7.0.0"
         // Credential-sweep target tokens — at least two co-occurring
         // indicate the payload is hunting cloud secrets, not legitimate
         // service-account use.
-        $cred_aws    = "AWS_ACCESS_KEY_ID" ascii
-        $cred_gcp    = "GOOGLE_APPLICATION_CREDENTIALS" ascii
-        $cred_az     = "AZURE_CLIENT_SECRET" ascii
-        $cred_npm    = "NPM_TOKEN" ascii
-        $cred_gha    = "ACTIONS_RUNTIME_TOKEN" ascii
-        $cred_vault  = "VAULT_TOKEN" ascii
-        $cred_kube   = "/.kube/config" ascii
-        $cred_ssh    = "/.ssh/" ascii
-
+        $cred_aws     = "AWS_ACCESS_KEY_ID"
+        $cred_gcp     = "GOOGLE_APPLICATION_CREDENTIALS"
+        $cred_az      = "AZURE_CLIENT_SECRET"
+        $cred_npm     = "NPM_TOKEN"
+        $cred_gha     = "ACTIONS_RUNTIME_TOKEN"
+        $cred_vault   = "VAULT_TOKEN"
+        $cred_kube    = "/.kube/config"
+        $cred_ssh     = "/.ssh/"
     condition:
-        filesize > 32KB
-        and filesize < 5MB
-        and $eval_call
+        $eval_call
         and (
-            $gcp_ua
-            or (
-                any of ($rot_helper_a, $rot_helper_b)
-                and 3 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm,
-                          $cred_gha, $cred_vault, $cred_kube, $cred_ssh)
-            )
+            $gcp_ua or
+            (any of ($rot_helper_a, $rot_helper_b) and 3 of ($cred_aws, $cred_gcp, $cred_az, $cred_npm, $cred_gha, $cred_vault, $cred_kube, $cred_ssh))
         )
+        and filesize > 32KB
+        and filesize < 5MB
 }
 
 rule Miasma_NpmPackageManifest
@@ -92,19 +83,17 @@ rule Miasma_NpmPackageManifest
         severity    = "critical"
         family      = "miasma-redhat-npm"
         reference   = "https://access.redhat.com/security/vulnerabilities/RHSB-2026-006"
-
     strings:
-        $scope        = "@redhat-cloud-services/" ascii
-        $pkg_scripts  = "\"scripts\"" ascii
-        $pkg_preinst  = "\"preinstall\"" ascii
-        $preinst_idx  = /"preinstall"\s*:\s*"[^"]{0,40}(node\s+)?\.?\/?index\.js[^"]{0,40}"/ ascii
-
+        $scope       = "@redhat-cloud-services/"
+        $pkg_scripts = "\"scripts\""
+        $pkg_preinst = "\"preinstall\""
+        $preinst_idx = /"preinstall"\s*:\s*"[^"]{0,40}(node\s+)?\.?\/?index\.js[^"]{0,40}"/
     condition:
-        filesize < 256KB
-        and $scope
+        $scope
         and $pkg_scripts
         and $pkg_preinst
         and $preinst_idx
+        and filesize < 256KB
 }
 
 rule Miasma_IOC
@@ -116,47 +105,44 @@ rule Miasma_IOC
         severity    = "high"
         family      = "miasma-redhat-npm"
         reference   = "https://www.wiz.io/blog/miasma-supply-chain-attack-targeting-redhat-npm-packages"
-
     strings:
         // Campaign / rebranding markers (Dune → Greek mythology cosmetic shift)
-        $theme_miasma = "Miasma: The Spreading Blight" ascii nocase
-        $theme_spartan = "spartan" ascii nocase
-        $gcp_ua = "google-api-nodejs-client/7.0.0 gl-node/20.11.0 gccl/7.0.0" ascii
-
+        $theme_miasma  = "Miasma: The Spreading Blight" nocase
+        $theme_spartan = "spartan" nocase
+        $gcp_ua        = "google-api-nodejs-client/7.0.0 gl-node/20.11.0 gccl/7.0.0"
         // Affected npm package coordinates under @redhat-cloud-services scope.
         // A representative subset — Wiz's full table lists 32 packages / 96
         // versions; matching any one is sufficient for the IOC sweep.
-        $pkg01 = "@redhat-cloud-services/frontend-components" ascii
-        $pkg02 = "@redhat-cloud-services/rbac-client" ascii
-        $pkg03 = "@redhat-cloud-services/chrome" ascii
-        $pkg04 = "@redhat-cloud-services/frontend-components-utilities" ascii
-        $pkg05 = "@redhat-cloud-services/frontend-components-notifications" ascii
-        $pkg06 = "@redhat-cloud-services/host-inventory" ascii
-        $pkg07 = "@redhat-cloud-services/insights-common-typescript" ascii
-        $pkg08 = "@redhat-cloud-services/types" ascii
-
+        $pkg01         = "@redhat-cloud-services/frontend-components"
+        $pkg02         = "@redhat-cloud-services/rbac-client"
+        $pkg03         = "@redhat-cloud-services/chrome"
+        $pkg04         = "@redhat-cloud-services/frontend-components-utilities"
+        $pkg05         = "@redhat-cloud-services/frontend-components-notifications"
+        $pkg06         = "@redhat-cloud-services/host-inventory"
+        $pkg07         = "@redhat-cloud-services/insights-common-typescript"
+        $pkg08         = "@redhat-cloud-services/types"
         // Specific vulnerable version pins reported by Wiz
-        $ver1 = "frontend-components@7.7.2" ascii
-        $ver2 = "frontend-components@7.7.3" ascii
-        $ver3 = "frontend-components@7.7.5" ascii
-        $ver4 = "rbac-client@9.0.3" ascii
-        $ver5 = "rbac-client@9.0.4" ascii
-        $ver6 = "rbac-client@9.0.6" ascii
-        $ver7 = "chrome@2.3.1" ascii
-
+        $ver1          = "frontend-components@7.7.2"
+        $ver2          = "frontend-components@7.7.3"
+        $ver3          = "frontend-components@7.7.5"
+        $ver4          = "rbac-client@9.0.3"
+        $ver5          = "rbac-client@9.0.4"
+        $ver6          = "rbac-client@9.0.6"
+        $ver7          = "chrome@2.3.1"
     condition:
-        filesize < 50MB and (
-            // Verbatim campaign phrase or fingerprint — high-confidence
-            $theme_miasma
-            or $gcp_ua
-            // Or a specific known-bad version pin
-            or any of ($ver*)
-            // Or "spartan" marker co-occurring with at least one package name
-            // (raw "spartan" alone is a noisy English word)
-            or ($theme_spartan and any of ($pkg*))
-            // NOTE: bare @redhat-cloud-services package *names* are not IOCs
-            // on their own — any legitimate consumer app or lockfile lists
-            // several of them. Detection here requires a compromised version
-            // pin ($ver*), a campaign theme, or the GCP UA fingerprint.
+        // Verbatim campaign phrase or fingerprint — high-confidence
+        // Or a specific known-bad version pin
+        // Or "spartan" marker co-occurring with at least one package name
+        // (raw "spartan" alone is a noisy English word)
+        // NOTE: bare @redhat-cloud-services package *names* are not IOCs
+        // on their own — any legitimate consumer app or lockfile lists
+        // several of them. Detection here requires a compromised version
+        // pin ($ver*), a campaign theme, or the GCP UA fingerprint.
+        (
+            $theme_miasma or
+            $gcp_ua or
+            any of ($ver*) or
+            ($theme_spartan and any of ($pkg*))
         )
+        and filesize < 50MB
 }

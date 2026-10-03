@@ -59,69 +59,69 @@ rule MoYu_BADBOX_HeadUnit_Behavior
 {
     meta:
         description = "MoYu Group / BADBOX Android car head-unit malware — distinctive multi-stage class/thread/service artifacts"
-        author = "synthetic-detections"
-        date = "2026-08-24"
-        severity = "critical"
-        family = "badbox-headunit-moyu"
-        reference = "https://securelist.com/android-head-unit-malware/121106/"
-
+        author      = "synthetic-detections"
+        date        = "2026-08-24"
+        severity    = "critical"
+        family      = "badbox-headunit-moyu"
+        reference   = "https://securelist.com/android-head-unit-malware/121106/"
     strings:
-        $jar    = "com.tw.jar1" ascii
-        $thread = "mosdk-host-loader" ascii
-        $svc    = "AdmoyuService" ascii
-        $bill   = "com.ast.sdk.BillingMain" ascii
-        $zhima  = "com.miyc.transfer.Client" ascii
-        $entry  = "com.c.j.qbh" ascii
-
+        $jar    = "com.tw.jar1"
+        $thread = "mosdk-host-loader"
+        $svc    = "AdmoyuService"
+        $bill   = "com.ast.sdk.BillingMain"
+        $zhima  = "com.miyc.transfer.Client"
+        $entry  = "com.c.j.qbh"
     condition:
-        filesize < 50MB and 3 of them
+        3 of them
+        and filesize < 50MB
 }
 
 rule MoYu_BADBOX_HeadUnit_IOC
 {
     meta:
         description = "MoYu Group / BADBOX head-unit malware — C2 domains and API paths (co-occurrence guarded)"
-        author = "synthetic-detections"
-        date = "2026-08-24"
-        severity = "high"
-        family = "badbox-headunit-moyu"
-        reference = "https://securelist.com/android-head-unit-malware/121106/"
-
+        author      = "synthetic-detections"
+        date        = "2026-08-24"
+        severity    = "high"
+        family      = "badbox-headunit-moyu"
+        reference   = "https://securelist.com/android-head-unit-malware/121106/"
     strings:
-        $d1 = "xmsae.sbs" ascii nocase
-        $d2 = "ishano456.sbs" ascii nocase
-        $d3 = "xshaon123.sbs" ascii nocase
-        $d4 = "kshahnd.sbs" ascii nocase
-        $d5 = "mdsjhd.sbs" ascii nocase
-        $d6 = "nmnsny.sbs" ascii nocase
-        $d7 = "ty54fgd435.my" ascii nocase
-        $d8 = "ue886578433.online" ascii nocase
-        $d9 = "ty4523.space" ascii nocase
-        $d10 = "cardoor.cn" ascii nocase
-        $api1 = "/cpc/api/task" ascii
-        $api2 = "/cpc/api/report" ascii
-        $api3 = "/cpc/api/xml" ascii
-
+        $d1   = "xmsae.sbs" nocase
+        $d2   = "ishano456.sbs" nocase
+        $d3   = "xshaon123.sbs" nocase
+        $d4   = "kshahnd.sbs" nocase
+        $d5   = "mdsjhd.sbs" nocase
+        $d6   = "nmnsny.sbs" nocase
+        $d7   = "ty54fgd435.my" nocase
+        $d8   = "ue886578433.online" nocase
+        $d9   = "ty4523.space" nocase
+        $d10  = "cardoor.cn" nocase
+        $api1 = "/cpc/api/task"
+        $api2 = "/cpc/api/report"
+        $api3 = "/cpc/api/xml"
     condition:
-        filesize < 50MB and
-        (2 of ($d*) or (1 of ($d*) and 1 of ($api*)) or 2 of ($api*))
+        (
+            2 of ($d*) or
+            (any of ($d*) and any of ($api*)) or
+            2 of ($api*)
+        )
+        and filesize < 50MB
 }
 
 rule MoYu_BADBOX_HeadUnit_Specimen
 {
     meta:
         description = "MoYu Group / BADBOX head-unit malware — tight specimen pin (loader thread + MoYu service + Zhima client)"
-        author = "synthetic-detections"
-        date = "2026-08-24"
-        severity = "critical"
-        family = "badbox-headunit-moyu"
-        reference = "https://securelist.com/android-head-unit-malware/121106/"
-
+        author      = "synthetic-detections"
+        date        = "2026-08-24"
+        severity    = "critical"
+        family      = "badbox-headunit-moyu"
+        reference   = "https://securelist.com/android-head-unit-malware/121106/"
     strings:
-        $thread = "mosdk-host-loader" ascii
-        $svc    = "AdmoyuService" ascii
-        $zhima  = "com.miyc.transfer.Client" ascii
-
+        $thread = "mosdk-host-loader"
+        $svc    = "AdmoyuService"
+        $zhima  = "com.miyc.transfer.Client"
     condition:
-        filesize < 50MB and all of them
+        all of them
+        and filesize < 50MB
 }

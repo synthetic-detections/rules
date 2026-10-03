@@ -48,26 +48,25 @@ rule Kimsuky_HelloDoor_LLM_Tells
         family      = "HelloDoor"
         hash_md5    = "c42ae004badddd3017adadbdd1421e00"
         reference1  = "https://securelist.com/kimsuky-appleseed-pebbledash-campaigns/119785/"
-
     strings:
         // Emoji-laden production debug strings — diagnostic for LLM authorship.
         // Kept ASCII-only because Rust strings are UTF-8 in .rdata; YARA's `wide`
         // would mangle multi-byte UTF-8 by widening each byte to xx 00 rather than
         // re-encoding the codepoints.
-        $emoji_listen   = "✅ Port is now listening (no accepting)" ascii
-        $emoji_inuse    = "❌ Port is already in use" ascii
-        $emoji_regsvr   = "🔍 regsvr32.exe detected as parent. Attempting to terminate..." ascii
-
+        $emoji_listen   = "\xE2\x9C\x85 Port is now listening (no accepting)"
+        $emoji_inuse    = "\xE2\x9D\x8C Port is already in use"
+        $emoji_regsvr   = "\xF0\x9F\x94\x8D regsvr32.exe detected as parent. Attempting to terminate..."
         // Phonetic typos that a linter or human reviewer would have caught.
         // Pure ASCII, so `wide` works correctly as a defence against UTF-16 variants.
-        $typo_decryt    = "decrytion failed" ascii wide        // intended: "decryption failed"
-        $typo_autorum   = "autorum failed" ascii wide          // intended: "autorun failed"
+        // intended: "decryption failed"
+        $typo_decryt    = "decrytion failed" ascii wide
+        // intended: "autorun failed"
+        $typo_autorum   = "autorum failed" ascii wide
         $typo_resultsnd = "result send fail" ascii wide
-
     condition:
-        filesize < 10MB and
-        any of ($emoji_*) and
-        any of ($typo_*)
+        any of ($emoji_*)
+        and any of ($typo_*)
+        and filesize < 10MB
 }
 
 rule Kimsuky_HelloDoor_IOCs
@@ -78,26 +77,20 @@ rule Kimsuky_HelloDoor_IOCs
         date        = "2026-05-30"
         severity    = "high"
         family      = "HelloDoor"
-
     strings:
         // C2 (Cloudflare Tunnel host) — current observed
-        $c2_host        = "female-disorder-beta-metropolitan.trycloudflare.com" ascii nocase
-
+        $c2_host        = "female-disorder-beta-metropolitan.trycloudflare.com" nocase
         // RC4 key used to decrypt Base64-then-RC4 server responses
-        $rc4_key        = "fwr3errsettwererfs" ascii
-
+        $rc4_key        = "fwr3errsettwererfs"
         // PebbleDash family fingerprint — ten-char-repeating parameter names
-        $pebbledash_qs  = /aaaaaaaaaa=[0-9]&bbbbbbbbbb=/ ascii
-
+        $pebbledash_qs  = /aaaaaaaaaa=[0-9]&bbbbbbbbbb=/
         // Persistence registry value: regsvr32-loaded DLL named "tdll"
-        $persistence    = /"tdll"="regsvr32\.exe \/s/ ascii
-
+        $persistence    = /"tdll"="regsvr32\.exe \/s/
         // Shell-exec template used by the backdoor
-        $shell_template = "chcp 65001 > nul & cmd /U /C" ascii
-
+        $shell_template = "chcp 65001 > nul & cmd /U /C"
     condition:
-        filesize < 50MB and
         any of them
+        and filesize < 50MB
 }
 
 rule Kimsuky_HelloDoor_PE_DLL
@@ -109,21 +102,20 @@ rule Kimsuky_HelloDoor_PE_DLL
         severity    = "critical"
         family      = "HelloDoor"
         notes       = "Rust DLL invoked via regsvr32.exe /s"
-
     strings:
         // HelloDoor-unique anchors (any one is sufficient when paired with PE+DLL)
-        $rc4_key      = "fwr3errsettwererfs" ascii
-        $emoji_listen = "✅ Port is now listening (no accepting)" ascii
-        $emoji_inuse  = "❌ Port is already in use" ascii
+        $rc4_key      = "fwr3errsettwererfs"
+        $emoji_listen = "\xE2\x9C\x85 Port is now listening (no accepting)"
+        $emoji_inuse  = "\xE2\x9D\x8C Port is already in use"
         $typo_decryt  = "decrytion failed" ascii wide
         $typo_autorum = "autorum failed" ascii wide
-
     condition:
         // Universally-portable PE+DLL gate (works in both classic YARA and
         // YARA-X). pe.is_pe / pe.is_dll are inconsistent between engines.
-        uint16(0) == 0x5A4D
-        and uint32(uint32(0x3C)) == 0x00004550
-        and (pe.characteristics & pe.DLL) != 0
-        and filesize > 20KB and filesize < 10MB
+        uint16(0) == 23117
+        and uint32(uint32(60)) == 17744
+        and pe.characteristics & pe.DLL != 0
         and any of ($rc4_key, $emoji_*, $typo_*)
+        and filesize > 20KB
+        and filesize < 10MB
 }

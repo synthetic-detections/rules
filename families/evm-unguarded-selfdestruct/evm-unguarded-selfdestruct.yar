@@ -43,53 +43,61 @@ rule EVM_Unguarded_SelfDestruct_Bytecode
         family      = "evm-unguarded-selfdestruct"
         reference   = "https://eips.ethereum.org/EIPS/eip-6780"
         note        = "audit/hunting rule — expect benign CTF/test/tooling hits; confirm the SELFDESTRUCT is truly unguarded and the contract holds value before treating as actionable"
-
     strings:
         // EVM runtime dispatcher preamble (Solidity): PUSH1 0x80 PUSH1 0x40 MSTORE
-        $evm = { 60 80 60 40 52 }
-
+        $evm         = { 60 80 60 40 52 }
         // --- "strong" destructive selectors: PUSH4 <sel> ---
         // names that essentially never appear on legitimate production code
-        $s_destroyme = { 63 0c 7c ad ed }   // destroyMe()
-        $s_gee       = { 63 5d 2b af ed }   // gee()  (pairs with destroyMe in CTF drain kits)
-        $s_die       = { 63 c9 35 3c b5 }   // die(address)
-        $s_kill      = { 63 41 c0 e1 b5 }   // kill()
-        $s_killme    = { 63 24 d9 7a 4a }   // killme()
-        $s_suicide   = { 63 c9 6c d4 6f }   // suicide()
-
+        // destroyMe()
+        $s_destroyme = { 63 0C 7C AD ED }
+        // gee()  (pairs with destroyMe in CTF drain kits)
+        $s_gee       = { 63 5D 2B AF ED }
+        // die(address)
+        $s_die       = { 63 C9 35 3C B5 }
+        // kill()
+        $s_kill      = { 63 41 C0 E1 B5 }
+        // killme()
+        $s_killme    = { 63 24 D9 7A 4A }
+        // suicide()
+        $s_suicide   = { 63 C9 6C D4 6F }
         // --- "weak" destructive selectors: only meaningful in combination ---
-        $w_drain     = { 63 98 90 22 0b }   // drain()
-        $w_target    = { 63 d4 b8 39 92 }   // target()  (drain-to-target honeypot)
-        $w_destroy   = { 63 83 19 7e f0 }   // destroy()
-        $w_destroyc  = { 63 09 2a 5c ce }   // destroyContract()
-        $w_run       = { 63 c0 40 62 26 }   // run()
-        $w_enable    = { 63 a3 90 7d 71 }   // enable()
-        $w_emergency = { 63 6f f1 c9 bc }   // emergencyWithdraw(address)
-
+        // drain()
+        $w_drain     = { 63 98 90 22 0B }
+        // target()  (drain-to-target honeypot)
+        $w_target    = { 63 D4 B8 39 92 }
+        // destroy()
+        $w_destroy   = { 63 83 19 7E F0 }
+        // destroyContract()
+        $w_destroyc  = { 63 09 2A 5C CE }
+        // run()
+        $w_run       = { 63 C0 40 62 26 }
+        // enable()
+        $w_enable    = { 63 A3 90 7D 71 }
+        // emergencyWithdraw(address)
+        $w_emergency = { 63 6F F1 C9 BC }
         // ownership markers — used to DOWN-weight: a contract with owner()
         // / transferOwnership() gates its destroy behind an owner, so it is
         // not "unguarded" and should not be reported on a weak selector alone
-        $o_owner     = { 63 8d a5 cb 5b }   // owner()
-        $o_xferown   = { 63 f2 fd e3 8b }   // transferOwnership(address)
-
+        // owner()
+        $o_owner     = { 63 8D A5 CB 5B }
+        // transferOwnership(address)
+        $o_xferown   = { 63 F2 FD E3 8B }
     condition:
-        $evm at 0 and filesize < 24KB
         // ownerless is part of the definition: a contract carrying owner()/
         // transferOwnership() gates its destroy behind an owner and is not
         // "unguarded". Requiring their absence on EVERY path removes the
         // dominant false positive (Ownable contracts with an onlyOwner kill()).
+        // Path 1: an unambiguous self-destruct-by-anyone selector
+        // Path 2: drain-to-target honeypot pair
+        // Path 3: two or more weak destructive selectors
+        $evm at 0
         and not any of ($o_*)
-        and
-        (
-            // Path 1: an unambiguous self-destruct-by-anyone selector
-            any of ($s_*)
-            or
-            // Path 2: drain-to-target honeypot pair
-            ($w_drain and $w_target)
-            or
-            // Path 3: two or more weak destructive selectors
-            (2 of ($w_*))
+        and (
+            any of ($s_*) or
+            ($w_drain and $w_target) or
+            2 of ($w_*)
         )
+        and filesize < 24KB
 }
 
 rule EVM_Unguarded_SelfDestruct_Source
@@ -101,28 +109,24 @@ rule EVM_Unguarded_SelfDestruct_Source
         severity    = "low"
         family      = "evm-unguarded-selfdestruct"
         reference   = "https://eips.ethereum.org/EIPS/eip-6780"
-
     strings:
-        $sd_kw     = "selfdestruct" ascii nocase
-        $sd_suicide= "suicide" ascii nocase
-
+        $sd_kw       = "selfdestruct" nocase
+        $sd_suicide  = "suicide" nocase
         // caller-invocable destroy/drain function declarations
-        $f_destroyme = "function destroyMe" ascii nocase
-        $f_kill      = "function kill" ascii nocase
-        $f_die       = "function die" ascii nocase
-        $f_drain     = "function drain" ascii nocase
-
+        $f_destroyme = "function destroyMe" nocase
+        $f_kill      = "function kill" nocase
+        $f_die       = "function die" nocase
+        $f_drain     = "function drain" nocase
         // absence of a guard is the point — flag public/external + no modifier
-        $g_public    = "public" ascii
-        $g_external  = "external" ascii
+        $g_public    = "public"
+        $g_external  = "external"
         // guard tokens: if present alongside, likely NOT unguarded
-        $mod_onlyown = "onlyOwner" ascii
-        $mod_require = "require(msg.sender" ascii
-
+        $mod_onlyown = "onlyOwner"
+        $mod_require = "require(msg.sender"
     condition:
-        filesize < 200KB
-        and (any of ($sd_*))
-        and (any of ($f_*))
-        and (any of ($g_public, $g_external))
+        any of ($sd_*)
+        and any of ($f_*)
+        and any of ($g_public, $g_external)
         and not ($mod_onlyown or $mod_require)
+        and filesize < 200KB
 }

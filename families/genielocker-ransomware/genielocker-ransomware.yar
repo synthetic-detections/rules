@@ -34,29 +34,33 @@ rule GenieLocker_Ransomware_Behavior
         severity    = "critical"
         family      = "genielocker-ransomware"
         reference   = "https://securelist.com/genielocker-ransomware-for-windows-linux-and-esxi/120843/"
-
     strings:
         // Campaign-unique constants
         $ext   = ".03ffc1c4a3da0f02" ascii wide
-        $journ = "VCJOURN" ascii
-
+        $journ = "VCJOURN"
         // Kill-list fragments (exact GenieLocker lists)
-        $kp = "dbeng50;sqbcoreservice;excel;infopath;msaccess" ascii
-        $ks = "GxVss;GxBlr;GxFWD;GxCVD;GxCIMgr" ascii
-
+        $kp    = "dbeng50;sqbcoreservice;excel;infopath;msaccess"
+        $ks    = "GxVss;GxBlr;GxFWD;GxCVD;GxCIMgr"
         // ESXi behaviour + libsodium key-wrap scheme markers
-        $esxi = "/etc/vmware/welcome" ascii
-        $wrap = "Curve25519-XSalsa20-Poly1305" ascii nocase
-
+        $esxi  = "/etc/vmware/welcome"
+        $wrap  = "Curve25519-XSalsa20-Poly1305" nocase
     condition:
-        (uint16(0) == 0x5A4D or uint32(0) == 0x464C457F)   // MZ or ELF
-        and filesize < 30MB
-        and (
-            $ext                                   // extension is campaign-unique
-            or $journ                              // journal magic is campaign-unique
-            or any of ($kp, $ks)                   // exact kill-list fragment
-            or ( $esxi and $wrap )                 // ESXi build + the key-wrap scheme
+        // MZ or ELF
+        // extension is campaign-unique
+        // journal magic is campaign-unique
+        // exact kill-list fragment
+        // ESXi build + the key-wrap scheme
+        (
+            uint16(0) == 23117 or
+            uint32(0) == 1179403647
         )
+        and (
+            $ext or
+            $journ or
+            any of ($kp, $ks) or
+            ($esxi and $wrap)
+        )
+        and filesize < 30MB
 }
 
 rule GenieLocker_IOC
@@ -68,17 +72,14 @@ rule GenieLocker_IOC
         severity    = "high"
         family      = "genielocker-ransomware"
         reference   = "https://securelist.com/genielocker-ransomware-for-windows-linux-and-esxi/120843/"
-
     strings:
         $ext = ".03ffc1c4a3da0f02" ascii wide
-        $c2  = "89.125.66.101" ascii
-
-        $m1 = "5d62c1349b8981c396c9a23f4f8f053c" ascii nocase
-        $m2 = "9201e35e2993612612919a3c71302cab" ascii nocase
-        $m3 = "a50eaaf514f4f84e61ca2455a8789753" ascii nocase
-        $m4 = "de3cfbb50f66079bfee20a6f64e59433" ascii nocase
-        $m5 = "34a7f28e0bb69b0d49bacc88bdf20ac1" ascii nocase
-
+        $c2  = "89.125.66.101"
+        $m1  = "5d62c1349b8981c396c9a23f4f8f053c" nocase
+        $m2  = "9201e35e2993612612919a3c71302cab" nocase
+        $m3  = "a50eaaf514f4f84e61ca2455a8789753" nocase
+        $m4  = "de3cfbb50f66079bfee20a6f64e59433" nocase
+        $m5  = "34a7f28e0bb69b0d49bacc88bdf20ac1" nocase
     condition:
         any of them
 }
