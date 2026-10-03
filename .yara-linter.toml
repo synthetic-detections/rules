@@ -1,0 +1,6 @@
+# yara-linter profile for synthetic-detections/rules
+align = true
+multiline = true
+brace_newline = true
+explicit_parens = true
+int_format = "hex-lower"
