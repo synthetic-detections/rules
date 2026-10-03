@@ -1,0 +1,10 @@
+DirtyBlanket campaign indicators (SafeDep, 2026-10-03)
+Tor C2: s5n2uyo6gb6dhirsm5pihwohi6e7ayrwojx4xjow4cqabmbowpezenid.onion:80
+npm account: dirtyblanket
+Contact: dirtyblanket@proton.me
+Codeberg: hellscripter (repo: install-scripts)
+Fake systemd service: systemd-fontd
+Node.js download: web.archive.org
+Propagation vectors: .ssh/authorized_keys, .pkg.tar.zst (AUR)
+Typosquat packages: xeprews, express-javascript, express-nodejs,
+  react-nodejs, exprdd, exprrdd, exptrdd, exptred, exptredd
