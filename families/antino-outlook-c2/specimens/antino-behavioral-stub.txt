@@ -1,0 +1,4 @@
+Synthetic specimen for Antino behavioural rule test.
+GatherOsState.exe side-loading slc.dll
+Outlook C2 subject: command_req_taskid_001
+Reaching graph.microsoft.com for /me/messages polling

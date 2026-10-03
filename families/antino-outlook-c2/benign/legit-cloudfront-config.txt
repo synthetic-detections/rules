@@ -1,0 +1,7 @@
+# Legitimate CloudFront distribution configuration
+# Uses a different distribution ID from the Antino C2 CDN
+DistributionId: EABCDEF1234567
+DomainName: d111111abcdef8.cloudfront.net
+Origin: assets.example.com
+CacheBehavior: default
+ViewerProtocol: redirect-to-https

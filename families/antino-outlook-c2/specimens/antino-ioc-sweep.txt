@@ -1,0 +1,9 @@
+Antino campaign indicators (The Hacker News, 2026-10-03)
+Actor: UAT-11587
+C2 staging: rsproxy.cn
+CDN delivery: d32tpl7xt7175h.cloudfront.net
+DLL sideloading: GatherOsState.exe -> slc.dll
+.NET downloader: TestAssembly.dll
+Outlook C2 subject prefix: command_req_
+Build locale: zh-CN, UTC+08:00
+Graph API endpoints: graph.microsoft.com /me/messages /me/drive
