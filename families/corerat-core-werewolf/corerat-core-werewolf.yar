@@ -32,40 +32,50 @@
    Related: [[sleepwalker-backdoor]] (same digest cadence, espionage backdoor).
 */
 
-private rule corerat_is_pe {
+private rule corerat_is_pe
+{
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550 and filesize < 12MB
+        uint16(0) == 23117 and
+        uint32(uint32(60)) == 17744 and
+        filesize < 12MB
 }
 
-rule CoreRAT_Behaviour {
+rule CoreRAT_Behaviour
+{
     meta:
         description = "CoreRAT C++ RAT — hardcoded mutex co-occurring with a CoreRAT C2 URI path or deployment EXE name"
-        author = "synthetic-detections"
-        date = "2026-08-27"
-        severity = "critical"
-        family = "corerat-core-werewolf"
-        reference = "https://bi-zone.medium.com/arsenal-revamped-core-werewolf-hits-russian-organizations-with-corerat-452d58ef1b6b"
+        author      = "synthetic-detections"
+        date        = "2026-08-27"
+        severity    = "critical"
+        family      = "corerat-core-werewolf"
+        reference   = "https://bi-zone.medium.com/arsenal-revamped-core-werewolf-hits-russian-organizations-with-corerat-452d58ef1b6b"
     strings:
         $mutex = "301525677" ascii wide
-        $uri1 = "/5743e279" ascii wide
-        $uri2 = "/0a445b0e" ascii wide
-        $uri3 = "/ba4b6dc1" ascii wide
-        $uri4 = "/97e8be66" ascii wide
-        $exe1 = "Firepoin.exe" ascii wide nocase
-        $exe2 = "Baresl.exe" ascii wide nocase
-        $exe3 = "Biostars.exe" ascii wide nocase
+        $uri1  = "/5743e279" ascii wide
+        $uri2  = "/0a445b0e" ascii wide
+        $uri3  = "/ba4b6dc1" ascii wide
+        $uri4  = "/97e8be66" ascii wide
+        $exe1  = "Firepoin.exe" ascii wide nocase
+        $exe2  = "Baresl.exe" ascii wide nocase
+        $exe3  = "Biostars.exe" ascii wide nocase
     condition:
-        corerat_is_pe and $mutex and (any of ($uri*) or any of ($exe*))
+        corerat_is_pe and
+        $mutex and
+        (
+            any of ($uri*) or
+            any of ($exe*)
+        )
 }
 
-rule CoreRAT_C2_IOC {
+rule CoreRAT_C2_IOC
+{
     meta:
         description = "CoreRAT command-and-control infrastructure — Core Werewolf 2026 campaign (>=2 distinct hosts)"
-        author = "synthetic-detections"
-        date = "2026-08-27"
-        severity = "high"
-        family = "corerat-core-werewolf"
-        reference = "https://gbhackers.com/core-werewolf-espionage-cluster/"
+        author      = "synthetic-detections"
+        date        = "2026-08-27"
+        severity    = "high"
+        family      = "corerat-core-werewolf"
+        reference   = "https://gbhackers.com/core-werewolf-espionage-cluster/"
     strings:
         $d1 = "teambusiness-mail.ru" ascii wide nocase
         $d2 = "xakklinkprik.ru" ascii wide nocase
@@ -85,14 +95,15 @@ rule CoreRAT_C2_IOC {
         2 of them
 }
 
-rule CoreRAT_Delivery_Pin {
+rule CoreRAT_Delivery_Pin
+{
     meta:
         description = "CoreRAT delivery specimen — decoy PDF name co-occurring with a deployment EXE name"
-        author = "synthetic-detections"
-        date = "2026-08-27"
-        severity = "critical"
-        family = "corerat-core-werewolf"
-        reference = "https://bi-zone.medium.com/arsenal-revamped-core-werewolf-hits-russian-organizations-with-corerat-452d58ef1b6b"
+        author      = "synthetic-detections"
+        date        = "2026-08-27"
+        severity    = "critical"
+        family      = "corerat-core-werewolf"
+        reference   = "https://bi-zone.medium.com/arsenal-revamped-core-werewolf-hits-russian-organizations-with-corerat-452d58ef1b6b"
     strings:
         $pdf1 = "Scan_125992145_TLG_na_perepodgotovku_dsp.pdf" ascii wide nocase
         $pdf2 = "FOhf6.pdf" ascii wide nocase
@@ -100,5 +111,6 @@ rule CoreRAT_Delivery_Pin {
         $exe2 = "Baresl.exe" ascii wide nocase
         $exe3 = "Biostars.exe" ascii wide nocase
     condition:
-        any of ($pdf*) and any of ($exe*)
+        any of ($pdf*) and
+        any of ($exe*)
 }

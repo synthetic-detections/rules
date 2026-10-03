@@ -1,5 +1,3 @@
-import "hash"
-
 /*
    NetScaler WHIPSHOT / SLAPSHOT — post-exploitation implants on Citrix
    NetScaler ADC/Gateway after CVE-2026-88771 / CVE-2026-88772 (2026-09).
@@ -22,6 +20,8 @@ import "hash"
      https://www.helpnetsecurity.com/2026/09/29/netscaler-zero-day-exploitation-escalates-into-mass-attacks-cve-2026-88771/
 */
 
+import "hash"
+
 rule NetScaler_WHIPSHOT_SLAPSHOT_Behavior
 {
     meta:
@@ -31,34 +31,31 @@ rule NetScaler_WHIPSHOT_SLAPSHOT_Behavior
         severity    = "critical"
         family      = "netscaler-whipshot-slapshot"
         reference   = "https://cloud.google.com/blog/topics/threat-intelligence/defending-against-active-exploitation-of-citrix-netscaler-adc-and-gateway-appliances"
-
     strings:
         // WHIPSHOT PHP web shell: header-driven command dispatch + IPC to SLAPSHOT
-        $w_hdr1 = "HTTP_X_UX" ascii
-        $w_hdr2 = "HTTP_X_UX_" ascii
-        $w_sock = "fsockopen" ascii
+        $w_hdr1 = "HTTP_X_UX"
+        $w_hdr2 = "HTTP_X_UX_"
+        $w_sock = "fsockopen"
         // SLAPSHOT Python tunneler markers
-        $s_env  = "UXD_IDLE_EXIT" ascii
+        $s_env  = "UXD_IDLE_EXIT"
         // shared IPC endpoints
-        $ipc1   = "/tmp/.uxdport" ascii
-        $ipc2   = "/tmp/.uxdlock" ascii
+        $ipc1   = "/tmp/.uxdport"
+        $ipc2   = "/tmp/.uxdlock"
         // SLAPSHOT command verbs (SOCKS-over-IPC protocol)
-        $v_open = "\"open\"" ascii
-        $v_conn = "\"conn\"" ascii
-        $v_push = "\"push\"" ascii
-        $v_pull = "\"pull\"" ascii
-        $v_exch = "\"exch\"" ascii
-        $v_ping = "\"ping\"" ascii
-
+        $v_open = "\"open\""
+        $v_conn = "\"conn\""
+        $v_push = "\"push\""
+        $v_pull = "\"pull\""
+        $v_exch = "\"exch\""
+        $v_ping = "\"ping\""
     condition:
-        filesize < 80KB and
+        // WHIPSHOT: header dispatch + IPC + socket
+        // SLAPSHOT: env marker + IPC + >=3 protocol verbs
         (
-            // WHIPSHOT: header dispatch + IPC + socket
-            (($w_hdr1 or $w_hdr2) and any of ($ipc1,$ipc2) and $w_sock)
-            or
-            // SLAPSHOT: env marker + IPC + >=3 protocol verbs
-            ($s_env and any of ($ipc1,$ipc2) and 3 of ($v_*))
-        )
+            ($w_hdr1 or $w_hdr2) and any of ($ipc1, $ipc2) and $w_sock or
+            $s_env and any of ($ipc1, $ipc2) and 3 of ($v_*)
+        ) and
+        filesize < 80KB
 }
 
 rule NetScaler_WebShell_httpd_Handler_Abuse
@@ -70,26 +67,24 @@ rule NetScaler_WebShell_httpd_Handler_Abuse
         severity    = "high"
         family      = "netscaler-whipshot-slapshot"
         reference   = "https://www.greynoise.io/blog/swarming-against-citrix-0-day-exploitation"
-
     strings:
-        $h_php   = "application/x-httpd-php" ascii
-        $h_deb   = "AddHandler application/x-httpd-php .deb" ascii
-        $h_sig   = "AddHandler application/x-httpd-php .sig" ascii
-        $h_alias = "AliasMatch" ascii
-        $p_ns    = "/var/netscaler/gui/vpn/scripts/linux/" ascii
-        $p_ctxs  = ".ctxs.receiver" ascii
-        $p_recv  = /receiver\.min\.[0-9a-f]*\.?css/ ascii
-        $p_ico   = /\.ico\$ \/var\/netscaler\/gui\/vpn\/scripts\/linux\/\$1\.sig/ ascii
-        $suid    = "chmod u+s /bin/sh" ascii
-
+        $h_php   = "application/x-httpd-php"
+        $h_deb   = "AddHandler application/x-httpd-php .deb"
+        $h_sig   = "AddHandler application/x-httpd-php .sig"
+        $h_alias = "AliasMatch"
+        $p_ns    = "/var/netscaler/gui/vpn/scripts/linux/"
+        $p_ctxs  = ".ctxs.receiver"
+        $p_recv  = /receiver\.min\.[0-9a-f]*\.?css/
+        $p_ico   = /\.ico\$ \/var\/netscaler\/gui\/vpn\/scripts\/linux\/\$1\.sig/
+        $suid    = "chmod u+s /bin/sh"
     condition:
-        filesize < 64KB and
         (
-            (($h_deb or $h_sig) and ($h_alias or $h_php))
-            or ($h_php and any of ($p_ns,$p_ctxs,$p_ico))
-            or ($p_ctxs and $p_recv)
-            or $suid
-        )
+            ($h_deb or $h_sig) and ($h_alias or $h_php) or
+            $h_php and any of ($p_ns, $p_ctxs, $p_ico) or
+            $p_ctxs and $p_recv or
+            $suid
+        ) and
+        filesize < 64KB
 }
 
 rule NetScaler_WHIPSHOT_WebShell_SpecimenPin
@@ -102,7 +97,6 @@ rule NetScaler_WHIPSHOT_WebShell_SpecimenPin
         family      = "netscaler-whipshot-slapshot"
         reference   = "https://www.greynoise.io/blog/swarming-against-citrix-0-day-exploitation"
         sha256      = "6f5a2a452a7901323abd21879c6cecccb47c06aeeaccb1b467212f3b11e4b1e7"
-
     condition:
         hash.sha256(0, filesize) == "6f5a2a452a7901323abd21879c6cecccb47c06aeeaccb1b467212f3b11e4b1e7"
 }

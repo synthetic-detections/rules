@@ -31,36 +31,42 @@
    (same digest, RaaS double-extortion).
 */
 
-private rule gunra_is_pe {
+private rule gunra_is_pe
+{
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550
+        uint16(0) == 23117 and
+        uint32(uint32(60)) == 17744
 }
 
-rule Gunra_Encryptor {
+rule Gunra_Encryptor
+{
     meta:
         description = "Gunra ransomware encryptor — .ENCRT extension + R3ADM3 note name co-occurrence"
-        author = "synthetic-detections"
-        date = "2026-08-12"
-        severity = "critical"
-        family = "gunra-ransomware"
-        reference = "https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-222a"
+        author      = "synthetic-detections"
+        date        = "2026-08-12"
+        severity    = "critical"
+        family      = "gunra-ransomware"
+        reference   = "https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-222a"
     strings:
-        $ext1 = ".ENCRT" ascii wide
-        $ext2 = ".CRYPT" ascii wide
-        $note = "R3ADM3.txt" ascii wide nocase
+        $ext1  = ".ENCRT" ascii wide
+        $ext2  = ".CRYPT" ascii wide
+        $note  = "R3ADM3.txt" ascii wide nocase
         $note2 = "R3ADM3" ascii wide nocase
     condition:
-        gunra_is_pe and (any of ($ext*)) and (any of ($note*))
+        gunra_is_pe and
+        any of ($ext*) and
+        any of ($note*)
 }
 
-rule Gunra_Ransom_Note {
+rule Gunra_Ransom_Note
+{
     meta:
         description = "Gunra ransom note — R3ADM3 recovery text (Client ID + qTox + deadline)"
-        author = "synthetic-detections"
-        date = "2026-08-12"
-        severity = "high"
-        family = "gunra-ransomware"
-        reference = "https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-222a"
+        author      = "synthetic-detections"
+        date        = "2026-08-12"
+        severity    = "high"
+        family      = "gunra-ransomware"
+        reference   = "https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-222a"
     strings:
         $r1 = "R3ADM3" ascii wide nocase
         $q  = "qTox" ascii wide nocase
@@ -70,37 +76,45 @@ rule Gunra_Ransom_Note {
     condition:
         // note body carries the extortion text (the file itself is named
         // R3ADM3.txt, so "R3ADM3" need not appear in the content)
-        filesize < 64KB and $e and $q and 1 of ($c, $t, $r1)
+        $e and
+        $q and
+        any of ($c, $t, $r1) and
+        filesize < 64KB
 }
 
-rule Gunra_Campaign_C2 {
+rule Gunra_Campaign_C2
+{
     meta:
         description = "Gunra AA26-222A C2 indicators (IPs + clearnet DLS mirror), count-guarded"
-        author = "synthetic-detections"
-        date = "2026-08-12"
-        severity = "high"
-        family = "gunra-ransomware"
-        reference = "https://media.defense.gov/2026/Aug/10/2003976697/-1/-1/0/CSA_STOPRANSOMWARE_GUNRA_RANSOMWARE.PDF"
+        author      = "synthetic-detections"
+        date        = "2026-08-12"
+        severity    = "high"
+        family      = "gunra-ransomware"
+        reference   = "https://media.defense.gov/2026/Aug/10/2003976697/-1/-1/0/CSA_STOPRANSOMWARE_GUNRA_RANSOMWARE.PDF"
     strings:
-        $i1 = "23.239.119.2" ascii fullword
-        $i2 = "23.239.119.3" ascii fullword
-        $i3 = "23.239.119.4" ascii fullword
-        $i4 = "23.239.119.5" ascii fullword
-        $i5 = "23.239.119.6" ascii fullword
-        $i6 = "86.54.28.216" ascii fullword
-        $i7 = "103.125.234.14" ascii fullword
-        $i8 = "70.36.99.82" ascii fullword
-        $i9 = "211.21.210.181" ascii fullword
-        $i10 = "123.184.143.105" ascii fullword
-        $i11 = "182.204.21.240" ascii fullword
-        $i12 = "182.204.16.112" ascii fullword
-        $i13 = "123.244.187.144" ascii fullword
-        $mirror = "datapub.news" ascii nocase
+        $i1     = "23.239.119.2" fullword
+        $i2     = "23.239.119.3" fullword
+        $i3     = "23.239.119.4" fullword
+        $i4     = "23.239.119.5" fullword
+        $i5     = "23.239.119.6" fullword
+        $i6     = "86.54.28.216" fullword
+        $i7     = "103.125.234.14" fullword
+        $i8     = "70.36.99.82" fullword
+        $i9     = "211.21.210.181" fullword
+        $i10    = "123.184.143.105" fullword
+        $i11    = "182.204.21.240" fullword
+        $i12    = "182.204.16.112" fullword
+        $i13    = "123.244.187.144" fullword
+        $mirror = "datapub.news" nocase
     condition:
         // The IP strings are fullword-anchored: without it, 23.239.119.2
         // matches inside 23.239.119.20-29, so a benign subnet inventory in
         // the adjacent /24 satisfies "3 of ($i*)" via substrings. Require the
         // distinctive clearnet DLS mirror, or three co-occurring C2 IPs,
         // under a filesize guard.
-        filesize < 2MB and ($mirror or 3 of ($i*))
+        (
+            $mirror or
+            3 of ($i*)
+        ) and
+        filesize < 2MB
 }

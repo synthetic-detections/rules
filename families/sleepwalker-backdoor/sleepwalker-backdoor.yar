@@ -36,61 +36,75 @@
    [[gunra-ransomware]] (same digest cadence).
 */
 
-private rule sleepwalker_is_pe {
+private rule sleepwalker_is_pe
+{
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550 and filesize < 8MB
+        uint16(0) == 23117 and
+        uint32(uint32(60)) == 17744 and
+        filesize < 8MB
 }
 
-rule SLEEPWALKER_ESET_Sideload {
+rule SLEEPWALKER_ESET_Sideload
+{
     meta:
         description = "SLEEPWALKER dpapi.dll side-load into ESET ERAAgent — spoofed DPAPI exports + ESET/dpapisvc host marker"
-        author = "synthetic-detections"
-        date = "2026-08-26"
-        severity = "critical"
-        family = "sleepwalker-backdoor"
-        reference = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
+        author      = "synthetic-detections"
+        date        = "2026-08-26"
+        severity    = "critical"
+        family      = "sleepwalker-backdoor"
+        reference   = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
     strings:
-        $x1 = "CryptProtectDataNoUI" ascii
-        $x2 = "CryptProtectMemory" ascii
-        $x3 = "CryptResetMachineCredentials" ascii
-        $x4 = "CryptUnprotectDataNoUI" ascii
-        $x5 = "CryptUnprotectMemory" ascii
-        $x6 = "CryptUpdateProtectedState" ascii
-        $x7 = "iCryptIdentifyProtection" ascii
+        $x1    = "CryptProtectDataNoUI"
+        $x2    = "CryptProtectMemory"
+        $x3    = "CryptResetMachineCredentials"
+        $x4    = "CryptUnprotectDataNoUI"
+        $x5    = "CryptUnprotectMemory"
+        $x6    = "CryptUpdateProtectedState"
+        $x7    = "iCryptIdentifyProtection"
         $host1 = "ERAAgent.exe" ascii wide nocase
         $host2 = "dpapisvc.dll" ascii wide nocase
     condition:
-        sleepwalker_is_pe and filesize < 8MB and 3 of ($x*) and any of ($host*)
+        sleepwalker_is_pe and
+        3 of ($x*) and
+        any of ($host*) and
+        filesize < 8MB
 }
 
-rule SLEEPWALKER_Host_Weakening {
+rule SLEEPWALKER_Host_Weakening
+{
     meta:
         description = "SLEEPWALKER host weakening — anonymous-access registry changes co-occurring with ESET/dpapisvc host markers"
-        author = "synthetic-detections"
-        date = "2026-08-26"
-        severity = "high"
-        family = "sleepwalker-backdoor"
-        reference = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
+        author      = "synthetic-detections"
+        date        = "2026-08-26"
+        severity    = "high"
+        family      = "sleepwalker-backdoor"
+        reference   = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
     strings:
         $r1 = "EveryoneIncludesAnonymous" ascii wide
         $r2 = "NullSessionPipes" ascii wide
         $h1 = "ERAAgent.exe" ascii wide nocase
         $h2 = "dpapisvc.dll" ascii wide nocase
     condition:
-        sleepwalker_is_pe and filesize < 8MB and $r1 and $r2 and any of ($h*)
+        sleepwalker_is_pe and
+        $r1 and
+        $r2 and
+        any of ($h*) and
+        filesize < 8MB
 }
 
-rule SLEEPWALKER_Crypto_Pin {
+rule SLEEPWALKER_Crypto_Pin
+{
     meta:
         description = "SLEEPWALKER embedded AES-256-CCM key / config nonce (specimen pin)"
-        author = "synthetic-detections"
-        date = "2026-08-26"
-        severity = "critical"
-        family = "sleepwalker-backdoor"
-        reference = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
+        author      = "synthetic-detections"
+        date        = "2026-08-26"
+        severity    = "critical"
+        family      = "sleepwalker-backdoor"
+        reference   = "https://r136a1.dev/2026/08/24/sleepwalker-a-passive-backdoor-with-its-own-command-language/"
     strings:
-        $key   = { 74 65 31 ff 37 8d bb 4b b5 1d 2a a2 b1 d3 8d 90 53 50 a9 59 58 31 86 ba f4 c6 90 f5 f3 16 b3 ae }
-        $nonce = { 3a 6d 35 7f b9 bc 51 ea cc 8b 85 09 }
+        $key   = { 74 65 31 FF 37 8D BB 4B B5 1D 2A A2 B1 D3 8D 90 53 50 A9 59 58 31 86 BA F4 C6 90 F5 F3 16 B3 AE }
+        $nonce = { 3A 6D 35 7F B9 BC 51 EA CC 8B 85 09 }
     condition:
-        filesize < 8MB and any of them
+        any of them and
+        filesize < 8MB
 }

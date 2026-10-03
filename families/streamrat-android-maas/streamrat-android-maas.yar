@@ -58,46 +58,38 @@ rule StreamRat_Behavior
         severity    = "critical"
         family      = "streamrat-android-maas"
         reference   = "https://www.threatfabric.com/blogs/from-meta-ads-to-full-device-takeover-uncovering-streamrat"
-
     strings:
         // WebSocket registration header triplet (all three together is the
         // distinctive signature; X-Device-Id alone is common in benign SDKs)
-        $h_id     = "X-Device-Id" ascii
-        $h_model  = "X-Device-Model" ascii
-        $h_api    = "X-Api-Level" ascii
-        $ws_up    = "Upgrade: websocket" ascii nocase
-        $ws_sch   = "wss://" ascii
-
+        $h_id      = "X-Device-Id"
+        $h_model   = "X-Device-Model"
+        $h_api     = "X-Api-Level"
+        $ws_up     = "Upgrade: websocket" nocase
+        $ws_sch    = "wss://"
         // Multi-stage HTML dropper pages
-        $pg_launch = "set_launcher.html" ascii
-        $pg_vpn    = "vpn_required.html" ascii
-        $pg_r1     = "r1edmi.html" ascii
-        $pg_apk    = "app.apk" ascii
-        $pg_upd    = "update_" ascii
-
+        $pg_launch = "set_launcher.html"
+        $pg_vpn    = "vpn_required.html"
+        $pg_r1     = "r1edmi.html"
+        $pg_apk    = "app.apk"
+        $pg_upd    = "update_"
         // Overlay injections + screen capture / control subsystems
-        $inj_dir   = "injections" ascii fullword
-        $mp_api    = "android.media.projection.MediaProjection" ascii
-        $acc_svc   = "android.accessibilityservice.AccessibilityService" ascii
-        $acc_shot  = "takeScreenshot" ascii
-        $vpn_svc   = "android.net.VpnService" ascii
-
+        $inj_dir   = "injections" fullword
+        $mp_api    = "android.media.projection.MediaProjection"
+        $acc_svc   = "android.accessibilityservice.AccessibilityService"
+        $acc_shot  = "takeScreenshot"
+        $vpn_svc   = "android.net.VpnService"
     condition:
+        // Path 1: the header triplet + WebSocket transport
+        // Path 2: dropper page set (2 of the 3 bespoke pages + payload name)
+        // Path 3: overlay injections + both screen-capture routes + kill-switch VPN
+        // Path 4: cross-subsystem — header triplet + injections/capture context
+        (
+            all of ($h_*) and any of ($ws_*) or
+            2 of ($pg_launch, $pg_vpn, $pg_r1) and any of ($pg_apk, $pg_upd) or
+            $inj_dir and $mp_api and ($acc_svc or $acc_shot) and $vpn_svc and any of ($h_*) or
+            all of ($h_*) and $inj_dir and ($mp_api or $acc_shot)
+        ) and
         filesize < 100MB
-        and (
-            // Path 1: the header triplet + WebSocket transport
-            (all of ($h_*) and any of ($ws_*))
-            or
-            // Path 2: dropper page set (2 of the 3 bespoke pages + payload name)
-            (2 of ($pg_launch, $pg_vpn, $pg_r1) and any of ($pg_apk, $pg_upd))
-            or
-            // Path 3: overlay injections + both screen-capture routes + kill-switch VPN
-            ($inj_dir and $mp_api and ($acc_svc or $acc_shot) and $vpn_svc
-             and any of ($h_*))
-            or
-            // Path 4: cross-subsystem — header triplet + injections/capture context
-            (all of ($h_*) and $inj_dir and ($mp_api or $acc_shot))
-        )
 }
 
 rule StreamRat_IOC
@@ -109,28 +101,24 @@ rule StreamRat_IOC
         severity    = "high"
         family      = "streamrat-android-maas"
         reference   = "https://www.threatfabric.com/blogs/from-meta-ads-to-full-device-takeover-uncovering-streamrat"
-
     strings:
         // Package names (distinctive)
-        $pkg1 = "io.base.one887" ascii fullword
-        $pkg2 = "io.meat.hint" ascii fullword
-
+        $pkg1 = "io.base.one887" fullword
+        $pkg2 = "io.meat.hint" fullword
         // C2 servers
-        $ip1  = "45.147.28.59" ascii fullword
-        $ip2  = "193.32.2.245" ascii fullword
-
+        $ip1  = "45.147.28.59" fullword
+        $ip2  = "193.32.2.245" fullword
         // App labels / ad lure — only credited when paired
-        $lbl1 = "Sistema de v\xc3\xaddeo" ascii
-        $lbl2 = "Str\xce\xb5\xce\xb1mTV" ascii
-        $lure = "Steamtv Esp" ascii nocase
-
+        $lbl1 = "Sistema de v\xC3\xADdeo"
+        $lbl2 = "Str\xCE\xB5\xCE\xB1mTV"
+        $lure = "Steamtv Esp" nocase
     condition:
+        (
+            any of ($pkg*) or
+            any of ($ip*) or
+            2 of ($lbl*, $lure)
+        ) and
         filesize < 100MB
-        and (
-            any of ($pkg*)
-            or any of ($ip*)
-            or 2 of ($lbl*, $lure)
-        )
 }
 
 rule StreamRat_Specimen_Pin
@@ -142,11 +130,9 @@ rule StreamRat_Specimen_Pin
         severity    = "critical"
         family      = "streamrat-android-maas"
         reference   = "https://www.threatfabric.com/blogs/from-meta-ads-to-full-device-takeover-uncovering-streamrat"
-
     strings:
-        $sha1 = "e0714788b4e2518b0d9d4cbf18c7217bb97718e01689d77338f1cc4a230fcb6c" ascii nocase
-        $sha2 = "ba83cc3c9535690191018edf73ca5c6001609df9919462796aa2e551f142e4d3" ascii nocase
-
+        $sha1 = "e0714788b4e2518b0d9d4cbf18c7217bb97718e01689d77338f1cc4a230fcb6c" nocase
+        $sha2 = "ba83cc3c9535690191018edf73ca5c6001609df9919462796aa2e551f142e4d3" nocase
     condition:
         any of them
 }

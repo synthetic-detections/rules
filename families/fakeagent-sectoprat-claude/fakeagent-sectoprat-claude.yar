@@ -58,49 +58,38 @@ rule FakeAgent_SectopRAT_SideloadChain
         severity    = "critical"
         family      = "fakeagent-sectoprat-claude"
         reference   = "https://www.huntress.com/blog/fakeagent-claude-desktop-malvertising-ends-in-dotnet-rat"
-
     strings:
         // Fake-installer / renamed benign jcef filenames used by the campaign
-        $f_claude   = "ClaudeDesktop.exe" ascii wide nocase
-        $f_docker   = "DockerDesktop.exe" ascii wide nocase
+        $f_claude  = "ClaudeDesktop.exe" ascii wide nocase
+        $f_docker  = "DockerDesktop.exe" ascii wide nocase
         // Second side-load chain
-        $f_sslconf  = "sslconf.exe" ascii wide nocase
-        $f_tempdir  = "tempdir.dll" ascii wide nocase
-        $f_appcfg   = "appcfg.dat" ascii wide nocase
-
+        $f_sslconf = "sslconf.exe" ascii wide nocase
+        $f_tempdir = "tempdir.dll" ascii wide nocase
+        $f_appcfg  = "appcfg.dat" ascii wide nocase
         // Distinctive second-stage install path
-        $path_edge  = "\\Microsoft\\EdgeUpdate\\Install\\" ascii wide nocase
-
+        $path_edge = "\\Microsoft\\EdgeUpdate\\Install\\" ascii wide nocase
         // EtherHiding — BNB Smart Chain contract addresses used for C2 config
-        $bsc1       = "0xc1907d7be91f95903ad66d775c397302e7dd9228" ascii wide nocase
-        $bsc2       = "0xe012d0f34cde9b870e9d9ed566ea5f8fd9b92228" ascii wide nocase
-
+        $bsc1      = "0xc1907d7be91f95903ad66d775c397302e7dd9228" ascii wide nocase
+        $bsc2      = "0xe012d0f34cde9b870e9d9ed566ea5f8fd9b92228" ascii wide nocase
         // Attacker-controlled delivery / C2 domains
-        $d_dl       = "claude.ai.download-app.us" ascii wide nocase
-        $d_api      = "downloading-api.it.com" ascii wide nocase
-        $d_c2       = "5ca8758c-02d0-4a72-89c8-d468b66dda41.com" ascii wide nocase
-
+        $d_dl      = "claude.ai.download-app.us" ascii wide nocase
+        $d_api     = "downloading-api.it.com" ascii wide nocase
+        $d_c2      = "5ca8758c-02d0-4a72-89c8-d468b66dda41.com" ascii wide nocase
         // Malicious Claude public-artifact UUID abused as the redirect
-        $artifact   = "ca456f1f-44c0-42af-b329-4f1c7534a877" ascii wide nocase
-
+        $artifact  = "ca456f1f-44c0-42af-b329-4f1c7534a877" ascii wide nocase
     condition:
+        // Path 1: any EtherHiding BSC contract or attacker C2 domain or
+        // the abused artifact UUID — each is campaign-unique on its own.
+        // Path 2: the fake-installer name co-occurring with a malicious
+        // side-load / staging artifact (benign jcef alone won't match).
+        // Path 3: the distinctive second-stage chain: sslconf side-load of
+        // tempdir.dll staging appcfg.dat from the EdgeUpdate install path.
+        (
+            any of ($bsc1, $bsc2, $d_dl, $d_api, $d_c2, $artifact) or
+            any of ($f_claude, $f_docker) and any of ($f_tempdir, $f_appcfg, $f_sslconf, $bsc1, $bsc2) or
+            $f_sslconf and $f_tempdir and ($f_appcfg or $path_edge)
+        ) and
         filesize < 60MB
-        and (
-            // Path 1: any EtherHiding BSC contract or attacker C2 domain or
-            // the abused artifact UUID — each is campaign-unique on its own.
-            any of ($bsc1, $bsc2, $d_dl, $d_api, $d_c2, $artifact)
-            or
-            // Path 2: the fake-installer name co-occurring with a malicious
-            // side-load / staging artifact (benign jcef alone won't match).
-            (
-                any of ($f_claude, $f_docker)
-                and any of ($f_tempdir, $f_appcfg, $f_sslconf, $bsc1, $bsc2)
-            )
-            or
-            // Path 3: the distinctive second-stage chain: sslconf side-load of
-            // tempdir.dll staging appcfg.dat from the EdgeUpdate install path.
-            ($f_sslconf and $f_tempdir and ($f_appcfg or $path_edge))
-        )
 }
 
 rule FakeAgent_SectopRAT_ShaderStagingShape
@@ -112,44 +101,30 @@ rule FakeAgent_SectopRAT_ShaderStagingShape
         severity    = "high"
         family      = "fakeagent-sectoprat-claude"
         reference   = "https://www.huntress.com/blog/fakeagent-claude-desktop-malvertising-ends-in-dotnet-rat"
-
     strings:
         $appcfg    = "appcfg.dat" ascii wide nocase
         $tempdir   = "tempdir.dll" ascii wide nocase
-
         // GPU / VRAM anti-VM gate device IDs referenced by tempdir.dll
         $vm_qemu   = "0x1234" ascii wide nocase
         $vm_vmware = "0x15AD" ascii wide nocase
-
         // DirectX / shader-model decryption stack (unusual for a loader)
         $dx_d3d    = "D3DCompile" ascii wide nocase
         $dx_dev    = "D3D11CreateDevice" ascii wide nocase
         $dx_dxgi   = "IDXGIAdapter" ascii wide nocase
         $dx_cs     = "CSSetShader" ascii wide nocase
         $dx_dvram  = "DedicatedVideoMemory" ascii wide nocase
-
         // SectopRAT / EtherHiding markers commonly co-present
         $ethhide   = "eth_call" ascii wide nocase
         $bnb_rpc   = "bsc-dataseed" ascii wide nocase
-
     condition:
+        // appcfg staging + anti-VM device IDs + any DirectX shader API:
+        // the shader-based decrypt is the campaign's signature.
+        // appcfg staging + EtherHiding RPC markers + a shader API
+        (
+            ($appcfg or $tempdir) and any of ($vm_qemu, $vm_vmware) and 2 of ($dx_d3d, $dx_dev, $dx_dxgi, $dx_cs, $dx_dvram) or
+            ($appcfg or $tempdir) and any of ($ethhide, $bnb_rpc) and any of ($dx_d3d, $dx_dev, $dx_dxgi, $dx_cs, $dx_dvram)
+        ) and
         filesize < 60MB
-        and (
-            // appcfg staging + anti-VM device IDs + any DirectX shader API:
-            // the shader-based decrypt is the campaign's signature.
-            (
-                ($appcfg or $tempdir)
-                and any of ($vm_qemu, $vm_vmware)
-                and 2 of ($dx_d3d, $dx_dev, $dx_dxgi, $dx_cs, $dx_dvram)
-            )
-            or
-            // appcfg staging + EtherHiding RPC markers + a shader API
-            (
-                ($appcfg or $tempdir)
-                and any of ($ethhide, $bnb_rpc)
-                and any of ($dx_d3d, $dx_dev, $dx_dxgi, $dx_cs, $dx_dvram)
-            )
-        )
 }
 
 rule FakeAgent_SectopRAT_IOC
@@ -161,35 +136,29 @@ rule FakeAgent_SectopRAT_IOC
         severity    = "critical"
         family      = "fakeagent-sectoprat-claude"
         reference   = "https://www.huntress.com/blog/fakeagent-claude-desktop-malvertising-ends-in-dotnet-rat"
-
     strings:
         // Malicious sample hashes (SHA-256)
-        $h_tempdir = "1cd58cfba596da296ab1878d74023e00c399345a1b6c2a0e5446c53563f4e3bb" ascii nocase
-        $h_libcef  = "26bae4d7012bf59847ab4036a065419c3d4ca47e020479f55b3b2c6d0d21394a" ascii nocase
-        $h_sectop  = "1fe3646d27d286db8123297e06ae7badf3e26f352a04f91b6d82c28869a91664" ascii nocase
-
+        $h_tempdir = "1cd58cfba596da296ab1878d74023e00c399345a1b6c2a0e5446c53563f4e3bb" nocase
+        $h_libcef  = "26bae4d7012bf59847ab4036a065419c3d4ca47e020479f55b3b2c6d0d21394a" nocase
+        $h_sectop  = "1fe3646d27d286db8123297e06ae7badf3e26f352a04f91b6d82c28869a91664" nocase
         // EtherHiding — BNB Smart Chain contract addresses
-        $bsc1 = "0xc1907d7be91f95903ad66d775c397302e7dd9228" ascii wide nocase
-        $bsc2 = "0xe012d0f34cde9b870e9d9ed566ea5f8fd9b92228" ascii wide nocase
-
+        $bsc1      = "0xc1907d7be91f95903ad66d775c397302e7dd9228" ascii wide nocase
+        $bsc2      = "0xe012d0f34cde9b870e9d9ed566ea5f8fd9b92228" ascii wide nocase
         // Delivery / redirect / C2 domains
-        $d_dl  = "claude.ai.download-app.us" ascii wide nocase
-        $d_api = "downloading-api.it.com" ascii wide nocase
-        $d_c2  = "5ca8758c-02d0-4a72-89c8-d468b66dda41.com" ascii wide nocase
-
+        $d_dl      = "claude.ai.download-app.us" ascii wide nocase
+        $d_api     = "downloading-api.it.com" ascii wide nocase
+        $d_c2      = "5ca8758c-02d0-4a72-89c8-d468b66dda41.com" ascii wide nocase
         // Current C2 IP (Huntress, as of 2026-06-12)
-        $ip1 = "2.24.131.246" ascii wide
-
+        $ip1       = "2.24.131.246" ascii wide
         // Abused Claude public-artifact UUID
-        $artifact = "ca456f1f-44c0-42af-b329-4f1c7534a877" ascii wide nocase
-
+        $artifact  = "ca456f1f-44c0-42af-b329-4f1c7534a877" ascii wide nocase
     condition:
+        (
+            any of ($h_*) or
+            any of ($bsc*) or
+            any of ($d_*) or
+            $ip1 or
+            $artifact
+        ) and
         filesize < 60MB
-        and (
-            any of ($h_*)
-            or any of ($bsc*)
-            or any of ($d_*)
-            or $ip1
-            or $artifact
-        )
 }

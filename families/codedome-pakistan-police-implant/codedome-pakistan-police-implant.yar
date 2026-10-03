@@ -44,17 +44,14 @@ rule Codedome_CMS_Implant_Behavior
         severity    = "critical"
         family      = "codedome-pakistan-police-implant"
         reference   = "https://www.sentinelone.com/labs/one-target-china-india-espionage-converge-on-pakistani-law-enforcement/"
-
     strings:
         $build   = "D:\\codedome\\" ascii wide nocase
         $pdbfull = "D:\\codedome\\case\\six\\Client\\Client2\\obj\\Debug\\Client2.pdb" ascii wide nocase
         $upd     = "Update Complete! Please refresh the page" ascii wide
         $pin     = "xinshi" ascii wide nocase
         $masq    = "360Safe.exe" ascii wide nocase
-
     condition:
-        $pdbfull
-        or ($build and 1 of ($upd, $pin, $masq))
+        $pdbfull or $build and any of ($upd, $pin, $masq)
 }
 
 rule Codedome_CMS_Implant_IOC
@@ -66,18 +63,13 @@ rule Codedome_CMS_Implant_IOC
         severity    = "high"
         family      = "codedome-pakistan-police-implant"
         reference   = "https://thehackernews.com/2026/07/hackers-weaponize-balochistan-police.html"
-
     strings:
         $dom  = "cms.balochistanpolice" ascii wide nocase
         $path = "/client%20scripts/cms_plugin.exe" ascii wide nocase
         $c2   = "41.216.188.140" ascii wide
         $fn   = "cms_plugin.exe" ascii wide nocase
-
     condition:
-        $path
-        or ($dom and $fn)
-        or ($c2 and $fn)
-        or 2 of ($dom, $c2, $path)
+        $path or $dom and $fn or $c2 and $fn or 2 of ($dom, $c2, $path)
 }
 
 rule Codedome_CMS_Implant_Specimen
@@ -89,11 +81,11 @@ rule Codedome_CMS_Implant_Specimen
         severity    = "critical"
         family      = "codedome-pakistan-police-implant"
         reference   = "https://www.sentinelone.com/labs/one-target-china-india-espionage-converge-on-pakistani-law-enforcement/"
-
     condition:
-        filesize < 8MB and (
-            hash.sha1(0, filesize) == "23f6781919a50b118d8d4e6a7e9ae63b71ecc885"
-            or hash.sha1(0, filesize) == "4039454c9189e64285e93fc075a30b93f814b5b5"
-            or hash.sha1(0, filesize) == "58cb2d95063b9df807b7aa8dc106b74ce988a491"
+        filesize < 8MB and
+        (
+            hash.sha1(0, filesize) == "23f6781919a50b118d8d4e6a7e9ae63b71ecc885" or
+            hash.sha1(0, filesize) == "4039454c9189e64285e93fc075a30b93f814b5b5" or
+            hash.sha1(0, filesize) == "58cb2d95063b9df807b7aa8dc106b74ce988a491"
         )
 }
