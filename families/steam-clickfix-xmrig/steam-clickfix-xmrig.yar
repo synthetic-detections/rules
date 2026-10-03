@@ -37,98 +37,61 @@
      https://www.techechelon.com/post/steam-forums-weaponized-in-clickfix-campaign-distributing-xmrig-cryptominers
 */
 
-rule Steam_ClickFix_XMRig_Dropper
-{
-    meta:
-        description = "Steam-forum ClickFix PowerShell dropper for XMRig — 'msf utility/PC Opt' lure that adds a Defender exclusion for C:\\Windows\\Background, fetches system.exe from msfconfig[.]icu, and installs an XMRig-<host> scheduled task as SYSTEM"
-        author      = "synthetic-detections"
-        date        = "2026-07-27"
-        severity    = "critical"
-        family      = "steam-clickfix-xmrig"
-        reference   = "https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/"
-
-    strings:
-        // Lure / masquerade labels printed by the fake optimizer
-        $lure1 = "msf utility" ascii wide nocase
-        $lure2 = "PC Opt" ascii wide nocase
-
-        // Campaign-unique install directory
-        $dir = "C:\\Windows\\Background" ascii wide nocase
-
-        // C2 / payload
-        $c2   = "msfconfig.icu" ascii wide nocase
-        $url  = "/tmp/system.txt" ascii wide nocase
-
-        // Defense evasion (Defender exclusion)
-        $mp1  = "Add-MpPreference" ascii wide nocase
-        $mp2  = "-ExclusionPath" ascii wide nocase
-
-        // Persistence (scheduled task naming pattern)
-        $task = "XMRig-" ascii wide nocase
-        $sch  = "schtasks" ascii wide nocase
-
-    condition:
-        filesize < 2MB
-        and (
-            // Path 1: the lure label plus the campaign install dir or C2
-            (all of ($lure*) and ($dir or $c2))
-            or
-            // Path 2: Defender exclusion aimed specifically at the Background dir
-            ($mp1 and $mp2 and $dir)
-            or
-            // Path 3: payload fetch from the tracked C2 to the install dir
-            ($c2 and $url)
-            or
-            // Path 4: XMRig-named scheduled task installed into Background
-            ($task and $sch and $dir)
-        )
+rule Steam_ClickFix_XMRig_Dropper {
+  meta:
+    description = "Steam-forum ClickFix PowerShell dropper for XMRig — 'msf utility/PC Opt' lure that adds a Defender exclusion for C:\\Windows\\Background, fetches system.exe from msfconfig[.]icu, and installs an XMRig-<host> scheduled task as SYSTEM"
+    author = "synthetic-detections"
+    date = "2026-07-27"
+    severity = "critical"
+    family = "steam-clickfix-xmrig"
+    reference = "https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/"
+  strings:
+    $lure1 = "msf utility" ascii wide nocase
+    $lure2 = "PC Opt" ascii wide nocase
+    $dir = "C:\\Windows\\Background" ascii wide nocase
+    $c2 = "msfconfig.icu" ascii wide nocase
+    $url = "/tmp/system.txt" ascii wide nocase
+    $mp1 = "Add-MpPreference" ascii wide nocase
+    $mp2 = "-ExclusionPath" ascii wide nocase
+    $task = "XMRig-" ascii wide nocase
+    $sch = "schtasks" ascii wide nocase
+  condition:
+    (all of ($lure*) and ($dir or $c2) or $mp1 and $mp2 and $dir or $c2 and $url or $task and $sch and $dir) and filesize < 2MB
 }
 
-rule Steam_ClickFix_XMRig_Config
-{
-    meta:
-        description = "XMRig config.json pinned to the Steam-ClickFix install dir — miner config referencing C:\\Windows\\Background\\system.exe / the msfconfig[.]icu pool"
-        author      = "synthetic-detections"
-        date        = "2026-07-27"
-        severity    = "high"
-        family      = "steam-clickfix-xmrig"
-        reference   = "https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/"
-
-    strings:
-        // XMRig config markers (generic to the miner)
-        $x1 = "\"cpu\"" ascii
-        $x2 = "\"randomx\"" ascii nocase
-        $x3 = "\"pools\"" ascii
-        $x4 = "\"rig-id\"" ascii nocase
-
-        // Campaign-specific anchors
-        $dir  = "C:\\\\Windows\\\\Background" ascii nocase
-        $exe  = "system.exe" ascii wide nocase
-        $c2   = "msfconfig.icu" ascii wide nocase
-
-    condition:
-        filesize < 256KB
-        and 2 of ($x*)
-        // config must reference a campaign anchor, not just be any XMRig config
-        and any of ($dir, $exe, $c2)
+rule Steam_ClickFix_XMRig_Config {
+  meta:
+    description = "XMRig config.json pinned to the Steam-ClickFix install dir — miner config referencing C:\\Windows\\Background\\system.exe / the msfconfig[.]icu pool"
+    author = "synthetic-detections"
+    date = "2026-07-27"
+    severity = "high"
+    family = "steam-clickfix-xmrig"
+    reference = "https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/"
+  strings:
+    $x1 = "\"cpu\""
+    $x2 = "\"randomx\"" nocase
+    $x3 = "\"pools\""
+    $x4 = "\"rig-id\"" nocase
+    $dir = "C:\\\\Windows\\\\Background" nocase
+    $exe = "system.exe" ascii wide nocase
+    $c2 = "msfconfig.icu" ascii wide nocase
+  condition:
+    2 of ($x*) and any of ($dir, $exe, $c2) and filesize < 256KB
 }
 
-rule Steam_ClickFix_XMRig_IOC
-{
-    meta:
-        description = "Steam-ClickFix XMRig hard IOCs — C2 domain msfconfig[.]icu, payload URL, install path, and XMRig-<host> task name"
-        author      = "synthetic-detections"
-        date        = "2026-07-27"
-        severity    = "critical"
-        family      = "steam-clickfix-xmrig"
-        reference   = "https://www.techechelon.com/post/steam-forums-weaponized-in-clickfix-campaign-distributing-xmrig-cryptominers"
-
-    strings:
-        $c2      = "msfconfig.icu" ascii wide nocase
-        $payload = "msfconfig.icu:443/tmp/system.txt" ascii wide nocase
-        $dir_exe = "C:\\Windows\\Background\\system.exe" ascii wide nocase
-        $dir_cfg = "C:\\Windows\\Background\\config.json" ascii wide nocase
-
-    condition:
-        filesize < 5MB and any of them
+rule Steam_ClickFix_XMRig_IOC {
+  meta:
+    description = "Steam-ClickFix XMRig hard IOCs — C2 domain msfconfig[.]icu, payload URL, install path, and XMRig-<host> task name"
+    author = "synthetic-detections"
+    date = "2026-07-27"
+    severity = "critical"
+    family = "steam-clickfix-xmrig"
+    reference = "https://www.techechelon.com/post/steam-forums-weaponized-in-clickfix-campaign-distributing-xmrig-cryptominers"
+  strings:
+    $c2 = "msfconfig.icu" ascii wide nocase
+    $payload = "msfconfig.icu:443/tmp/system.txt" ascii wide nocase
+    $dir_exe = "C:\\Windows\\Background\\system.exe" ascii wide nocase
+    $dir_cfg = "C:\\Windows\\Background\\config.json" ascii wide nocase
+  condition:
+    any of them and filesize < 5MB
 }

@@ -42,85 +42,60 @@
      3c30deb6556a94cfb84ae51798f4aecfae8c7358e55fdb321c5f2376579631cd  (standalone wiper)
 */
 
-rule GigaWiper_Go_ToolSymbols
-{
-    meta:
-        description = "GigaWiper assembled Go tool/package symbols (rabbit_tools wipe/wipec/ran/extort + RunOnce registry) — near-unique to the implant"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "critical"
-        family      = "gigawiper-destructive-backdoor"
-        reference   = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
-
-    strings:
-        $g1 = "rabbit_tools_tool_wipe_main.WipeMain" ascii
-        $g2 = "rabbit_tools_tool_wipec_main.WipeCMain" ascii
-        $g3 = "rabbit_tools_tool_ran_main_cmd_extort.RanMain" ascii
-        $g4 = "rabbit_tools_tool_ran_main_bin.BigBangExtortMain" ascii
-        $g5 = "rabbit_bin.RunOnceRegistryMain" ascii
-        // shorter supporting symbols — require a distinctive one alongside
-        $s1 = "rabbit_tools_tool_" ascii
-        $s2 = "BigBangExtort" ascii
-
-    condition:
-        filesize < 80MB and (
-            any of ($g*)
-            or ($s1 and $s2)
-        )
+rule GigaWiper_Go_ToolSymbols {
+  meta:
+    description = "GigaWiper assembled Go tool/package symbols (rabbit_tools wipe/wipec/ran/extort + RunOnce registry) — near-unique to the implant"
+    author = "synthetic-detections"
+    date = "2026-07-10"
+    severity = "critical"
+    family = "gigawiper-destructive-backdoor"
+    reference = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
+  strings:
+    $g1 = "rabbit_tools_tool_wipe_main.WipeMain"
+    $g2 = "rabbit_tools_tool_wipec_main.WipeCMain"
+    $g3 = "rabbit_tools_tool_ran_main_cmd_extort.RanMain"
+    $g4 = "rabbit_tools_tool_ran_main_bin.BigBangExtortMain"
+    $g5 = "rabbit_bin.RunOnceRegistryMain"
+    $s1 = "rabbit_tools_tool_"
+    $s2 = "BigBangExtort"
+  condition:
+    (any of ($g*) or $s1 and $s2) and filesize < 80MB
 }
 
-rule GigaWiper_Wiper_FakeRansom_Artifacts
-{
-    meta:
-        description = "GigaWiper wiper + fake-ransomware artifact cluster (.candy extension, image_danger.jpg wallpaper, OneDrive-masquerade persistence, GRAT/CWipe PDB) in a PE"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "critical"
-        family      = "gigawiper-destructive-backdoor"
-        reference   = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
-
-    strings:
-        // fake-ransomware markers
-        $candy   = ".candy" ascii wide
-        $img     = "image_danger.jpg" ascii wide nocase
-
-        // persistence masquerade
-        $task    = "OneDrive Update" ascii wide
-        $regkey  = "SOFTWARE\\OneDrive\\Environment" ascii wide nocase
-
-        // FlockWiper / GRAT wiper lineage PDB paths (highly distinctive)
-        $pdb1    = "GRAT\\CWipeNew\\Release\\CWipeNew.pdb" ascii nocase
-        $pdb2    = "GRAT\\CWipe\\Release\\CWipe.pdb" ascii nocase
-
-        // RabbitMQ command plumbing symbols
-        $mq1     = "cmd.Task" ascii
-        $mq2     = "cmd.Result" ascii
-
-    condition:
-        uint16(0) == 0x5A4D and filesize < 80MB and (
-            any of ($pdb*)                       // PDB path alone is specific
-            or ($candy and ($img or $task or $regkey or any of ($mq*)))
-            or ($img and ($task or $regkey))
-            or (any of ($mq*) and ($candy or $img or $task))
-        )
+rule GigaWiper_Wiper_FakeRansom_Artifacts {
+  meta:
+    description = "GigaWiper wiper + fake-ransomware artifact cluster (.candy extension, image_danger.jpg wallpaper, OneDrive-masquerade persistence, GRAT/CWipe PDB) in a PE"
+    author = "synthetic-detections"
+    date = "2026-07-10"
+    severity = "critical"
+    family = "gigawiper-destructive-backdoor"
+    reference = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
+  strings:
+    $candy = ".candy" ascii wide
+    $img = "image_danger.jpg" ascii wide nocase
+    $task = "OneDrive Update" ascii wide
+    $regkey = "SOFTWARE\\OneDrive\\Environment" ascii wide nocase
+    $pdb1 = "GRAT\\CWipeNew\\Release\\CWipeNew.pdb" nocase
+    $pdb2 = "GRAT\\CWipe\\Release\\CWipe.pdb" nocase
+    $mq1 = "cmd.Task"
+    $mq2 = "cmd.Result"
+  condition:
+    uint16(0) == 23117 and (any of ($pdb*) or $candy and ($img or $task or $regkey or any of ($mq*)) or $img and ($task or $regkey) or any of ($mq*) and ($candy or $img or $task)) and filesize < 80MB
 }
 
-rule GigaWiper_IOC
-{
-    meta:
-        description = "GigaWiper hard network IOCs — RabbitMQ/Redis C2 and secondary C2 host"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "high"
-        family      = "gigawiper-destructive-backdoor"
-        reference   = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
-
-    strings:
-        $c2_rabbit = "185.182.193.21" ascii wide      // RabbitMQ :5544 / Redis :7542
-        $c2_second = "212.8.248.104" ascii wide
-        $port_rmq  = "185.182.193.21:5544" ascii wide
-        $port_rds  = "185.182.193.21:7542" ascii wide
-
-    condition:
-        filesize < 80MB and any of them
+rule GigaWiper_IOC {
+  meta:
+    description = "GigaWiper hard network IOCs — RabbitMQ/Redis C2 and secondary C2 host"
+    author = "synthetic-detections"
+    date = "2026-07-10"
+    severity = "high"
+    family = "gigawiper-destructive-backdoor"
+    reference = "https://www.microsoft.com/en-us/security/blog/2026/07/09/gigawiper-anatomy-of-a-destructive-backdoor-assembled-from-multiple-malware/"
+  strings:
+    $c2_rabbit = "185.182.193.21" ascii wide
+    $c2_second = "212.8.248.104" ascii wide
+    $port_rmq = "185.182.193.21:5544" ascii wide
+    $port_rds = "185.182.193.21:7542" ascii wide
+  condition:
+    any of them and filesize < 80MB
 }

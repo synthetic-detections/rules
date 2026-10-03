@@ -43,101 +43,69 @@
      https://research.checkpoint.com/2026/10th-august-threat-intelligence-report/
 */
 
-rule WEL1DROPPER_Loader_Behavior
-{
-    meta:
-        description = "WEL1DROPPER npm loader — hookless require()-triggered downloader: OS/arch fingerprint + Cloudflare Workers oob-worker host + DNS-TXT/wel1.ru staging fallback"
-        author      = "synthetic-detections"
-        date        = "2026-08-11"
-        severity    = "critical"
-        family      = "wel1dropper-npm-rat"
-        reference   = "https://thehackernews.com/2026/08/nearly-800-malicious-npm-packages.html"
-
-    strings:
-        // OS + CPU-arch fingerprint via node process introspection
-        $fp_platform = "process.platform" ascii
-        $fp_arch     = "process.arch" ascii
-
-        // Cloudflare Workers staging host — the campaign's distinctive prefix
-        $cf_worker   = "oob-worker.cf" ascii
-        $cf_dev      = ".workers.dev" ascii
-
-        // DNS-TXT fallback staging (resolveTxt over a wel1 subdomain, chunked)
-        $dns_txt     = "resolveTxt" ascii
-        $wel1        = "wel1.ru" ascii
-        $dl_sub      = ".dl.wel1.ru" ascii
-
-        // require()-triggered entry helper file names
-        $helper_a    = "_helpers.js" ascii
-        $helper_b    = "lib/telemetry.js" ascii
-
-    condition:
-        // JS text, and the fingerprint + (a CF-Workers OR a wel1 DNS-TXT staging path)
-        filesize < 500KB and
-        (2 of ($fp_*)) and
-        (
-            (all of ($cf_worker, $cf_dev)) or
-            ($dns_txt and ($wel1 or $dl_sub))
-        ) and
-        1 of ($helper_*)
+rule WEL1DROPPER_Loader_Behavior {
+  meta:
+    description = "WEL1DROPPER npm loader — hookless require()-triggered downloader: OS/arch fingerprint + Cloudflare Workers oob-worker host + DNS-TXT/wel1.ru staging fallback"
+    author = "synthetic-detections"
+    date = "2026-08-11"
+    severity = "critical"
+    family = "wel1dropper-npm-rat"
+    reference = "https://thehackernews.com/2026/08/nearly-800-malicious-npm-packages.html"
+  strings:
+    $fp_platform = "process.platform"
+    $fp_arch = "process.arch"
+    $cf_worker = "oob-worker.cf"
+    $cf_dev = ".workers.dev"
+    $dns_txt = "resolveTxt"
+    $wel1 = "wel1.ru"
+    $dl_sub = ".dl.wel1.ru"
+    $helper_a = "_helpers.js"
+    $helper_b = "lib/telemetry.js"
+  condition:
+    2 of ($fp_*) and (all of ($cf_worker, $cf_dev) or $dns_txt and ($wel1 or $dl_sub)) and any of ($helper_*) and filesize < 500KB
 }
 
-rule WEL1DROPPER_IOC
-{
-    meta:
-        description = "WEL1DROPPER hard IOCs — wel1.ru staging subdomains, Cloudflare Workers hosts, disguised LaunchAgent, payload paths (>=2 co-occurring to avoid IOC-doc FPs)"
-        author      = "synthetic-detections"
-        date        = "2026-08-11"
-        severity    = "high"
-        family      = "wel1dropper-npm-rat"
-        reference   = "https://gbhackers.com/russian-hackers-use-ai-slopsquatting/"
-
-    strings:
-        $h1  = "sdk.dl.wel1.ru" ascii
-        $h2  = "ext.dl.wel1.ru" ascii
-        $h3  = "pkg.dl.wel1.ru" ascii
-        $h4  = "net.dl.wel1.ru" ascii
-        $w1  = "oob-worker.cf103-070.workers.dev" ascii
-        $w2  = "oob-worker.cf102-baf.workers.dev" ascii
-        $w3  = "oob-worker.cf99-9b3.workers.dev" ascii
-        $p1  = "/pkg/update_win.exe" ascii
-        $p2  = "/pkg/beacon_mac.bin" ascii
-        $la  = "com.apple.windowserver.helper.plist" ascii
-        // XOR-decoded Russian-bank decoy health-check strings
-        $d1  = "tcsbank.ru" ascii
-        $d2  = "cloudpayments.ru" ascii
-
-    condition:
-        filesize < 500KB and 2 of them
+rule WEL1DROPPER_IOC {
+  meta:
+    description = "WEL1DROPPER hard IOCs — wel1.ru staging subdomains, Cloudflare Workers hosts, disguised LaunchAgent, payload paths (>=2 co-occurring to avoid IOC-doc FPs)"
+    author = "synthetic-detections"
+    date = "2026-08-11"
+    severity = "high"
+    family = "wel1dropper-npm-rat"
+    reference = "https://gbhackers.com/russian-hackers-use-ai-slopsquatting/"
+  strings:
+    $h1 = "sdk.dl.wel1.ru"
+    $h2 = "ext.dl.wel1.ru"
+    $h3 = "pkg.dl.wel1.ru"
+    $h4 = "net.dl.wel1.ru"
+    $w1 = "oob-worker.cf103-070.workers.dev"
+    $w2 = "oob-worker.cf102-baf.workers.dev"
+    $w3 = "oob-worker.cf99-9b3.workers.dev"
+    $p1 = "/pkg/update_win.exe"
+    $p2 = "/pkg/beacon_mac.bin"
+    $la = "com.apple.windowserver.helper.plist"
+    $d1 = "tcsbank.ru"
+    $d2 = "cloudpayments.ru"
+  condition:
+    2 of them and filesize < 500KB
 }
 
-rule WEL1DROPPER_MacOS_Persistence
-{
-    meta:
-        description = "WEL1DROPPER macOS stage — disguised WindowServer LaunchAgent persistence combined with lldb/frida/dtrace + VMware anti-analysis"
-        author      = "synthetic-detections"
-        date        = "2026-08-11"
-        severity    = "critical"
-        family      = "wel1dropper-npm-rat"
-        reference   = "https://thehackernews.com/2026/08/nearly-800-malicious-npm-packages.html"
-
-    strings:
-        $plist  = "com.apple.windowserver.helper.plist" ascii
-        $la_dir = "LaunchAgents" ascii
-
-        $dbg1   = "lldb" ascii
-        $dbg2   = "frida" ascii
-        $dbg3   = "dtrace" ascii
-        $vm     = "VMware" ascii
-
-        $macbeacon = "beacon_mac.bin" ascii
-
-    condition:
-        filesize < 500KB and
-        $plist and
-        (
-            (2 of ($dbg1, $dbg2, $dbg3)) or
-            ($vm and 1 of ($dbg1, $dbg2, $dbg3)) or
-            ($la_dir and $macbeacon)
-        )
+rule WEL1DROPPER_MacOS_Persistence {
+  meta:
+    description = "WEL1DROPPER macOS stage — disguised WindowServer LaunchAgent persistence combined with lldb/frida/dtrace + VMware anti-analysis"
+    author = "synthetic-detections"
+    date = "2026-08-11"
+    severity = "critical"
+    family = "wel1dropper-npm-rat"
+    reference = "https://thehackernews.com/2026/08/nearly-800-malicious-npm-packages.html"
+  strings:
+    $plist = "com.apple.windowserver.helper.plist"
+    $la_dir = "LaunchAgents"
+    $dbg1 = "lldb"
+    $dbg2 = "frida"
+    $dbg3 = "dtrace"
+    $vm = "VMware"
+    $macbeacon = "beacon_mac.bin"
+  condition:
+    $plist and (2 of ($dbg1, $dbg2, $dbg3) or $vm and any of ($dbg1, $dbg2, $dbg3) or $la_dir and $macbeacon) and filesize < 500KB
 }

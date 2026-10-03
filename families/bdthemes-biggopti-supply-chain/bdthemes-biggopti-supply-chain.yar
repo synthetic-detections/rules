@@ -53,99 +53,68 @@
      e450ae5bc4bfc0d960dded06a76bb8e9  wp-cache-optimizer.php ("Health Check")
 */
 
-rule Biggopti_Poisoned_Banner_Payload
-{
-    meta:
-        description = "BdThemes/Biggopti poisoned banner-JSON: onanimationstart id-attribute breakout + fromCharCode stager fetching the Sigmative payload"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "critical"
-        family      = "bdthemes-biggopti-supply-chain"
-        reference   = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
-
-    strings:
-        // (1) the XSS breakout vector used in the poisoned display_id
-        $brk1 = "onanimationstart=" ascii wide nocase
-        $brk2 = "animation:wrapperSlideInTop" ascii wide nocase
-
-        // (2) the fromCharCode/eval stager that reassembles the fetch()
-        $stg1 = "eval(String.fromCharCode(" ascii wide nocase
-        $stg2 = "new Function(t)()" ascii wide nocase
-        $stg3 = ".then(r=>r.text())" ascii wide nocase
-
-        // (3) Biggopti/Sigmative context tying it to this family
-        $ctx1 = "biggopti" ascii wide nocase
-        $ctx2 = "sigmative" ascii wide nocase
-        $ctx3 = "display_id" ascii wide nocase
-        $ctx4 = "/prod/store/api/biggopti/" ascii wide nocase
-
-    condition:
-        // breakout OR stager, AND a family-context anchor
-        ((any of ($brk*)) or (any of ($stg*))) and (any of ($ctx*))
-        and filesize < 512KB
+rule Biggopti_Poisoned_Banner_Payload {
+  meta:
+    description = "BdThemes/Biggopti poisoned banner-JSON: onanimationstart id-attribute breakout + fromCharCode stager fetching the Sigmative payload"
+    author = "synthetic-detections"
+    date = "2026-08-09"
+    severity = "critical"
+    family = "bdthemes-biggopti-supply-chain"
+    reference = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
+  strings:
+    $brk1 = "onanimationstart=" ascii wide nocase
+    $brk2 = "animation:wrapperSlideInTop" ascii wide nocase
+    $stg1 = "eval(String.fromCharCode(" ascii wide nocase
+    $stg2 = "new Function(t)()" ascii wide nocase
+    $stg3 = ".then(r=>r.text())" ascii wide nocase
+    $ctx1 = "biggopti" ascii wide nocase
+    $ctx2 = "sigmative" ascii wide nocase
+    $ctx3 = "display_id" ascii wide nocase
+    $ctx4 = "/prod/store/api/biggopti/" ascii wide nocase
+  condition:
+    (any of ($brk*) or any of ($stg*)) and any of ($ctx*) and filesize < 512KB
 }
 
-rule Biggopti_Dropped_Webshell_Backdoor
-{
-    meta:
-        description = "BdThemes/Biggopti on-disk PHP artifacts: emer-run webshell, ?_wplogin magic-login MU-plugin, or deterministic bd_ credential scheme"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "critical"
-        family      = "bdthemes-biggopti-supply-chain"
-        reference   = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
-
-    strings:
-        $php = "<?php"
-
-        // dropped-artifact filenames / disguised slugs
-        $a1 = "emer-run.php" ascii wide nocase
-        $a2 = "wp-smart-thumbnails" ascii wide nocase
-        $a3 = "wp-cache-optimizer.php" ascii wide nocase
-        $a4 = "class-wp-token-validate.php" ascii wide nocase
-
-        // magic-login backdoor entry (targets longest-registered admin)
-        $b1 = "_wplogin" ascii wide nocase
-
-        // deterministic credential scheme from the site hostname (x.js -> PHP)
-        $c1 = "Bd@26!" ascii wide
-        $c2 = /\bbd_[0-9a-z]{1,6}\b/ ascii wide
-
-        // rogue-admin / MU-plugin persistence action
-        $d1 = "wp-content/mu-plugins" ascii wide nocase
-        $d2 = "wp_insert_user" ascii wide nocase
-        $d3 = "X-WP-Nonce" ascii wide nocase
-
-    condition:
-        $php and (
-            any of ($a*)                       // named dropped artifact
-            or ($b1 and any of ($d*))          // magic-login + persistence/admin
-            or (($c1 or $c2) and any of ($d*)) // deterministic creds + action
-        )
-        and filesize < 256KB
+rule Biggopti_Dropped_Webshell_Backdoor {
+  meta:
+    description = "BdThemes/Biggopti on-disk PHP artifacts: emer-run webshell, ?_wplogin magic-login MU-plugin, or deterministic bd_ credential scheme"
+    author = "synthetic-detections"
+    date = "2026-08-09"
+    severity = "critical"
+    family = "bdthemes-biggopti-supply-chain"
+    reference = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
+  strings:
+    $php = "<?php"
+    $a1 = "emer-run.php" ascii wide nocase
+    $a2 = "wp-smart-thumbnails" ascii wide nocase
+    $a3 = "wp-cache-optimizer.php" ascii wide nocase
+    $a4 = "class-wp-token-validate.php" ascii wide nocase
+    $b1 = "_wplogin" ascii wide nocase
+    $c1 = "Bd@26!" ascii wide
+    $c2 = /\bbd_[0-9a-z]{1,6}\b/
+    $d1 = "wp-content/mu-plugins" ascii wide nocase
+    $d2 = "wp_insert_user" ascii wide nocase
+    $d3 = "X-WP-Nonce" ascii wide nocase
+  condition:
+    $php and (any of ($a*) or $b1 and any of ($d*) or ($c1 or $c2) and any of ($d*)) and filesize < 256KB
 }
 
-rule Biggopti_IOCs
-{
-    meta:
-        description = "BdThemes/Biggopti hard IOCs — C2 ia-cdn.com/fz/c, Sigmative staging host, and dropped-artifact md5 pins"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "high"
-        family      = "bdthemes-biggopti-supply-chain"
-        reference   = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
-
-    strings:
-        $c2   = "ia-cdn.com/fz/c" ascii wide nocase
-        $host = "api.sigmative.io" ascii wide nocase
-        $path = "sigmative.io/prod/store/api/biggopti/x.js" ascii wide nocase
-
-        // md5 pins (recorded for hash-sweep parity; string form for text IOC feeds)
-        $h1 = "1024732009983dd5e54b4cf5593f04d4" ascii wide nocase
-        $h2 = "7719cd98a35ffad2771f26d1ceab7d27" ascii wide nocase
-        $h3 = "9aadc3e5c5242b273bd17c5bdc358845" ascii wide nocase
-        $h4 = "e450ae5bc4bfc0d960dded06a76bb8e9" ascii wide nocase
-
-    condition:
-        any of them and filesize < 2MB
+rule Biggopti_IOCs {
+  meta:
+    description = "BdThemes/Biggopti hard IOCs — C2 ia-cdn.com/fz/c, Sigmative staging host, and dropped-artifact md5 pins"
+    author = "synthetic-detections"
+    date = "2026-08-09"
+    severity = "high"
+    family = "bdthemes-biggopti-supply-chain"
+    reference = "https://www.wordfence.com/blog/2026/08/psa-supply-chain-compromise-in-bdthemes-ecosystem-via-poisoned-api-response/"
+  strings:
+    $c2 = "ia-cdn.com/fz/c" ascii wide nocase
+    $host = "api.sigmative.io" ascii wide nocase
+    $path = "sigmative.io/prod/store/api/biggopti/x.js" ascii wide nocase
+    $h1 = "1024732009983dd5e54b4cf5593f04d4" ascii wide nocase
+    $h2 = "7719cd98a35ffad2771f26d1ceab7d27" ascii wide nocase
+    $h3 = "9aadc3e5c5242b273bd17c5bdc358845" ascii wide nocase
+    $h4 = "e450ae5bc4bfc0d960dded06a76bb8e9" ascii wide nocase
+  condition:
+    any of them and filesize < 2MB
 }

@@ -36,68 +36,57 @@
 
 import "hash"
 
-rule FalconFlank_EDR_LPE_PoC_Behaviour
-{
-    meta:
-        description = "FalconFlank CrowdStrike Falcon LPE PoC -- FALCONFLANK named pipe + planted PowerShell bcrypt.dll + MareBackup task-abuse + oplock/reparse race strings"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "critical"
-        family      = "falconflank-edr-lpe-poc"
-        reference   = "https://thehackernews.com/2026/09/researcher-releases-falconflank-poc.html"
-
-    strings:
-        $pipe       = "\\??\\pipe\\FALCONFLANK" ascii wide
-        $pipe_src   = "\\\\??\\\\pipe\\\\FALCONFLANK" ascii
-        $dll        = "\\WindowsPowerShell\\v1.0\\bcrypt.dll" ascii wide
-        $dll_src    = "\\\\WindowsPowerShell\\\\v1.0\\\\bcrypt.dll" ascii
-        $flank      = "Flanker_" ascii wide
-        $task       = "\\Microsoft\\Windows\\Application Experience" ascii wide
-        $task_src   = "\\\\Microsoft\\\\Windows\\\\Application Experience" ascii
-        $mare       = "MareBackup" ascii wide
-        $m1         = "Exploit succeeded, loading dll, please wait" ascii wide
-        $m2         = "Failed to create oplock, error" ascii wide
-        $m3         = "creating system32 directory" ascii wide
-        $m4         = "Failed to connect to task scheduler service" ascii wide
-
-    condition:
-        any of ($pipe*)
-        or (any of ($dll*) and $mare)
-        or (2 of ($flank, $task, $task_src, $m1, $m2, $m3, $m4))
+rule FalconFlank_EDR_LPE_PoC_Behaviour {
+  meta:
+    description = "FalconFlank CrowdStrike Falcon LPE PoC -- FALCONFLANK named pipe + planted PowerShell bcrypt.dll + MareBackup task-abuse + oplock/reparse race strings"
+    author = "synthetic-detections"
+    date = "2026-09-04"
+    severity = "critical"
+    family = "falconflank-edr-lpe-poc"
+    reference = "https://thehackernews.com/2026/09/researcher-releases-falconflank-poc.html"
+  strings:
+    $pipe = "\\??\\pipe\\FALCONFLANK" ascii wide
+    $pipe_src = "\\\\??\\\\pipe\\\\FALCONFLANK"
+    $dll = "\\WindowsPowerShell\\v1.0\\bcrypt.dll" ascii wide
+    $dll_src = "\\\\WindowsPowerShell\\\\v1.0\\\\bcrypt.dll"
+    $flank = "Flanker_" ascii wide
+    $task = "\\Microsoft\\Windows\\Application Experience" ascii wide
+    $task_src = "\\\\Microsoft\\\\Windows\\\\Application Experience"
+    $mare = "MareBackup" ascii wide
+    $m1 = "Exploit succeeded, loading dll, please wait" ascii wide
+    $m2 = "Failed to create oplock, error" ascii wide
+    $m3 = "creating system32 directory" ascii wide
+    $m4 = "Failed to connect to task scheduler service" ascii wide
+  condition:
+    any of ($pipe*) or any of ($dll*) and $mare or 2 of ($flank, $task, $task_src, $m1, $m2, $m3, $m4)
 }
 
-rule FalconFlank_EDR_LPE_PoC_IOC
-{
-    meta:
-        description = "FalconFlank PoC repository artifacts (MSNightmare / Nightmare Eclipse) -- project filenames and unique markers"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "high"
-        family      = "falconflank-edr-lpe-poc"
-        reference   = "https://www.theregister.com/security/2026/09/03/prolific-microsoft-0-day-hunter-drops-crowdstrike-falcon-exploit-poc/5294318"
-
-    strings:
-        $f1 = "FalconFlank.cpp" ascii wide
-        $f2 = "FalconFlank.sln" ascii wide
-        $f3 = "FalconFlank.vcxproj" ascii wide
-        $n1 = "FALCONFLANK" ascii wide
-        $n2 = "Flanker_" ascii wide
-
-    condition:
-        any of ($f1, $f2, $f3) or all of ($n1, $n2)
+rule FalconFlank_EDR_LPE_PoC_IOC {
+  meta:
+    description = "FalconFlank PoC repository artifacts (MSNightmare / Nightmare Eclipse) -- project filenames and unique markers"
+    author = "synthetic-detections"
+    date = "2026-09-04"
+    severity = "high"
+    family = "falconflank-edr-lpe-poc"
+    reference = "https://www.theregister.com/security/2026/09/03/prolific-microsoft-0-day-hunter-drops-crowdstrike-falcon-exploit-poc/5294318"
+  strings:
+    $f1 = "FalconFlank.cpp" ascii wide
+    $f2 = "FalconFlank.sln" ascii wide
+    $f3 = "FalconFlank.vcxproj" ascii wide
+    $n1 = "FALCONFLANK" ascii wide
+    $n2 = "Flanker_" ascii wide
+  condition:
+    any of ($f1, $f2, $f3) or all of ($n1, $n2)
 }
 
-rule FalconFlank_EDR_LPE_PoC_Pin
-{
-    meta:
-        description = "Hash pin for the compiled FalconFlank PoC binary (SHA-256) -- populate when a sample is captured"
-        author      = "synthetic-detections"
-        date        = "2026-09-04"
-        severity    = "critical"
-        family      = "falconflank-edr-lpe-poc"
-        reference   = "https://github.com/MSNightmare/FalconFlank"
-
-    condition:
-        // placeholder pin (never matches) until the compiled PoC is hashed
-        hash.sha256(0, filesize) == "0000000000000000000000000000000000000000000000000000000000000000"
+rule FalconFlank_EDR_LPE_PoC_Pin {
+  meta:
+    description = "Hash pin for the compiled FalconFlank PoC binary (SHA-256) -- populate when a sample is captured"
+    author = "synthetic-detections"
+    date = "2026-09-04"
+    severity = "critical"
+    family = "falconflank-edr-lpe-poc"
+    reference = "https://github.com/MSNightmare/FalconFlank"
+  condition:
+    hash.sha256(0, filesize) == "0000000000000000000000000000000000000000000000000000000000000000"
 }

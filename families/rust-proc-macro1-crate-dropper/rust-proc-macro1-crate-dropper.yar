@@ -47,149 +47,92 @@
      https://thehackernews.com/2026/08/rust-supply-chain-attack-puts-build.html
 */
 
-rule Rust_ProcMacro1_Dropper_Behavior
-{
-    meta:
-        description = "proc-macro1 crates.io build-script dropper — build.rs base64 URL reassembly + TLS-verify bypass + rust-setup payload drop/exec"
-        author      = "synthetic-detections"
-        date        = "2026-08-22"
-        severity    = "critical"
-        family      = "rust-proc-macro1-crate-dropper"
-        reference   = "https://www.stepsecurity.io/blog/arrayref-rust-crate-supply-chain-attack"
-
-    strings:
-        // base64 URL fragments reassembled at build time (host 23.254.165.112:9089 / :443)
-        $u_https  = "aHR0cHM6Ly8=" ascii   // "https://"
-        $u_23254  = "MjMuMjU0Lg==" ascii   // "23.254."
-        $u_165    = "MTY1Lg==" ascii       // "165."
-        $u_112    = "MTEyOg==" ascii       // "112:"
-        $u_9089   = "OTA4OS8=" ascii       // "9089/"
-        $u_443    = "NDQz" ascii           // "443"
-
-        // build.rs structural markers
-        $s_srcparts = "SRC_URL_PARTS" ascii
-        $s_endparts = "END_URL_PARTS" ascii
-        $s_rununix  = "run_unix_payload" ascii
-        $s_acceptall= "AcceptAll" ascii
-        $s_certveri = "ServerCertVerifier" ascii
-        $s_assert   = "ServerCertVerified::assertion" ascii
-
-        // drop / execute
-        $d_setup    = "/tmp/rust-setup" ascii
-        $d_ps1      = "rust-setup.ps1" ascii
-        $d_vbs      = "rust-setup-launch.vbs" ascii
-        $d_forget   = "std::mem::forget(child)" ascii
-
-        // OS/arch payload selector names
-        $p_c010 = "rust-crate_0.1.0" ascii
-        $p_c020 = "rust-crate_0.2.0" ascii
-        $p_c030 = "rust-crate_0.3.0" ascii
-        $p_c040 = "rust-crate_0.4.0" ascii
-
-    condition:
-        filesize < 2MB
-        and (
-            // the two build.rs URL-fragment array names together are pathognomonic
-            ($s_srcparts and $s_endparts)
-            // TLS-verify bypass helper co-occurring with a drop/exec sink
-            or ((any of ($s_acceptall, $s_certveri, $s_assert)) and (any of ($d_setup, $d_ps1, $d_vbs, $d_forget)))
-            // named dropper routine plus a drop artifact
-            or ($s_rununix and (any of ($d_setup, $p_c010, $p_c020, $p_c030, $p_c040)))
-            // three or more of the reassembly fragments together (host chain)
-            or (3 of ($u_https, $u_23254, $u_165, $u_112, $u_9089, $u_443) and (any of ($d_setup, $d_ps1, $s_srcparts, $p_c010, $p_c020, $p_c030, $p_c040)))
-            // two distinct rust-crate payload selectors plus a drop path
-            or (2 of ($p_c010, $p_c020, $p_c030, $p_c040) and (any of ($d_setup, $d_ps1, $d_vbs)))
-        )
+rule Rust_ProcMacro1_Dropper_Behavior {
+  meta:
+    description = "proc-macro1 crates.io build-script dropper — build.rs base64 URL reassembly + TLS-verify bypass + rust-setup payload drop/exec"
+    author = "synthetic-detections"
+    date = "2026-08-22"
+    severity = "critical"
+    family = "rust-proc-macro1-crate-dropper"
+    reference = "https://www.stepsecurity.io/blog/arrayref-rust-crate-supply-chain-attack"
+  strings:
+    $u_https = "aHR0cHM6Ly8="
+    $u_23254 = "MjMuMjU0Lg=="
+    $u_165 = "MTY1Lg=="
+    $u_112 = "MTEyOg=="
+    $u_9089 = "OTA4OS8="
+    $u_443 = "NDQz"
+    $s_srcparts = "SRC_URL_PARTS"
+    $s_endparts = "END_URL_PARTS"
+    $s_rununix = "run_unix_payload"
+    $s_acceptall = "AcceptAll"
+    $s_certveri = "ServerCertVerifier"
+    $s_assert = "ServerCertVerified::assertion"
+    $d_setup = "/tmp/rust-setup"
+    $d_ps1 = "rust-setup.ps1"
+    $d_vbs = "rust-setup-launch.vbs"
+    $d_forget = "std::mem::forget(child)"
+    $p_c010 = "rust-crate_0.1.0"
+    $p_c020 = "rust-crate_0.2.0"
+    $p_c030 = "rust-crate_0.3.0"
+    $p_c040 = "rust-crate_0.4.0"
+  condition:
+    ($s_srcparts and $s_endparts or any of ($s_acceptall, $s_certveri, $s_assert) and any of ($d_setup, $d_ps1, $d_vbs, $d_forget) or $s_rununix and any of ($d_setup, $p_c010, $p_c020, $p_c030, $p_c040) or 3 of ($u_https, $u_23254, $u_165, $u_112, $u_9089, $u_443) and any of ($d_setup, $d_ps1, $s_srcparts, $p_c010, $p_c020, $p_c030, $p_c040) or 2 of ($p_c010, $p_c020, $p_c030, $p_c040) and any of ($d_setup, $d_ps1, $d_vbs)) and filesize < 2MB
 }
 
-rule Rust_ProcMacro1_Dropper_IOC
-{
-    meta:
-        description = "proc-macro1 crates.io dropper — infra IPs/host/paths, dropper+persistence file names, attacker crate names, .crate SHA-256s"
-        author      = "synthetic-detections"
-        date        = "2026-08-22"
-        severity    = "high"
-        family      = "rust-proc-macro1-crate-dropper"
-        reference   = "https://blog.rust-lang.org/2026/08/20/supply-chain-attack-on-arrayref/"
-
-    strings:
-        // stage-1 payload host + C2, stage-2 C2 (Hostwinds)
-        $i_host9089 = "23.254.165.112:9089" ascii
-        $i_c2443    = "23.254.165.112:443" ascii
-        $i_ip112    = "23.254.165.112" ascii
-        $i_ip216    = "23.254.167.216" ascii
-        $i_ip107    = "23.254.167.107" ascii
-        $i_hwsrv    = "hwsrv-798836.hostwindsdns.com" ascii nocase
-
-        // dropper + persistence artifacts
-        $f_setup    = "/tmp/rust-setup" ascii
-        $f_ps1      = "rust-setup.ps1" ascii
-        $f_vbs      = "rust-setup-launch.vbs" ascii
-        $f_azure    = ".config/AzureKits" ascii
-        $f_service  = ".config/ServiceKit" ascii
-        $f_monosvc  = "MonoService" ascii
-        $f_monoxpc  = "MonoXpc" ascii
-
-        // attacker-owned crate names (co-occurrence guarded — generic-ish)
-        $c_pm1      = "proc-macro1" ascii
-        $c_pmen     = "proc-macro-en" ascii
-        $c_aovine   = "aovine" ascii
-        $c_arone    = "arone" ascii fullword
-        $c_aronenao = "aronenao" ascii
-        $c_tiny     = "tinymember" ascii
-
-        // .crate SHA-256s
-        $h_arrayref = "25ad700976873c76af785cb99b33c48db7df8b81f21d1e9e06b3676b9a9373ae" ascii nocase
-        $h_pm107    = "61198155da51b838772eecf5bfaac6cbc4dcc388dccc56658fc28a8e831b34d4" ascii nocase
-        $h_pm106    = "b5c1b5b0763a8809a644a8f92224653f0aca623a98eecc714d27f74b80fbe436" ascii nocase
-
-    condition:
-        filesize < 5MB
-        and (
-            // exact sample hash — pinned, near-zero FP
-            any of ($h_*)
-            // distinctive infra literals
-            or $i_host9089 or $i_c2443 or $i_ip216 or $i_ip107 or $i_hwsrv
-            // bare payload IP guarded by a dropper/persistence artifact
-            or ($i_ip112 and (any of ($f_setup, $f_ps1, $f_vbs, $f_azure, $f_service, $f_monosvc, $f_monoxpc)))
-            // dropper file names co-occurring
-            or ($f_ps1 and $f_vbs)
-            or ($f_setup and (any of ($f_ps1, $f_vbs, $f_azure, $f_service)))
-            // persistence dir + implant binary
-            or ((any of ($f_azure, $f_service)) and (any of ($f_monosvc, $f_monoxpc)))
-            // typosquat crate name plus an attacker sibling crate (guards proc-macro1 alone)
-            or ($c_pm1 and (any of ($c_pmen, $c_aovine, $c_aronenao, $c_tiny)))
-            or (2 of ($c_pmen, $c_aovine, $c_arone, $c_aronenao, $c_tiny))
-        )
+rule Rust_ProcMacro1_Dropper_IOC {
+  meta:
+    description = "proc-macro1 crates.io dropper — infra IPs/host/paths, dropper+persistence file names, attacker crate names, .crate SHA-256s"
+    author = "synthetic-detections"
+    date = "2026-08-22"
+    severity = "high"
+    family = "rust-proc-macro1-crate-dropper"
+    reference = "https://blog.rust-lang.org/2026/08/20/supply-chain-attack-on-arrayref/"
+  strings:
+    $i_host9089 = "23.254.165.112:9089"
+    $i_c2443 = "23.254.165.112:443"
+    $i_ip112 = "23.254.165.112"
+    $i_ip216 = "23.254.167.216"
+    $i_ip107 = "23.254.167.107"
+    $i_hwsrv = "hwsrv-798836.hostwindsdns.com" nocase
+    $f_setup = "/tmp/rust-setup"
+    $f_ps1 = "rust-setup.ps1"
+    $f_vbs = "rust-setup-launch.vbs"
+    $f_azure = ".config/AzureKits"
+    $f_service = ".config/ServiceKit"
+    $f_monosvc = "MonoService"
+    $f_monoxpc = "MonoXpc"
+    $c_pm1 = "proc-macro1"
+    $c_pmen = "proc-macro-en"
+    $c_aovine = "aovine"
+    $c_arone = "arone" fullword
+    $c_aronenao = "aronenao"
+    $c_tiny = "tinymember"
+    $h_arrayref = "25ad700976873c76af785cb99b33c48db7df8b81f21d1e9e06b3676b9a9373ae" nocase
+    $h_pm107 = "61198155da51b838772eecf5bfaac6cbc4dcc388dccc56658fc28a8e831b34d4" nocase
+    $h_pm106 = "b5c1b5b0763a8809a644a8f92224653f0aca623a98eecc714d27f74b80fbe436" nocase
+  condition:
+    (any of ($h_*) or $i_host9089 or $i_c2443 or $i_ip216 or $i_ip107 or $i_hwsrv or $i_ip112 and any of ($f_setup, $f_ps1, $f_vbs, $f_azure, $f_service, $f_monosvc, $f_monoxpc) or $f_ps1 and $f_vbs or $f_setup and any of ($f_ps1, $f_vbs, $f_azure, $f_service) or any of ($f_azure, $f_service) and any of ($f_monosvc, $f_monoxpc) or $c_pm1 and any of ($c_pmen, $c_aovine, $c_aronenao, $c_tiny) or 2 of ($c_pmen, $c_aovine, $c_arone, $c_aronenao, $c_tiny)) and filesize < 5MB
 }
 
-rule Rust_ProcMacro1_Dropper_Specimen
-{
-    meta:
-        description = "proc-macro1 crates.io dropper — tight specimen pin (build.rs dropper shape + host reassembly)"
-        author      = "synthetic-detections"
-        date        = "2026-08-22"
-        severity    = "critical"
-        family      = "rust-proc-macro1-crate-dropper"
-        reference   = "https://www.aikido.dev/blog/two-popular-rust-crates-arrayref-and-append-only-vec-compromised-in-supply-chain-attack"
-
-    strings:
-        $s_srcparts = "SRC_URL_PARTS" ascii
-        $s_endparts = "END_URL_PARTS" ascii
-        $s_rununix  = "run_unix_payload" ascii
-        $s_acceptall= "AcceptAll" ascii
-        $u_https    = "aHR0cHM6Ly8=" ascii
-        $u_9089     = "OTA4OS8=" ascii
-        $d_setup    = "/tmp/rust-setup" ascii
-        $d_vbs      = "rust-setup-launch.vbs" ascii
-        $i_host9089 = "23.254.165.112:9089" ascii
-
-    condition:
-        filesize < 2MB
-        and ($s_srcparts and $s_endparts)
-        and (
-            $s_rununix or $s_acceptall
-            or ($u_https and $u_9089)
-            or (any of ($d_setup, $d_vbs, $i_host9089))
-        )
+rule Rust_ProcMacro1_Dropper_Specimen {
+  meta:
+    description = "proc-macro1 crates.io dropper — tight specimen pin (build.rs dropper shape + host reassembly)"
+    author = "synthetic-detections"
+    date = "2026-08-22"
+    severity = "critical"
+    family = "rust-proc-macro1-crate-dropper"
+    reference = "https://www.aikido.dev/blog/two-popular-rust-crates-arrayref-and-append-only-vec-compromised-in-supply-chain-attack"
+  strings:
+    $s_srcparts = "SRC_URL_PARTS"
+    $s_endparts = "END_URL_PARTS"
+    $s_rununix = "run_unix_payload"
+    $s_acceptall = "AcceptAll"
+    $u_https = "aHR0cHM6Ly8="
+    $u_9089 = "OTA4OS8="
+    $d_setup = "/tmp/rust-setup"
+    $d_vbs = "rust-setup-launch.vbs"
+    $i_host9089 = "23.254.165.112:9089"
+  condition:
+    $s_srcparts and $s_endparts and ($s_rununix or $s_acceptall or $u_https and $u_9089 or any of ($d_setup, $d_vbs, $i_host9089)) and filesize < 2MB
 }

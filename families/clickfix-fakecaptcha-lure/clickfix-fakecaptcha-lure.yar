@@ -21,102 +21,98 @@
 */
 
 private rule cf_clipboard_write {
-    strings:
-        $stage     = "stageClipboard" ascii wide nocase
-        $sccd      = "setClipboardCopyData" ascii wide nocase
-        $writetext = "clipboard.writeText" ascii wide nocase
-        $ec1       = "execCommand('copy')" ascii wide nocase
-        $ec2       = "execCommand(\"copy\")" ascii wide nocase
-    condition:
-        any of them
+  strings:
+    $stage = "stageClipboard" ascii wide nocase
+    $sccd = "setClipboardCopyData" ascii wide nocase
+    $writetext = "clipboard.writeText" ascii wide nocase
+    $ec1 = "execCommand('copy')" ascii wide nocase
+    $ec2 = "execCommand(\"copy\")" ascii wide nocase
+  condition:
+    any of them
 }
 
 private rule cf_exec_cradle {
-    // an obfuscated / remote-execution command cradle (not a plain admin command)
-    strings:
-        $c1 = /powershell(\.exe)?\s+-[wnepc]{1,3}\b/ ascii wide nocase
-        $c2 = "-EncodedCommand" ascii wide nocase
-        $c3 = /-e(nc)?\s+[A-Za-z0-9+\/]{20,}/ ascii wide nocase
-        $c4 = /iwr\s+[^\n]{0,160}\|\s*iex/ ascii wide nocase
-        $c5 = /curl\s+[^\n]{0,200}\|\s*(iex|powershell|bash|zsh|sh)\b/ ascii wide nocase
-        $c6 = "mshta http" ascii wide nocase
-        $c7 = /conhost(\.exe)?\s+--headless/ ascii wide nocase
-        $c8 = /Invoke-(Expression|WebRequest|RestMethod)/ ascii wide nocase
-    condition:
-        any of them
+  strings:
+    $c1 = /powershell(\.exe)?\s+-[wnepc]{1,3}\b/
+    $c2 = "-EncodedCommand" ascii wide nocase
+    $c3 = /-e(nc)?\s+[A-Za-z0-9+\/]{20,}/
+    $c4 = /iwr\s+[^\n]{0,160}\|\s*iex/
+    $c5 = /curl\s+[^\n]{0,200}\|\s*(iex|powershell|bash|zsh|sh)\b/
+    $c6 = "mshta http" ascii wide nocase
+    $c7 = /conhost(\.exe)?\s+--headless/
+    $c8 = /Invoke-(Expression|WebRequest|RestMethod)/
+  condition:
+    any of them
 }
 
 private rule cf_verify_ploy {
-    // fake human-verification framing that is near-unique to ClickFix lures
-    strings:
-        $p1 = "reCAPTCHA Verification Hash" ascii wide nocase
-        $p2 = "reCAPTCHA Verification ID" ascii wide nocase
-        $p3 = "I am not a robot - reCAPTCHA" ascii wide nocase
-        $p4 = "Cloud Identificator" ascii wide nocase
-        $p5 = "Verification ID:" ascii wide nocase
-        $p6 = "Verify you are human" ascii wide nocase
-        $p7 = "Checking if you are human" ascii wide nocase
-        $p8 = "ray id" ascii wide nocase
-    condition:
-        any of them
+  strings:
+    $p1 = "reCAPTCHA Verification Hash" ascii wide nocase
+    $p2 = "reCAPTCHA Verification ID" ascii wide nocase
+    $p3 = "I am not a robot - reCAPTCHA" ascii wide nocase
+    $p4 = "Cloud Identificator" ascii wide nocase
+    $p5 = "Verification ID:" ascii wide nocase
+    $p6 = "Verify you are human" ascii wide nocase
+    $p7 = "Checking if you are human" ascii wide nocase
+    $p8 = "ray id" ascii wide nocase
+  condition:
+    any of them
 }
 
 rule clickfix_stageclipboard_routine {
-    meta:
-        author = "synthetic-detections"
-        description = "ClickFix lure: the near-unique clipboard-staging routine (stageClipboard/setClipboardCopyData)"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
-    strings:
-        $stage = "stageClipboard" ascii wide nocase
-        $sccd  = "setClipboardCopyData" ascii wide nocase
-    condition:
-        filesize < 3MB and any of them
+  meta:
+    description = "ClickFix lure: the near-unique clipboard-staging routine (stageClipboard/setClipboardCopyData)"
+    author = "synthetic-detections"
+    severity = "high"
+    reference = "https://attack.mitre.org/techniques/T1204/004/"
+    technique = "T1204.004"
+  strings:
+    $stage = "stageClipboard" ascii wide nocase
+    $sccd = "setClipboardCopyData" ascii wide nocase
+  condition:
+    any of them and filesize < 3MB
 }
 
 rule clickfix_clipboard_staged_cradle {
-    meta:
-        author = "synthetic-detections"
-        description = "ClickFix lure: a clipboard-copy of an obfuscated/remote-exec command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
-    condition:
-        filesize < 3MB and cf_clipboard_write and cf_exec_cradle
+  meta:
+    description = "ClickFix lure: a clipboard-copy of an obfuscated/remote-exec command cradle"
+    author = "synthetic-detections"
+    severity = "high"
+    reference = "https://attack.mitre.org/techniques/T1204/004/"
+    technique = "T1204.004"
+  condition:
+    cf_clipboard_write and cf_exec_cradle and filesize < 3MB
 }
 
 rule clickfix_fakecaptcha_verify_ploy {
-    meta:
-        author = "synthetic-detections"
-        description = "ClickFix lure: fake human-verification ploy + clipboard staging or a command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
-    condition:
-        filesize < 3MB and cf_verify_ploy and (cf_clipboard_write or cf_exec_cradle)
+  meta:
+    description = "ClickFix lure: fake human-verification ploy + clipboard staging or a command cradle"
+    author = "synthetic-detections"
+    severity = "high"
+    reference = "https://attack.mitre.org/techniques/T1204/004/"
+    technique = "T1204.004"
+  condition:
+    cf_verify_ploy and (cf_clipboard_write or cf_exec_cradle) and filesize < 3MB
 }
 
 rule clickfix_run_dialog_instructions {
-    meta:
-        author = "synthetic-detections"
-        description = "ClickFix lure: paste-and-run (Win+R / File Explorer / PowerShell) instructions with a command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
-    strings:
-        // open-the-runner / FileFix framing
-        $r1 = /Win(dows)?\s*(key|button|logo)?\s*\+?\s*R\b/ ascii wide nocase
-        $r2 = "Run dialog" ascii wide nocase
-        $r3 = "Open PowerShell" ascii wide nocase
-        $r4 = "Windows Terminal" ascii wide nocase
-        $r5 = "File Explorer" ascii wide nocase
-        $r6 = "How to fix" ascii wide nocase
-        $r7 = "address bar" ascii wide nocase
-        // paste + execute step
-        $s1 = /Ctrl\s*\+?\s*V/ ascii wide nocase
-        $s2 = "press Enter" ascii wide nocase
-        $s3 = "paste" ascii wide nocase
-    condition:
-        filesize < 3MB and (1 of ($r*)) and (1 of ($s*)) and cf_exec_cradle and cf_verify_ploy
+  meta:
+    description = "ClickFix lure: paste-and-run (Win+R / File Explorer / PowerShell) instructions with a command cradle"
+    author = "synthetic-detections"
+    severity = "high"
+    reference = "https://attack.mitre.org/techniques/T1204/004/"
+    technique = "T1204.004"
+  strings:
+    $r1 = /Win(dows)?\s*(key|button|logo)?\s*\+?\s*R\b/
+    $r2 = "Run dialog" ascii wide nocase
+    $r3 = "Open PowerShell" ascii wide nocase
+    $r4 = "Windows Terminal" ascii wide nocase
+    $r5 = "File Explorer" ascii wide nocase
+    $r6 = "How to fix" ascii wide nocase
+    $r7 = "address bar" ascii wide nocase
+    $s1 = /Ctrl\s*\+?\s*V/
+    $s2 = "press Enter" ascii wide nocase
+    $s3 = "paste" ascii wide nocase
+  condition:
+    any of ($r*) and any of ($s*) and cf_exec_cradle and cf_verify_ploy and filesize < 3MB
 }
