@@ -42,7 +42,6 @@ rule Cavern_Manticore_Agent_Behavior
         severity    = "critical"
         family      = "cavern-manticore-net-c2"
         reference   = "https://research.checkpoint.com/2026/cavern-manticore-exposing-iran-linked-modular-c2-framework/"
-
     strings:
         $pdb   = "\\Desktop\\Modules\\cavern\\" ascii wide nocase
         $mtx   = "MYMUTEX123HELLP" ascii wide
@@ -53,11 +52,8 @@ rule Cavern_Manticore_Agent_Behavior
         $steg1 = ".CvnC.png" ascii wide nocase
         $steg2 = ".CvnA.png" ascii wide nocase
         $steg3 = ".CvnR.png" ascii wide nocase
-
     condition:
-        $pdb
-        or ($mtx and 1 of ($proj, $err1, $err2, $err3, $steg1, $steg2, $steg3))
-        or 2 of ($err1, $err2, $err3, $steg1, $steg2, $steg3)
+        $pdb or ($mtx and any of ($proj, $err1, $err2, $err3, $steg1, $steg2, $steg3)) or 2 of ($err1, $err2, $err3, $steg1, $steg2, $steg3)
 }
 
 rule Cavern_Manticore_IOC
@@ -69,7 +65,6 @@ rule Cavern_Manticore_IOC
         severity    = "high"
         family      = "cavern-manticore-net-c2"
         reference   = "https://thehackernews.com/2026/07/iran-linked-hackers-use-new-cavern-c2.html"
-
     strings:
         $mtx  = "MYMUTEX123HELLP" ascii wide
         $cfg  = "Cvn.cfg" ascii wide nocase
@@ -79,11 +74,8 @@ rule Cavern_Manticore_IOC
         $mod1 = "n-HTCommp.dll" ascii wide nocase
         $mod2 = "n-ten.dll" ascii wide nocase
         $mod3 = "n-sws.dll" ascii wide nocase
-
     condition:
-        $mtx or $cfg
-        or any of ($c2a, $c2b, $c2c)
-        or any of ($mod1, $mod2, $mod3)
+        $mtx or $cfg or any of ($c2a, $c2b, $c2c) or any of ($mod1, $mod2, $mod3)
 }
 
 rule Cavern_Manticore_Specimen
@@ -95,14 +87,14 @@ rule Cavern_Manticore_Specimen
         severity    = "critical"
         family      = "cavern-manticore-net-c2"
         reference   = "https://research.checkpoint.com/2026/cavern-manticore-exposing-iran-linked-modular-c2-framework/"
-
     condition:
-        filesize < 6MB and (
-            hash.sha256(0, filesize) == "37e123bd7998af4eae32718ce254776f36365a80ba56952593dab46f536d4066"
-            or hash.sha256(0, filesize) == "92cae0ad7f98f51a14bcc0ee05e372ebdc29ea96ea7bd161bd3f55198767603b"
-            or hash.sha256(0, filesize) == "5dc08bda6919a57a85e5f38b857985fa71529ca39c8299868d5a49a987e19b18"
-            or hash.sha256(0, filesize) == "a4aa217def4c38f4ecacdf47b1cd687f60cc74c18ab75195be3c4357a790bf41"
-            or hash.sha256(0, filesize) == "b630c96d3763182533d4fb9b614134382bd644cb02c6c1c3ade848b6ecc31e86"
-            or hash.sha256(0, filesize) == "8e9425c0b46eeb516610ae913d13f2b3f44a023043cb099277031d4ec38a6134"
+        filesize < 6MB
+        and (
+            hash.sha256(0, filesize) == "37e123bd7998af4eae32718ce254776f36365a80ba56952593dab46f536d4066" or
+            hash.sha256(0, filesize) == "92cae0ad7f98f51a14bcc0ee05e372ebdc29ea96ea7bd161bd3f55198767603b" or
+            hash.sha256(0, filesize) == "5dc08bda6919a57a85e5f38b857985fa71529ca39c8299868d5a49a987e19b18" or
+            hash.sha256(0, filesize) == "a4aa217def4c38f4ecacdf47b1cd687f60cc74c18ab75195be3c4357a790bf41" or
+            hash.sha256(0, filesize) == "b630c96d3763182533d4fb9b614134382bd644cb02c6c1c3ade848b6ecc31e86" or
+            hash.sha256(0, filesize) == "8e9425c0b46eeb516610ae913d13f2b3f44a023043cb099277031d4ec38a6134"
         )
 }

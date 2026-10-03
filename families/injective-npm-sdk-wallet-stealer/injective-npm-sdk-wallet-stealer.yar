@@ -51,30 +51,23 @@ rule Injective_SDK_KeyExfil_Behavior
         severity    = "critical"
         family      = "injective-npm-sdk-wallet-stealer"
         reference   = "https://socket.dev/blog/compromised-injective-sdk-npm-package"
-
     strings:
         // Unique injected exfil handler name — not present in the clean SDK
-        $handler = "trackKeyDerivation" ascii
-
+        $handler       = "trackKeyDerivation"
         // Key-derivation functions the malware hooks (legit SDK names — used
         // here only as co-occurrence context, never alone)
-        $hook_mnemonic = "fromMnemonic" ascii
-        $hook_hex      = "fromHex" ascii
-
+        $hook_mnemonic = "fromMnemonic"
+        $hook_hex      = "fromHex"
         // Exfil mechanics
-        $exfil_host = "grpc-web.injective.network" ascii
-        $b64        = "base64" ascii
-        $marker_fm  = "\"fm\"" ascii
-        $marker_fh  = "\"fh\"" ascii
-
+        $exfil_host    = "grpc-web.injective.network"
+        $b64           = "base64"
+        $marker_fm     = "\"fm\""
+        $marker_fh     = "\"fh\""
     condition:
-        filesize < 8MB
-        and $handler
+        $handler
         and any of ($hook_mnemonic, $hook_hex)
-        and (
-            $exfil_host
-            or ($b64 and any of ($marker_fm, $marker_fh))
-        )
+        and ($exfil_host or ($b64 and any of ($marker_fm, $marker_fh)))
+        and filesize < 8MB
 }
 
 rule Injective_SDK_IOC
@@ -86,28 +79,25 @@ rule Injective_SDK_IOC
         severity    = "high"
         family      = "injective-npm-sdk-wallet-stealer"
         reference   = "https://www.stepsecurity.io/blog/injective-npm-supply-chain-attack-18-packages-backdoored-to-steal-crypto-wallet-keys"
-
     strings:
         // Crafted look-alike exfil endpoint (full host is the durable IOC)
-        $exfil = "testnet.archival.chain.grpc-web.injective.network" ascii
-
+        $exfil    = "testnet.archival.chain.grpc-web.injective.network"
         // The two unique hashed filenames carrying the malicious payload
-        $dist_cjs = "accounts-Cy0p4lLW.cjs" ascii
-        $dist_esm = "accounts-jQ1GSgaW.js" ascii
-
+        $dist_cjs = "accounts-Cy0p4lLW.cjs"
+        $dist_esm = "accounts-jQ1GSgaW.js"
         // Scope + malicious version pin. The bare scope alone is legitimate
         // in any consumer lockfile, so it must co-occur with version 1.20.21.
-        $scope   = "@injectivelabs/" ascii
-        $badver  = "1.20.21" ascii
-        $sdk_ts  = "@injectivelabs/sdk-ts" ascii
-
+        $scope    = "@injectivelabs/"
+        $badver   = "1.20.21"
+        $sdk_ts   = "@injectivelabs/sdk-ts"
     condition:
-        filesize < 50MB and (
-            $exfil
-            or any of ($dist_cjs, $dist_esm)
-            or ($sdk_ts and $badver)
-            or ($scope and $badver and $exfil)
+        (
+            $exfil or
+            any of ($dist_cjs, $dist_esm) or
+            ($sdk_ts and $badver) or
+            ($scope and $badver and $exfil)
         )
+        and filesize < 50MB
 }
 
 rule Injective_SDK_Specimen
@@ -121,11 +111,11 @@ rule Injective_SDK_Specimen
         reference   = "https://socket.dev/blog/compromised-injective-sdk-npm-package"
         hash_cjs    = "103c4e6181151c1bcfedc41506cd1815458c38375d08a8fcd9981dbe0b965ce0"
         hash_esm    = "9a59eb454f3ca3fe91214136ee5edd417cc47a80e6f169b52099d6561944baf9"
-
     condition:
-        filesize > 256 and filesize < 8MB
+        filesize > 256
+        and filesize < 8MB
         and (
-            hash.sha256(0, filesize) == "103c4e6181151c1bcfedc41506cd1815458c38375d08a8fcd9981dbe0b965ce0"
-            or hash.sha256(0, filesize) == "9a59eb454f3ca3fe91214136ee5edd417cc47a80e6f169b52099d6561944baf9"
+            hash.sha256(0, filesize) == "103c4e6181151c1bcfedc41506cd1815458c38375d08a8fcd9981dbe0b965ce0" or
+            hash.sha256(0, filesize) == "9a59eb454f3ca3fe91214136ee5edd417cc47a80e6f169b52099d6561944baf9"
         )
 }
