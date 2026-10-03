@@ -57,5 +57,4 @@ warrants investigation. The domain alone does not trigger the behavioural or spe
 | Rule                           |  Slice | Hits | Verdict |
 |--------------------------------|-------:|-----:|---------|
 | Antino_DllSideload_Behavioral  | 10,118 |    0 | Clean   |
-
-Antino_IOC scan pending.
+| Antino_IOC                     | 10,443 |    0 | Clean   |
