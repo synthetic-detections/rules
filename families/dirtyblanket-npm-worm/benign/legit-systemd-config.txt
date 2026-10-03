@@ -1,0 +1,11 @@
+[Unit]
+Description=Font Configuration Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/fc-cache -f -v
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
