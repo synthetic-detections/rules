@@ -30,25 +30,21 @@ rule WindowsSearch_URI_NTLM_Leak_Lure
         severity    = "critical"
         family      = "windows-search-uri-ntlm-leak"
         reference   = "https://www.huntress.com/blog/unpatched-ntlm-leak-windows-search-uri-handler"
-
     strings:
         // URI scheme
-        $sch_search   = "search:" ascii nocase
-        $sch_searchms = "search-ms:" ascii nocase
-
+        $sch_search   = "search:" nocase
+        $sch_searchms = "search-ms:" nocase
         // The bypass primitive — crumb=location: keys the SMB out-call destination
-        $crumb_loc    = /crumb\s*=\s*location:/ ascii nocase
-
+        $crumb_loc    = /crumb\s*=\s*location:/ nocase
         // UNC pointer to attacker host, escaped or raw. Bounded length prevents
         // catastrophic backtracking; the search: URI pattern keeps the prefix close.
-        $unc_raw      = /\\\\[A-Za-z0-9._-]{1,253}\\[A-Za-z0-9._$-]{1,80}/ ascii
-        $unc_escaped  = /\\\\\\\\[A-Za-z0-9._-]{1,253}\\\\[A-Za-z0-9._$-]{1,80}/ ascii
-
+        $unc_raw      = /\\\\[A-Za-z0-9._-]{1,253}\\[A-Za-z0-9._$-]{1,80}/
+        $unc_escaped  = /\\\\\\\\[A-Za-z0-9._-]{1,253}\\\\[A-Za-z0-9._$-]{1,80}/
     condition:
-        filesize < 1MB
-        and any of ($sch_search, $sch_searchms)
+        any of ($sch_search, $sch_searchms)
         and $crumb_loc
         and any of ($unc_raw, $unc_escaped)
+        and filesize < 1MB
 }
 
 rule WindowsSearch_URI_NTLM_Leak_HtmlAnchor
@@ -60,19 +56,16 @@ rule WindowsSearch_URI_NTLM_Leak_HtmlAnchor
         severity    = "critical"
         family      = "windows-search-uri-ntlm-leak"
         reference   = "https://www.huntress.com/blog/unpatched-ntlm-leak-windows-search-uri-handler"
-
     strings:
         // <a href="search:...crumb=location:\\host\share"> or HTA-style equivalents
-        $anchor_a    = /<a\b[^>]{0,400}href\s*=\s*["']search(-ms)?:[^"'>]{1,800}crumb\s*=\s*location:[^"'>]{1,400}/ ascii nocase
-
+        $anchor_a  = /<a\b[^>]{0,400}href\s*=\s*["']search(-ms)?:[^"'>]{1,800}crumb\s*=\s*location:[^"'>]{1,400}/ nocase
         // Markdown-style [text](search:...crumb=location:\\...)
-        $anchor_md   = /\]\s*\(\s*search(-ms)?:[^)]{1,800}crumb\s*=\s*location:[^)]{1,400}\)/ ascii nocase
-
+        $anchor_md = /\]\s*\(\s*search(-ms)?:[^)]{1,800}crumb\s*=\s*location:[^)]{1,400}\)/ nocase
         // Command-line invocation as seen in the Huntress writeup
-        $startcmd    = /start\s+""\s+"search(-ms)?:[^"]{1,800}crumb\s*=\s*location:[^"]{1,400}"/ ascii nocase
-
+        $startcmd  = /start\s+""\s+"search(-ms)?:[^"]{1,800}crumb\s*=\s*location:[^"]{1,400}"/ nocase
     condition:
-        filesize < 1MB and any of them
+        any of them
+        and filesize < 1MB
 }
 
 rule WindowsSearch_URI_NTLM_Leak_RegistryAnchor
@@ -84,15 +77,13 @@ rule WindowsSearch_URI_NTLM_Leak_RegistryAnchor
         severity    = "high"
         family      = "windows-search-uri-ntlm-leak"
         reference   = "https://www.huntress.com/blog/unpatched-ntlm-leak-windows-search-uri-handler"
-
     strings:
-        $clsid_dele  = "90b9bce2-b6db-4fd3-8451-35917ea1081b" ascii nocase
-        $delegate    = "DelegateExecute" ascii nocase
-        $sch_search  = "search:" ascii nocase
-        $sch_searchms = "search-ms:" ascii nocase
-
+        $clsid_dele   = "90b9bce2-b6db-4fd3-8451-35917ea1081b" nocase
+        $delegate     = "DelegateExecute" nocase
+        $sch_search   = "search:" nocase
+        $sch_searchms = "search-ms:" nocase
     condition:
-        filesize < 5MB
-        and $clsid_dele
+        $clsid_dele
         and ($delegate or $sch_search or $sch_searchms)
+        and filesize < 5MB
 }
