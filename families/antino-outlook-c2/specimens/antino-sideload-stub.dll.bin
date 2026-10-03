@@ -1,0 +1,22 @@
+MZ_FAKE_PE_HEADER_STUB
+This is a synthetic test specimen for the Antino YARA rule.
+NOT a real PE binary — contains trigger strings only.
+
+.rustc
+rust_panic
+/rustc/abc123def456
+
+slc.dll
+GatherOsState.exe
+TestAssembly.dll
+
+command_req_
+graph.microsoft.com
+/me/messages
+/me/drive
+
+rsproxy.cn
+d32tpl7xt7175h.cloudfront.net
+
+zh-CN
+UTC+08:00
