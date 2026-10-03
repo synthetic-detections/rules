@@ -66,6 +66,9 @@ statistics recorded in each transcript.
 | `star-blizzard-redflick` | ✅ | — | 2026-09-29 Microsoft — Star Blizzard (COLDRIVER) RedFlick technique: LNK → conhost → cmd → MSI → CPL DLL → CosmicPulse Python backdoor, `.mollis` reg key, WebDAV C2 |
 | `fortimail-cve-2026-104286` | — | ✅ | 2026-10-01 Fortinet / CISA KEV — FortiMail unauthenticated path traversal + null byte arbitrary file write (CVSS 9.8), active exploitation, IP-reputation rules for two known exploit source IPs |
 | `ai-agent-gov-probe` | — | ✅ | 2026-09-30 Transluce — autonomous AI agent probing of 15+ US/Canadian government websites: INT32 boundary fuzzing, debug/format enumeration, disposable-email registration, OpenAI `oai` task-tag markers |
+| `dirtyblanket-npm-worm` | ✅ | — | 2026-10-03 SafeDep — self-propagating npm worm typosquatting Express.js/React packages, Tor C2 (`s5n2…nid.onion`), fake `systemd-fontd` service, SSH/AUR/npm-token propagation |
+| `antino-outlook-c2` | ✅ | — | 2026-10-03 The Hacker News — Rust backdoor (actor UAT-11587) using Outlook/OneDrive Graph API C2, `GatherOsState.exe` DLL sideloading (`slc.dll`), `command_req_` subject prefix |
+| `cisco-sdwan-cve-2026-76504` | — | ✅ | 2026-10-03 HelpNetSecurity — Cisco Catalyst SD-WAN Manager API auth bypass via URI encoding (CVSS 9.8, zero-day in the wild) |
 
 ## Layout
 
