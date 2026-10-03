@@ -49,8 +49,9 @@ identifiers. These names are campaign-specific and do not collide with legitimat
 
 ## Corpus FP test
 
-| Rule                      | Slice | Hits | Verdict |
-|---------------------------|------:|-----:|---------|
-| DirtyBlanket_NpmManifest  | 6,385 |    0 | Clean   |
+| Rule                      |  Slice | Hits | Verdict |
+|---------------------------|-------:|-----:|---------|
+| DirtyBlanket_NpmManifest  |  6,385 |    0 | Clean   |
+| DirtyBlanket_IOC          | 10,412 |    0 | Clean   |
 
-DirtyBlanket_IOC and DirtyBlanket_Specimen scans pending.
+DirtyBlanket_Specimen scan pending.
