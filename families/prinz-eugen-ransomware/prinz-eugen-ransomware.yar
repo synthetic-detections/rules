@@ -44,50 +44,36 @@ rule PrinzEugen_Encryptor_Behavior
         date        = "2026-06-22"
         severity    = "critical"
         family      = "prinz-eugen-ransomware"
-        hash        = "686213cc11d36af764de824801bced9366dfca3823fe0d51b752f74149bcf1f4"
         reference   = "https://www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/"
-
+        hash        = "686213cc11d36af764de824801bced9366dfca3823fe0d51b752f74149bcf1f4"
     strings:
         // Go package path — unique to this family
-        $pkg_name = "scorched-earth-ausfc" ascii
-
+        $pkg_name     = "scorched-earth-ausfc"
         // Core encryption function names (Go symbol table)
-        $func_encrypt = "EncryptFileToKey" ascii
-        $func_verify  = "VerifyEncryptedWithKey" ascii
-
+        $func_encrypt = "EncryptFileToKey"
+        $func_verify  = "VerifyEncryptedWithKey"
         // Encrypted file extension written to disk
-        $ext = ".prinzeugen" ascii
-
+        $ext          = ".prinzeugen"
         // Magic header written to encrypted files
-        $magic = "CHV1" ascii
-
+        $magic        = "CHV1"
         // Self-delete pattern: ping loopback then del
-        $self_del = "ping 127.0.0.1 -n 2" ascii
-
+        $self_del     = "ping 127.0.0.1 -n 2"
         // Backdoor local account creation
-        $backdoor = "admin germania" ascii
-
+        $backdoor     = "admin germania"
         // Temporary encryption working file suffix
-        $tmp_ext = ".prinzeugen.tmp" ascii
-
+        $tmp_ext      = ".prinzeugen.tmp"
     condition:
-        filesize > 100KB and filesize < 30MB
-        and (
-            // Path 1: the encryptor binary — package name is
-            // the strongest single anchor; pair with any function
-            // or operational artifact
-            (
-                $pkg_name
-                and any of ($func_encrypt, $func_verify, $ext, $magic)
-            )
-            or
-            // Path 2: without full symbol table (stripped binary) —
-            // file extension + magic header + any operational tell
-            (
-                $ext and $magic
-                and any of ($self_del, $backdoor, $tmp_ext, $pkg_name)
-            )
+        // Path 1: the encryptor binary — package name is
+        // the strongest single anchor; pair with any function
+        // or operational artifact
+        // Path 2: without full symbol table (stripped binary) —
+        // file extension + magic header + any operational tell
+        (
+            ($pkg_name and any of ($func_encrypt, $func_verify, $ext, $magic)) or
+            ($ext and $magic and any of ($self_del, $backdoor, $tmp_ext, $pkg_name))
         )
+        and filesize > 100KB
+        and filesize < 30MB
 }
 
 rule PrinzEugen_Encrypted_File
@@ -99,17 +85,13 @@ rule PrinzEugen_Encrypted_File
         severity    = "critical"
         family      = "prinz-eugen-ransomware"
         reference   = "https://www.threatdown.com/blog/prinz-eugen-ransomware-a-deep-dive-into-a-new-go-based-encryptor/"
-
     strings:
         // CHV1 magic at file start — the encryptor's version marker
         $magic = "CHV1"
-
     condition:
         // CHV1 at offset 0 + minimum ciphertext size (header + IV +
         // at least one ChaCha20-Poly1305 block + auth tag)
-        $magic at 0
-        and filesize > 128
-        and filesize < 500MB
+        $magic at 0 and filesize > 128 and filesize < 500MB
 }
 
 rule PrinzEugen_IOC
@@ -120,66 +102,50 @@ rule PrinzEugen_IOC
         date        = "2026-06-22"
         severity    = "high"
         family      = "prinz-eugen-ransomware"
-        hash        = "686213cc11d36af764de824801bced9366dfca3823fe0d51b752f74149bcf1f4"
         reference   = "https://www.bleepingcomputer.com/news/security/new-prinz-eugen-ransomware-prioritizes-recent-files-for-encryption/"
-
+        hash        = "686213cc11d36af764de824801bced9366dfca3823fe0d51b752f74149bcf1f4"
     strings:
         // C2 panel / stager host (AS215439, Play2go International, Frankfurt)
-        $c2_ip = "212.80.7.74" ascii
-
+        $c2_ip        = "212.80.7.74"
         // Operator domains
-        $dom_bank    = "stndrdbnk.cc" ascii
-        $dom_captcha = "g-captchafestung.sbs" ascii
-        $dom_dyndns  = "festung-e.duckdns.org" ascii
-
+        $dom_bank     = "stndrdbnk.cc"
+        $dom_captcha  = "g-captchafestung.sbs"
+        $dom_dyndns   = "festung-e.duckdns.org"
         // PowerShell stager URL paths
-        $stager_ps1  = "/serverscan.ps1" ascii
-        $stager_mini = "/stager/mini" ascii
-        $stager_main = "/stager/ps1" ascii
-
+        $stager_ps1   = "/serverscan.ps1"
+        $stager_mini  = "/stager/mini"
+        $stager_main  = "/stager/ps1"
         // Actor contact — TOX ID (unique 76-char hex)
-        $tox = "496187425B2944D73FBB17CAF3F9FD569B9ED3A08A497A8314CB4F27A51E65081ACEE1E22F21" ascii nocase
-
+        $tox          = "496187425B2944D73FBB17CAF3F9FD569B9ED3A08A497A8314CB4F27A51E65081ACEE1E22F21" nocase
         // Actor email addresses
-        $email_tor  = "prinzeugen@mail2tor.co" ascii
-        $email_cock = "standardbankcc@cock.li" ascii
-
+        $email_tor    = "prinzeugen@mail2tor.co"
+        $email_cock   = "standardbankcc@cock.li"
         // Bitcoin wallet
-        $btc = "bc1q2ztpcvqdaptej6uu2ywt9mrlatx6envu34rf0v" ascii
-
+        $btc          = "bc1q2ztpcvqdaptej6uu2ywt9mrlatx6envu34rf0v"
         // Onion leak sites
-        $onion_active = "prinzfkbjiazbrur4mjje6mntjc4vydx3iatkkzycufoylqcoo4y7pqd" ascii
-        $onion_down   = "6cudc5cqa2bjpwdhcwm2lj6dbqejjjqzeo6ipwvmbazr6cgu7vfk3dad" ascii
-
+        $onion_active = "prinzfkbjiazbrur4mjje6mntjc4vydx3iatkkzycufoylqcoo4y7pqd"
+        $onion_down   = "6cudc5cqa2bjpwdhcwm2lj6dbqejjjqzeo6ipwvmbazr6cgu7vfk3dad"
         // Self-delete command pattern (full form)
-        $self_del = "cmd.exe /C ping 127.0.0.1 -n 2" ascii
-
+        $self_del     = "cmd.exe /C ping 127.0.0.1 -n 2"
         // Backdoor account creation
-        $backdoor_cmd = "net user admin germania /add" ascii
-
+        $backdoor_cmd = "net user admin germania /add"
         // Actor handles (in threat reports / leak site context)
-        $handle_root = "ROOTBOY" ascii
-        $handle_germ = "GERMANIA" ascii
-
+        $handle_root  = "ROOTBOY"
+        $handle_germ  = "GERMANIA"
     condition:
-        filesize < 50MB
-        and (
-            // Any C2 infrastructure indicator
-            any of ($c2_ip, $dom_bank, $dom_captcha, $dom_dyndns)
-            or
-            // Stager URL paths (specific enough with the path structure)
-            any of ($stager_ps1, $stager_mini, $stager_main)
-            or
-            // Actor contact channels
-            any of ($tox, $email_tor, $email_cock, $btc)
-            or
-            // Onion infrastructure
-            any of ($onion_active, $onion_down)
-            or
-            // Operational commands (together — individually too generic)
-            ($self_del and $backdoor_cmd)
-            or
-            // Actor handles + any other IOC (handles alone too generic)
+        // Any C2 infrastructure indicator
+        // Stager URL paths (specific enough with the path structure)
+        // Actor contact channels
+        // Onion infrastructure
+        // Operational commands (together — individually too generic)
+        // Actor handles + any other IOC (handles alone too generic)
+        (
+            any of ($c2_ip, $dom_bank, $dom_captcha, $dom_dyndns) or
+            any of ($stager_ps1, $stager_mini, $stager_main) or
+            any of ($tox, $email_tor, $email_cock, $btc) or
+            any of ($onion_active, $onion_down) or
+            ($self_del and $backdoor_cmd) or
             (any of ($handle_root, $handle_germ) and any of ($c2_ip, $dom_bank, $dom_captcha, $dom_dyndns, $email_tor, $email_cock, $btc))
         )
+        and filesize < 50MB
 }

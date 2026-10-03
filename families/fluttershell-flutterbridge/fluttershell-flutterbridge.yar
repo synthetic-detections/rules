@@ -48,42 +48,35 @@ rule FlutterShell_MachOBundle
         severity    = "critical"
         family      = "fluttershell-flutterbridge"
         reference   = "https://unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/"
-
     strings:
         // Mach-O magic — fat universal binaries (CAFEBABE) and single-arch
         // 64-bit (FEEDFACF / CFFAEDFE in either endianness).
-        $mh_fat_be   = { CA FE BA BE }
-        $mh_fat_le   = { BE BA FE CA }
-        $mh_64_be    = { FE ED FA CF }
-        $mh_64_le    = { CF FA ED FE }
-
+        $mh_fat_be  = { CA FE BA BE }
+        $mh_fat_le  = { BE BA FE CA }
+        $mh_64_be   = { FE ED FA CF }
+        $mh_64_le   = { CF FA ED FE }
         // Bundle IDs from Unit 42 — verbatim
-        $b_podcasts  = "com.app.podcastsLounge" ascii
-        $b_pdfbrain  = "com.app.pdfBrain" ascii
-        $b_pdfninja  = "com.pdfninja.app" ascii
-
+        $b_podcasts = "com.app.podcastsLounge"
+        $b_pdfbrain = "com.app.pdfBrain"
+        $b_pdfninja = "com.pdfninja.app"
         // Apple Developer IDs + Team IDs (verbatim from the malicious
         // codesigning blob — these are real Apple-issued IDs the operator
         // burned to ship signed/notarised binaries)
-        $dev_sever   = "Yasar Sever (UBZDAAV97Y)" ascii
-        $dev_dabag   = "Batuhan Dabag (FW9NHQ8922)" ascii
-        $dev_bal     = "Yusuf Bal (B73CHZ24Y8)" ascii
-        $tid_sever   = "UBZDAAV97Y" ascii fullword
-        $tid_dabag   = "FW9NHQ8922" ascii fullword
-        $tid_bal     = "B73CHZ24Y8" ascii fullword
-
+        $dev_sever  = "Yasar Sever (UBZDAAV97Y)"
+        $dev_dabag  = "Batuhan Dabag (FW9NHQ8922)"
+        $dev_bal    = "Yusuf Bal (B73CHZ24Y8)"
+        $tid_sever  = "UBZDAAV97Y" fullword
+        $tid_dabag  = "FW9NHQ8922" fullword
+        $tid_bal    = "B73CHZ24Y8" fullword
     condition:
-        filesize < 200MB
+        // Mach-O at offset 0 — fat or thin, either endian
+        ($mh_fat_be at 0 or $mh_fat_le at 0 or $mh_64_be at 0 or $mh_64_le at 0)
         and (
-            // Mach-O at offset 0 — fat or thin, either endian
-            ($mh_fat_be at 0) or ($mh_fat_le at 0)
-            or ($mh_64_be at 0) or ($mh_64_le at 0)
+            any of ($b_podcasts, $b_pdfbrain, $b_pdfninja) or
+            any of ($dev_sever, $dev_dabag, $dev_bal) or
+            any of ($tid_sever, $tid_dabag, $tid_bal)
         )
-        and (
-            any of ($b_podcasts, $b_pdfbrain, $b_pdfninja)
-            or any of ($dev_sever, $dev_dabag, $dev_bal)
-            or any of ($tid_sever, $tid_dabag, $tid_bal)
-        )
+        and filesize < 200MB
 }
 
 rule FlutterShell_WebViewJSBridge
@@ -95,58 +88,53 @@ rule FlutterShell_WebViewJSBridge
         severity    = "critical"
         family      = "fluttershell-flutterbridge"
         reference   = "https://unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/"
-
     strings:
         // The verbatim bridge message-channel name. Survives Flutter
         // --obfuscate because Unit 42 confirmed it as the wire-format
         // identifier; if the operator rotates the name they break their
         // own JS payload library.
-        $bridge      = "flutterInvoke" ascii
-
+        $bridge          = "flutterInvoke"
         // Native-side command names (plaintext in PodcastsLounge,
         // base64-encoded in PDF-Brain, partially renamed in PDF-Ninja).
-        $cmd_exec    = "exec_sync" ascii
-        $cmd_pdf     = "pdf_sync" ascii
-        $cmd_render  = "renderPDF" ascii
-        $cmd_read_f  = "read_file" ascii
-        $cmd_write_f = "write_file" ascii
-        $cmd_read_d  = "read_dir" ascii
-        $cmd_exists  = "exists" ascii fullword
-        $cmd_home    = "get_home_dir" ascii
-        $cmd_env     = "get_env" ascii fullword
-        $cmd_read_p  = "read_pdf" ascii  // PDF-Ninja deception rename
-
+        $cmd_exec        = "exec_sync"
+        $cmd_pdf         = "pdf_sync"
+        $cmd_render      = "renderPDF"
+        $cmd_read_f      = "read_file"
+        $cmd_write_f     = "write_file"
+        $cmd_read_d      = "read_dir"
+        $cmd_exists      = "exists" fullword
+        $cmd_home        = "get_home_dir"
+        $cmd_env         = "get_env" fullword
+        // PDF-Ninja deception rename
+        $cmd_read_p      = "read_pdf"
         // Verbatim C2 path-shapes from Unit 42 — JS payloads fetch these
-        $p_update_thanks = "/update-thanks.html" ascii
-        $p_update_delay  = "/api/update-delay" ascii
-        $p_getconfig     = "/getConfig" ascii
-        $p_getupdate     = "/getUpdateThanksConfig" ascii
-        $p_summarize     = "/summarize-text" ascii
-
+        $p_update_thanks = "/update-thanks.html"
+        $p_update_delay  = "/api/update-delay"
+        $p_getconfig     = "/getConfig"
+        $p_getupdate     = "/getUpdateThanksConfig"
+        $p_summarize     = "/summarize-text"
         // Reconnaissance one-liner observed in all three variants
-        $recon_ioreg = "ioreg -rd1 -c IOPlatformExpertDevice" ascii
-
+        $recon_ioreg     = "ioreg -rd1 -c IOPlatformExpertDevice"
         // Chrome Secure Preferences hijack target
-        $chrome_pref = "default_search_provider_data" ascii
-
+        $chrome_pref     = "default_search_provider_data"
     condition:
-        filesize < 200MB
-        and (
-            // The bridge channel name plus enough command-set context.
-            // 3-of guards against the bridge string appearing on its own
-            // in unrelated material that legitimately discusses Flutter.
-            ($bridge and 3 of ($cmd_*))
-            // Or any of the distinctive verbatim C2 path-shapes — these
-            // only appear inside the malicious JS payload or samples that
-            // mirror it.
-            or any of ($p_update_thanks, $p_update_delay, $p_getupdate, $p_summarize)
-            // /getConfig is a common REST endpoint name (benign apps use it
-            // for fetch('/getConfig')), so it only counts alongside the
-            // flutterInvoke bridge that makes it FlutterShell-specific.
-            or ($p_getconfig and $bridge)
-            // Or the recon command + Chrome pref hijack together
-            or ($recon_ioreg and $chrome_pref)
+        // The bridge channel name plus enough command-set context.
+        // 3-of guards against the bridge string appearing on its own
+        // in unrelated material that legitimately discusses Flutter.
+        // Or any of the distinctive verbatim C2 path-shapes — these
+        // only appear inside the malicious JS payload or samples that
+        // mirror it.
+        // /getConfig is a common REST endpoint name (benign apps use it
+        // for fetch('/getConfig')), so it only counts alongside the
+        // flutterInvoke bridge that makes it FlutterShell-specific.
+        // Or the recon command + Chrome pref hijack together
+        (
+            ($bridge and 3 of ($cmd_*)) or
+            any of ($p_update_thanks, $p_update_delay, $p_getupdate, $p_summarize) or
+            ($p_getconfig and $bridge) or
+            ($recon_ioreg and $chrome_pref)
         )
+        and filesize < 200MB
 }
 
 rule FlutterShell_IOC
@@ -158,29 +146,25 @@ rule FlutterShell_IOC
         severity    = "high"
         family      = "fluttershell-flutterbridge"
         reference   = "https://unit42.paloaltonetworks.com/flutterbridge-new-fluttershell-backdoor/"
-
     strings:
         // Campaign markers
-        $m_op_name    = "FlutterBridge" ascii nocase
-        $m_mal_name   = "FlutterShell" ascii nocase
-
+        $m_op_name   = "FlutterBridge" nocase
+        $m_mal_name  = "FlutterShell" nocase
         // C2 hostnames — defanged dot reconstructed
-        $c2_podcasts  = "atsheisdomestic.org" ascii nocase
-        $c2_pdfbrain  = "etoftheappyrince.org" ascii nocase
-        $c2_pdfninja  = "healightejustb.org" ascii nocase
-        $c2_track     = "sinterfumesco.com" ascii nocase
-
+        $c2_podcasts = "atsheisdomestic.org" nocase
+        $c2_pdfbrain = "etoftheappyrince.org" nocase
+        $c2_pdfninja = "healightejustb.org" nocase
+        $c2_track    = "sinterfumesco.com" nocase
         // SHA-256 hashes (3 per variant: DMG, App, Dylib) — per Unit 42
-        $h1 = "021666417de8b9972c179783fe60d4c4ad2d93224e3a0f16137065c960b1b845" ascii nocase
-        $h2 = "363923500ce942bf1a953e8a4e943fbf1fb1b5ed6e5d247964c345b3ad5bfc34" ascii nocase
-        $h3 = "8421c902364980e3d762ec6dbbe6b0f40577c27bd79b48c57d098328b2533109" ascii nocase
-        $h4 = "644fc49fa1006a2a2acace694e5fb83753164e2617051ece6d9dc9ea32329e70" ascii nocase
-        $h5 = "9053e8ddaecca1f960c041c944ca8799fc71dc86a4b50d2639ee4e0d2cb82f47" ascii nocase
-        $h6 = "b60074d1ea2008a581f432f2dee5f84f78668d9dd8e66f75d03c42dabd89bdea" ascii nocase
-        $h7 = "9425e8e39fa8a7212cdd07f0917cb3dfde38a90b87297de2c82a5850aff1e4de" ascii nocase
-        $h8 = "30448686ec900d5213d74f08f0d2b7924c5336a29445b2a434aba8d8b19d7530" ascii nocase
-        $h9 = "48047c34bfd57fe1e24bc538bc2ce9e0ac4c4eb48d3b0c195b414f0379dc0745" ascii nocase
-
+        $h1          = "021666417de8b9972c179783fe60d4c4ad2d93224e3a0f16137065c960b1b845" nocase
+        $h2          = "363923500ce942bf1a953e8a4e943fbf1fb1b5ed6e5d247964c345b3ad5bfc34" nocase
+        $h3          = "8421c902364980e3d762ec6dbbe6b0f40577c27bd79b48c57d098328b2533109" nocase
+        $h4          = "644fc49fa1006a2a2acace694e5fb83753164e2617051ece6d9dc9ea32329e70" nocase
+        $h5          = "9053e8ddaecca1f960c041c944ca8799fc71dc86a4b50d2639ee4e0d2cb82f47" nocase
+        $h6          = "b60074d1ea2008a581f432f2dee5f84f78668d9dd8e66f75d03c42dabd89bdea" nocase
+        $h7          = "9425e8e39fa8a7212cdd07f0917cb3dfde38a90b87297de2c82a5850aff1e4de" nocase
+        $h8          = "30448686ec900d5213d74f08f0d2b7924c5336a29445b2a434aba8d8b19d7530" nocase
+        $h9          = "48047c34bfd57fe1e24bc538bc2ce9e0ac4c4eb48d3b0c195b414f0379dc0745" nocase
     condition:
-        filesize < 50MB and any of them
+        any of them and filesize < 50MB
 }

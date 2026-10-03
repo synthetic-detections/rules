@@ -20,7 +20,8 @@
   Rules fire on saved lure HTML / harvested pages, not on binaries.
 */
 
-private rule cf_clipboard_write {
+private rule cf_clipboard_write
+{
     strings:
         $stage     = "stageClipboard" ascii wide nocase
         $sccd      = "setClipboardCopyData" ascii wide nocase
@@ -31,8 +32,8 @@ private rule cf_clipboard_write {
         any of them
 }
 
-private rule cf_exec_cradle {
-    // an obfuscated / remote-execution command cradle (not a plain admin command)
+private rule cf_exec_cradle
+{
     strings:
         $c1 = /powershell(\.exe)?\s+-[wnepc]{1,3}\b/ ascii wide nocase
         $c2 = "-EncodedCommand" ascii wide nocase
@@ -46,8 +47,8 @@ private rule cf_exec_cradle {
         any of them
 }
 
-private rule cf_verify_ploy {
-    // fake human-verification framing that is near-unique to ClickFix lures
+private rule cf_verify_ploy
+{
     strings:
         $p1 = "reCAPTCHA Verification Hash" ascii wide nocase
         $p2 = "reCAPTCHA Verification ID" ascii wide nocase
@@ -61,49 +62,53 @@ private rule cf_verify_ploy {
         any of them
 }
 
-rule clickfix_stageclipboard_routine {
+rule clickfix_stageclipboard_routine
+{
     meta:
-        author = "synthetic-detections"
         description = "ClickFix lure: the near-unique clipboard-staging routine (stageClipboard/setClipboardCopyData)"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
+        author      = "synthetic-detections"
+        severity    = "high"
+        reference   = "https://attack.mitre.org/techniques/T1204/004/"
+        technique   = "T1204.004"
     strings:
         $stage = "stageClipboard" ascii wide nocase
         $sccd  = "setClipboardCopyData" ascii wide nocase
     condition:
-        filesize < 3MB and any of them
+        any of them and filesize < 3MB
 }
 
-rule clickfix_clipboard_staged_cradle {
+rule clickfix_clipboard_staged_cradle
+{
     meta:
-        author = "synthetic-detections"
         description = "ClickFix lure: a clipboard-copy of an obfuscated/remote-exec command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
+        author      = "synthetic-detections"
+        severity    = "high"
+        reference   = "https://attack.mitre.org/techniques/T1204/004/"
+        technique   = "T1204.004"
     condition:
-        filesize < 3MB and cf_clipboard_write and cf_exec_cradle
+        cf_clipboard_write and cf_exec_cradle and filesize < 3MB
 }
 
-rule clickfix_fakecaptcha_verify_ploy {
+rule clickfix_fakecaptcha_verify_ploy
+{
     meta:
-        author = "synthetic-detections"
         description = "ClickFix lure: fake human-verification ploy + clipboard staging or a command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
+        author      = "synthetic-detections"
+        severity    = "high"
+        reference   = "https://attack.mitre.org/techniques/T1204/004/"
+        technique   = "T1204.004"
     condition:
-        filesize < 3MB and cf_verify_ploy and (cf_clipboard_write or cf_exec_cradle)
+        cf_verify_ploy and (cf_clipboard_write or cf_exec_cradle) and filesize < 3MB
 }
 
-rule clickfix_run_dialog_instructions {
+rule clickfix_run_dialog_instructions
+{
     meta:
-        author = "synthetic-detections"
         description = "ClickFix lure: paste-and-run (Win+R / File Explorer / PowerShell) instructions with a command cradle"
-        reference = "https://attack.mitre.org/techniques/T1204/004/"
-        technique = "T1204.004"
-        severity = "high"
+        author      = "synthetic-detections"
+        severity    = "high"
+        reference   = "https://attack.mitre.org/techniques/T1204/004/"
+        technique   = "T1204.004"
     strings:
         // open-the-runner / FileFix framing
         $r1 = /Win(dows)?\s*(key|button|logo)?\s*\+?\s*R\b/ ascii wide nocase
@@ -118,5 +123,5 @@ rule clickfix_run_dialog_instructions {
         $s2 = "press Enter" ascii wide nocase
         $s3 = "paste" ascii wide nocase
     condition:
-        filesize < 3MB and (1 of ($r*)) and (1 of ($s*)) and cf_exec_cradle and cf_verify_ploy
+        any of ($r*) and any of ($s*) and cf_exec_cradle and cf_verify_ploy and filesize < 3MB
 }

@@ -39,19 +39,21 @@
 
 import "hash"
 
-private rule patchcord_is_pe {
+private rule patchcord_is_pe
+{
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550
+        uint16(0) == 23117 and uint32(uint32(60)) == 17744
 }
 
-rule PATCHCORD_Beacon {
+rule PATCHCORD_Beacon
+{
     meta:
         description = "PATCHCORD implant — Beacon/1.0.0 UA guarded by APT36 campaign token or C2 IP"
-        author = "synthetic-detections"
-        date = "2026-08-14"
-        severity = "critical"
-        family = "patchcord-apt36"
-        reference = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
+        author      = "synthetic-detections"
+        date        = "2026-08-14"
+        severity    = "critical"
+        family      = "patchcord-apt36"
+        reference   = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
     strings:
         $ua    = "Beacon/1.0.0" ascii wide
         $camp1 = "TMS_AfghanTelecom" ascii wide nocase
@@ -61,17 +63,18 @@ rule PATCHCORD_Beacon {
         $c2a   = "108.187.42.63" ascii wide
         $c2b   = "46.30.188.13" ascii wide
     condition:
-        patchcord_is_pe and $ua and 1 of ($camp*, $c2*)
+        patchcord_is_pe and $ua and any of ($camp*, $c2*)
 }
 
-rule PATCHCORD_Campaign_Artifacts {
+rule PATCHCORD_Campaign_Artifacts
+{
     meta:
         description = "APT36 PATCHCORD/SHEETCORD campaign — distinctive lure/persistence file names (>=2)"
-        author = "synthetic-detections"
-        date = "2026-08-14"
-        severity = "high"
-        family = "patchcord-apt36"
-        reference = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
+        author      = "synthetic-detections"
+        date        = "2026-08-14"
+        severity    = "high"
+        family      = "patchcord-apt36"
+        reference   = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
     strings:
         $f1 = "TMS_AfghanTelecom.exe" ascii wide nocase
         $f2 = "Bonus_Salaam_telecom.zip" ascii wide nocase
@@ -80,19 +83,21 @@ rule PATCHCORD_Campaign_Artifacts {
         $f5 = "SystemHelper.vbs" ascii wide nocase
         $f6 = "GateSentinel-C2-Rat-Hvnc" ascii wide nocase
     condition:
-        filesize < 40MB and 2 of ($f*)
+        2 of ($f*) and filesize < 40MB
 }
 
-rule PATCHCORD_Samples {
+rule PATCHCORD_Samples
+{
     meta:
         description = "PATCHCORD/SHEETCORD/HACKERAI — Acronis TRU SHA-256 sample pins"
-        author = "synthetic-detections"
-        date = "2026-08-14"
-        severity = "critical"
-        family = "patchcord-apt36"
-        reference = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
+        author      = "synthetic-detections"
+        date        = "2026-08-14"
+        severity    = "critical"
+        family      = "patchcord-apt36"
+        reference   = "https://www.acronis.com/en/tru/posts/patchcord-new-malware-cluster-targets-afghan-telecom-and-south-asian-critical-infrastructure/"
     condition:
-        filesize < 80MB and (
+        filesize < 80MB
+        and (
             hash.sha256(0, filesize) == "0f4073d3c866bc3daf55b25f71250b96ec120db94a4f9cc8fe85b7c9f9d346b3" or
             hash.sha256(0, filesize) == "1774e15e8eb96eb89bc03cb4768fc0620e10c09c5f795297f36dcc2aa5d9dd94" or
             hash.sha256(0, filesize) == "2323b55ea743c813e48689318e8ed54ae838cf9e8a2adbfc2488ea8a36dd0126" or

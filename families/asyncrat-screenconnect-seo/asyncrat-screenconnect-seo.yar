@@ -49,66 +49,49 @@ rule AsyncRAT_ScreenConnect_SEO_Behavior
         severity    = "critical"
         family      = "asyncrat-screenconnect-seo"
         reference   = "https://hunt.io/blog/asyncrat-screenconnect-open-directory-campaigns"
-
     strings:
         // Internal AsyncRAT build label unique to this campaign
-        $build_label = "FlowProxy Monitor V3" ascii wide
-
+        $build_label  = "FlowProxy Monitor V3" ascii wide
         // Scheduled-task persistence names
         $task_install = "SystemInstallTask" ascii wide
         $task_3losh   = "3losh" ascii wide
-
         // DLL side-load: rogue resource DLL bundled with signed install.exe
         $sideload_dll = "install.res.1033.dll" ascii wide nocase
-
         // Loader / injector chain filenames
-        $loader_ps = "Skype.ps1" ascii wide nocase
-        $injector  = "libPK.dll" ascii wide nocase
-        $inject_tg = "AppLaunch.exe" ascii wide nocase
-        $lnk       = "Microsoft.lnk" ascii wide nocase
-        $vbs       = "Ab.vbs" ascii wide nocase
-
+        $loader_ps    = "Skype.ps1" ascii wide nocase
+        $injector     = "libPK.dll" ascii wide nocase
+        $inject_tg    = "AppLaunch.exe" ascii wide nocase
+        $lnk          = "Microsoft.lnk" ascii wide nocase
+        $vbs          = "Ab.vbs" ascii wide nocase
         // Defense evasion performed by the PowerShell loader
-        $def_excl  = "Add-MpPreference" ascii wide nocase
-        $def_path  = "-ExclusionPath" ascii wide nocase
-        $uac_off   = "EnableLUA" ascii wide nocase
-        $amsi      = "AmsiScanBuffer" ascii wide nocase
-        $ps_hidden = "-w hidden" ascii wide nocase
-        $ps_bypass = "-ep bypass" ascii wide nocase
-
+        $def_excl     = "Add-MpPreference" ascii wide nocase
+        $def_path     = "-ExclusionPath" ascii wide nocase
+        $uac_off      = "EnableLUA" ascii wide nocase
+        $amsi         = "AmsiScanBuffer" ascii wide nocase
+        $ps_hidden    = "-w hidden" ascii wide nocase
+        $ps_bypass    = "-ep bypass" ascii wide nocase
         // ScreenConnect implant (only ever used in combination below)
-        $sc_client = "screenconnect.client.exe" ascii wide nocase
-
+        $sc_client    = "screenconnect.client.exe" ascii wide nocase
     condition:
-        filesize < 20MB
-        and (
-            // Path 1: the internal build label is campaign-unique
-            $build_label
-            or
-            // Path 2: both scheduled-task persistence names
-            ($task_install and $task_3losh)
-            or
-            // Path 3: side-load DLL used to stand up the ScreenConnect implant
-            ($sideload_dll and ($sc_client or $def_excl or $uac_off))
-            or
-            // Path 4: injector chain — native injector into AppLaunch
-            ($injector and $inject_tg and ($loader_ps or $vbs or $lnk))
-            or
-            // Path 5: PowerShell loader behavior — Defender exclusion +
-            // UAC/AMSI tampering + hidden/bypass execution. This combo is
-            // common to many unrelated loaders and admin/debloat scripts,
-            // so it must co-occur with a campaign-specific artifact (the
-            // Skype.ps1 loader, a stage filename, the side-load DLL, the
-            // injector/target, or a persistence task name) to attribute it
-            // to THIS campaign rather than mislabel generic evasion.
-            (
-                $def_excl and $def_path
-                and any of ($uac_off, $amsi)
-                and any of ($ps_hidden, $ps_bypass)
-                and any of ($loader_ps, $vbs, $lnk, $injector, $inject_tg,
-                            $sideload_dll, $task_install, $task_3losh)
-            )
+        // Path 1: the internal build label is campaign-unique
+        // Path 2: both scheduled-task persistence names
+        // Path 3: side-load DLL used to stand up the ScreenConnect implant
+        // Path 4: injector chain — native injector into AppLaunch
+        // Path 5: PowerShell loader behavior — Defender exclusion +
+        // UAC/AMSI tampering + hidden/bypass execution. This combo is
+        // common to many unrelated loaders and admin/debloat scripts,
+        // so it must co-occur with a campaign-specific artifact (the
+        // Skype.ps1 loader, a stage filename, the side-load DLL, the
+        // injector/target, or a persistence task name) to attribute it
+        // to THIS campaign rather than mislabel generic evasion.
+        (
+            $build_label or
+            ($task_install and $task_3losh) or
+            ($sideload_dll and ($sc_client or $def_excl or $uac_off)) or
+            ($injector and $inject_tg and ($loader_ps or $vbs or $lnk)) or
+            ($def_excl and $def_path and any of ($uac_off, $amsi) and any of ($ps_hidden, $ps_bypass) and any of ($loader_ps, $vbs, $lnk, $injector, $inject_tg, $sideload_dll, $task_install, $task_3losh))
         )
+        and filesize < 20MB
 }
 
 rule AsyncRAT_ScreenConnect_SEO_LoaderShape
@@ -120,40 +103,33 @@ rule AsyncRAT_ScreenConnect_SEO_LoaderShape
         severity    = "high"
         family      = "asyncrat-screenconnect-seo"
         reference   = "https://hunt.io/blog/asyncrat-screenconnect-open-directory-campaigns"
-
     strings:
         // Stage filenames observed across the open directories
-        $ab_vbs   = "Ab.vbs" ascii wide nocase
-        $ab_js    = "Ab.js" ascii wide nocase
-        $skype_ps = "Skype.ps1" ascii wide nocase
-        $ms_lnk   = "Microsoft.lnk" ascii wide nocase
-        $libpk    = "libPK.dll" ascii wide nocase
-
+        $ab_vbs    = "Ab.vbs" ascii wide nocase
+        $ab_js     = "Ab.js" ascii wide nocase
+        $skype_ps  = "Skype.ps1" ascii wide nocase
+        $ms_lnk    = "Microsoft.lnk" ascii wide nocase
+        $libpk     = "libPK.dll" ascii wide nocase
         // Encoded staging blobs pulled by the loader
-        $pe_txt   = "pe.txt" ascii wide nocase
-        $q_txt    = "q.txt" ascii wide nocase
-        $one_txt  = "1.txt" ascii wide nocase
-        $logs_idk = "logs.idk" ascii wide nocase
-        $logs_idr = "logs.idr" ascii wide nocase
-
+        $pe_txt    = "pe.txt" ascii wide nocase
+        $q_txt     = "q.txt" ascii wide nocase
+        $one_txt   = "1.txt" ascii wide nocase
+        $logs_idk  = "logs.idk" ascii wide nocase
+        $logs_idr  = "logs.idr" ascii wide nocase
         // ClickOnce delivery artifact
         $clickonce = "event_support-pdf.Client.exe" ascii wide nocase
-
         // Injection target for the assembled RAT
         $applaunch = "AppLaunch.exe" ascii wide nocase
-
     condition:
-        filesize < 20MB
-        and (
-            // ClickOnce dropper filename is campaign-specific
-            $clickonce
-            or
-            // 3+ distinct loader-stage filenames co-located
-            3 of ($ab_vbs, $ab_js, $skype_ps, $ms_lnk, $libpk, $pe_txt, $q_txt, $one_txt, $logs_idk, $logs_idr)
-            or
-            // Injector library + injection target + any staging blob
+        // ClickOnce dropper filename is campaign-specific
+        // 3+ distinct loader-stage filenames co-located
+        // Injector library + injection target + any staging blob
+        (
+            $clickonce or
+            3 of ($ab_vbs, $ab_js, $skype_ps, $ms_lnk, $libpk, $pe_txt, $q_txt, $one_txt, $logs_idk, $logs_idr) or
             ($libpk and $applaunch and any of ($pe_txt, $q_txt, $one_txt, $logs_idk, $logs_idr))
         )
+        and filesize < 20MB
 }
 
 rule AsyncRAT_ScreenConnect_SEO_IOC
@@ -165,49 +141,38 @@ rule AsyncRAT_ScreenConnect_SEO_IOC
         severity    = "high"
         family      = "asyncrat-screenconnect-seo"
         reference   = "https://hunt.io/blog/asyncrat-screenconnect-open-directory-campaigns"
-
     strings:
         // C2 / staging IPs
-        $ip1 = "176.65.139.119" ascii wide
-        $ip2 = "45.74.16.71" ascii wide
-        $ip3 = "164.68.120.30" ascii wide
-        $ip4 = "78.161.14.229" ascii wide
-        $ip5 = "78.162.57.179" ascii wide
-        $ip6 = "88.229.27.40" ascii wide
-        $ip7 = "185.208.159.71" ascii wide
-        $ip8 = "94.154.173.145" ascii wide
-
+        $ip1       = "176.65.139.119" ascii wide
+        $ip2       = "45.74.16.71" ascii wide
+        $ip3       = "164.68.120.30" ascii wide
+        $ip4       = "78.161.14.229" ascii wide
+        $ip5       = "78.162.57.179" ascii wide
+        $ip6       = "88.229.27.40" ascii wide
+        $ip7       = "185.208.159.71" ascii wide
+        $ip8       = "94.154.173.145" ascii wide
         // Delivery / redirect / disposable domains
-        $dom1 = "dual.saltuta.com" ascii wide nocase
-        $dom2 = "verify.uniupdate.net" ascii wide nocase
-        $dom3 = "galusa.ac.mz" ascii wide nocase
-        $dom4 = "dp.vdpanxxs.top" ascii wide nocase
-        $dom5 = "sc.vdpanxxs.top" ascii wide nocase
-        $dom6 = "vixgstxpnl.top" ascii wide nocase
-
+        $dom1      = "dual.saltuta.com" ascii wide nocase
+        $dom2      = "verify.uniupdate.net" ascii wide nocase
+        $dom3      = "galusa.ac.mz" ascii wide nocase
+        $dom4      = "dp.vdpanxxs.top" ascii wide nocase
+        $dom5      = "sc.vdpanxxs.top" ascii wide nocase
+        $dom6      = "vixgstxpnl.top" ascii wide nocase
         // File hashes (SHA-256)
-        $h_abvbs   = "6142295a7f7ce60b86738e07d79b72d5a3edb3d5915aa9fb6c81ea752a9cd229" ascii nocase
-        $h_abvbs2  = "c7936cc04631bc9d4ed7a9be3a5638193fac57cb3ccfa7ce037aa2b0fe24cad7" ascii nocase
-        $h_lnk     = "521769c955761f7fc625eae2006f4dabcf36ce3169309e0ad111e7b7b29748af" ascii nocase
-        $h_skype   = "54b762e05af1a1138786a78e9936d63f4e419bbeb0d116c2cee7376566420382" ascii nocase
-        $h_skype2  = "8d5b8061b3f6b899583bbf20e78c13bb2b44b9dff4c6c302c8c278725dc5a34d" ascii nocase
-        $h_libpk   = "b97d0a646c8aece8f5c4cedb26da808ec5104038c7871ad0481f75df7a75c59d" ascii nocase
-        $h_scc     = "701e702f91942acef4d6afdda2abf70ed8618cde2f2ef3b174b092373c63c033" ascii nocase
-        $h_1txt    = "ff529b5e54b079ff9a449e933b6042c2403f15d0de9ee9dbfb0c51e56bf13fad" ascii nocase
-        $h_petxt   = "1f7b509db8424453b8bb3a45053f3bc47f98414b168a67f253c10f0f6fb83936" ascii nocase
-        $h_qtxt    = "5705e818447ec8f7c480a2bf28337b002d66b293b7450b7a993bf26ac9fee60f" ascii nocase
-        $h_police  = "0736e890f62b920c4489928254d5c0e5e67584dfb1c8649f08b62e400d28e882" ascii nocase
-
+        $h_abvbs   = "6142295a7f7ce60b86738e07d79b72d5a3edb3d5915aa9fb6c81ea752a9cd229" nocase
+        $h_abvbs2  = "c7936cc04631bc9d4ed7a9be3a5638193fac57cb3ccfa7ce037aa2b0fe24cad7" nocase
+        $h_lnk     = "521769c955761f7fc625eae2006f4dabcf36ce3169309e0ad111e7b7b29748af" nocase
+        $h_skype   = "54b762e05af1a1138786a78e9936d63f4e419bbeb0d116c2cee7376566420382" nocase
+        $h_skype2  = "8d5b8061b3f6b899583bbf20e78c13bb2b44b9dff4c6c302c8c278725dc5a34d" nocase
+        $h_libpk   = "b97d0a646c8aece8f5c4cedb26da808ec5104038c7871ad0481f75df7a75c59d" nocase
+        $h_scc     = "701e702f91942acef4d6afdda2abf70ed8618cde2f2ef3b174b092373c63c033" nocase
+        $h_1txt    = "ff529b5e54b079ff9a449e933b6042c2403f15d0de9ee9dbfb0c51e56bf13fad" nocase
+        $h_petxt   = "1f7b509db8424453b8bb3a45053f3bc47f98414b168a67f253c10f0f6fb83936" nocase
+        $h_qtxt    = "5705e818447ec8f7c480a2bf28337b002d66b293b7450b7a993bf26ac9fee60f" nocase
+        $h_police  = "0736e890f62b920c4489928254d5c0e5e67584dfb1c8649f08b62e400d28e882" nocase
         // File hashes (MD5)
-        $m_stub    = "cd5207483b78ef50d3dbd3f6a36d2a98" ascii nocase
-        $m_clickon = "c596910b65fb3af81b9ca67ce11ebcc3" ascii nocase
-
+        $m_stub    = "cd5207483b78ef50d3dbd3f6a36d2a98" nocase
+        $m_clickon = "c596910b65fb3af81b9ca67ce11ebcc3" nocase
     condition:
-        filesize < 50MB
-        and (
-            any of ($ip*)
-            or any of ($dom*)
-            or any of ($h_*)
-            or any of ($m_*)
-        )
+        (any of ($ip*) or any of ($dom*) or any of ($h_*) or any of ($m_*)) and filesize < 50MB
 }

@@ -50,36 +50,28 @@ rule APT28_PROMPTSTEAL_LLM_Behavior
         severity    = "critical"
         family      = "PROMPTSTEAL"
         reference   = "https://services.google.com/fh/files/misc/advances-in-threat-actor-usage-of-ai-tools-en.pdf"
-
     strings:
         // Hugging Face API endpoints used by PROMPTSTEAL
-        $api_chat     = "hyperbolic/v1/chat/completions" ascii
-        $api_image    = "nebius/v1/images/generations" ascii
-        $api_host     = "router.huggingface.co" ascii
-
+        $api_chat    = "hyperbolic/v1/chat/completions"
+        $api_image   = "nebius/v1/images/generations"
+        $api_host    = "router.huggingface.co"
         // Model identifier
-        $model        = "Qwen2.5-Coder-32B-Instruct" ascii
-
+        $model       = "Qwen2.5-Coder-32B-Instruct"
         // LLM payload role string
-        $role         = "Windows systems administrator" ascii
-
+        $role        = "Windows systems administrator"
         // Prompt tail strings -- separate ascii and base64 variants because
         // YARA 4.5.2 treats `ascii base64` as "base64 of ascii input",
         // NOT "match either ascii or base64"
-        $prompt_v1a   = "Return only commands, without markdown" ascii
-        $prompt_v1b   = "Return only command, without markdown" ascii
-        $prompt_v2a   = "Return only commands, without markdown" base64
-        $prompt_v2b   = "Return only command, without markdown" base64
-
+        $prompt_v1a  = "Return only commands, without markdown"
+        $prompt_v1b  = "Return only command, without markdown"
+        $prompt_v2a  = "Return only commands, without markdown" base64
+        $prompt_v2b  = "Return only command, without markdown" base64
         // On-host staging directory (double-backslash for Python source,
         // single-backslash for compiled bytecode / PyInstaller)
-        $staging_dbl  = "Programdata\\\\info" ascii nocase
-        $staging_sgl  = "Programdata\\info" ascii nocase
-
+        $staging_dbl = "Programdata\\\\info" nocase
+        $staging_sgl = "Programdata\\info" nocase
     condition:
-        filesize < 10MB
-        and 2 of ($api_*, $model, $role)
-        and 1 of ($staging_*, $prompt_*)
+        2 of ($api_*, $model, $role) and any of ($staging_*, $prompt_*) and filesize < 10MB
 }
 
 rule APT28_PROMPTSTEAL_IOCs
@@ -94,29 +86,22 @@ rule APT28_PROMPTSTEAL_IOCs
         hash2       = "d6af1c9f5ce407e53ec73c8e7187ed804fb4f80cf8dbd6722fc69e15e135db2e"
         hash3       = "bdb33bbb4ea11884b15f67e5c974136e6294aa87459cdc276ac2eea85b1deaa3"
         hash4       = "384e8f3d300205546fb8c9b9224011b3b3cb71adc994180ff55e1e6416f65715"
-
     strings:
         // C2 / exfil -- HTTP POST (v2)
-        $c2_domain   = "stayathomeclasses.com" ascii nocase
-        $c2_path     = "/slpw/up.php" ascii
-
+        $c2_domain = "stayathomeclasses.com" nocase
+        $c2_path   = "/slpw/up.php"
         // C2 / exfil -- SFTP (v1)
-        $sftp_ip     = "144.126.202.227" ascii
-
+        $sftp_ip   = "144.126.202.227"
         // Additional infrastructure
-        $infra_ip    = "107.180.50.236" ascii
-
+        $infra_ip  = "107.180.50.236"
         // Delivery filenames
-        $fn_pif      = "Dodatok.pif" ascii nocase
-        $fn_gen09    = "AI_generator_uncensored_Canvas_PRO" ascii
-        $fn_gen095   = "AI_image_generator_v0.95" ascii
-
+        $fn_pif    = "Dodatok.pif" nocase
+        $fn_gen09  = "AI_generator_uncensored_Canvas_PRO"
+        $fn_gen095 = "AI_image_generator_v0.95"
         // Operator email (compromised sender)
-        $email       = "boroda70@meta.ua" ascii nocase
-
+        $email     = "boroda70@meta.ua" nocase
     condition:
-        filesize < 50MB
-        and any of them
+        any of them and filesize < 50MB
 }
 
 rule APT28_PROMPTSTEAL_Script_Shape
@@ -128,23 +113,20 @@ rule APT28_PROMPTSTEAL_Script_Shape
         severity    = "critical"
         family      = "PROMPTSTEAL"
         reference   = "https://cert.gov.ua/article/6284730"
-
     strings:
         // PROMPTSTEAL-unique function/variable names (survive in both
         // raw .py source and PyInstaller-embedded bytecode)
-        $fn_llm      = "LLM_QUERY_EX" ascii
-        $fn_xlsx     = "xlsx_open" ascii
-        $fn_qimage   = "query_image" ascii
-        $fn_sshsend  = "ssh_send" ascii
-        $var_xlsxb   = "xlsx_base" ascii
-        $var_imgapi  = "Image_API_URL" ascii
-
+        $fn_llm     = "LLM_QUERY_EX"
+        $fn_xlsx    = "xlsx_open"
+        $fn_qimage  = "query_image"
+        $fn_sshsend = "ssh_send"
+        $var_xlsxb  = "xlsx_base"
+        $var_imgapi = "Image_API_URL"
         // Threading pattern
-        $thread_llm  = "llm_query_thread" ascii
-        $thread_img  = "image_thread" ascii
-
+        $thread_llm = "llm_query_thread"
+        $thread_img = "image_thread"
     condition:
-        filesize < 10MB
-        and $fn_llm
-        and 1 of ($fn_xlsx, $fn_qimage, $fn_sshsend, $var_*, $thread_*)
+        $fn_llm
+        and any of ($fn_xlsx, $fn_qimage, $fn_sshsend, $var_*, $thread_*)
+        and filesize < 10MB
 }
