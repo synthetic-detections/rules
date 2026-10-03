@@ -32,94 +32,46 @@
      https://www.securityweek.com/http-2-bomb-exploit-knocks-web-servers-offline-in-seconds/
 */
 
-rule HTTP2_Bomb_PoC_SourceCode
-{
+rule HTTP2_Bomb_PoC_SourceCode {
     meta:
         description = "PoC / derivative exploit source for the HTTP/2 Bomb DoS: HPACK indexed-reference amplification + zero-window flow-control stall"
-        author      = "synthetic-detections"
-        date        = "2026-06-04"
-        severity    = "critical"
-        family      = "http2-bomb"
-        reference   = "https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb"
-
+        author = "synthetic-detections"
+        date = "2026-06-04"
+        severity = "critical"
+        family = "http2-bomb"
+        reference = "https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb"
     strings:
-        // HPACK / HTTP/2 framing constants and APIs commonly used by PoCs
-        $hpack_word    = "HPACK" ascii
-        $h2_setting    = "SETTINGS_INITIAL_WINDOW_SIZE" ascii
-        $h2_dynamic    = /dynamic[ _]?table/ ascii nocase
-        $h2_indexed    = /indexed[ _]?(reference|header)/ ascii nocase
-        $h2_send_preface = "PRI * HTTP/2.0" ascii
-
-        // Behavioural shape: zero receive window + drip 1-byte WINDOW_UPDATEs
-        $zero_window   = /(initial[_-]?window[_-]?size|recv[_-]?window)\s*[=:]\s*0\b/ ascii nocase
-        $drip          = /WINDOW_UPDATE[^;\n]{0,120}(1|0x01|\\x01)\b/ ascii nocase
-
-        // Cookie-crumb splitting bypass (RFC 9113 §8.2.3) — distinctive phrase
-        $crumb_phrase  = /cookie[^,;\n]{0,40}(crumb|crumbs|split|fragment)/ ascii nocase
-
-        // Technique name as coined by Codex / Calif.io
-        $technique     = /indexed[ _-]?reference[ _-]?bomb/ ascii nocase
-
-        // Common HTTP/2 client libraries that a PoC would lean on
-        $lib_h2py      = "h2.connection" ascii
-        $lib_hyper     = "hyper.client" ascii
-        $lib_h2c       = "http2.NewClientConn" ascii
-        $lib_nghttp2   = "nghttp2_session" ascii
-
+        $hpack_word = "HPACK"
+        $h2_setting = "SETTINGS_INITIAL_WINDOW_SIZE"
+        $h2_dynamic = /dynamic[ _]?table/
+        $h2_indexed = /indexed[ _]?(reference|header)/
+        $h2_send_preface = "PRI * HTTP/2.0"
+        $zero_window = /(initial[_-]?window[_-]?size|recv[_-]?window)\s*[=:]\s*0\b/
+        $drip = /WINDOW_UPDATE[^;\n]{0,120}(1|0x01|\\x01)\b/
+        $crumb_phrase = /cookie[^,;\n]{0,40}(crumb|crumbs|split|fragment)/
+        $technique = /indexed[ _-]?reference[ _-]?bomb/
+        $lib_h2py = "h2.connection"
+        $lib_hyper = "hyper.client"
+        $lib_h2c = "http2.NewClientConn"
+        $lib_nghttp2 = "nghttp2_session"
     condition:
-        filesize < 5MB
-        and (
-            // Technique name + a client-library code tell. The name alone
-            // ("indexed reference bomb") appears verbatim in advisories and
-            // news coverage of the CVE, so it must co-occur with actual PoC
-            // code to fire this critical rule.
-            ($technique and any of ($lib_h2py, $lib_hyper, $lib_h2c, $lib_nghttp2))
-            or
-            // Co-occurrence: HTTP/2 client/framing tell + zero receive window
-            // + WINDOW_UPDATE drip + an HPACK / cookie-crumb amplification anchor.
-            // $crumb_phrase is intentionally gated by the co-occurrence here —
-            // standalone "cookie crumb" mentions are too common in RFC docs.
-            (
-                any of ($lib_h2py, $lib_hyper, $lib_h2c, $lib_nghttp2,
-                        $h2_send_preface, $h2_setting)
-                and $zero_window
-                and $drip
-                and ($h2_dynamic or $h2_indexed or $hpack_word or $crumb_phrase)
-            )
-        )
+        ($technique and any of ($lib_h2py, $lib_hyper, $lib_h2c, $lib_nghttp2) or any of ($lib_h2py, $lib_hyper, $lib_h2c, $lib_nghttp2, $h2_send_preface, $h2_setting) and $zero_window and $drip and ($h2_dynamic or $h2_indexed or $hpack_word or $crumb_phrase)) and filesize < 5MB
 }
 
-rule HTTP2_Bomb_PoC_IOC
-{
+rule HTTP2_Bomb_PoC_IOC {
     meta:
         description = "Static IOCs for the HTTP/2 Bomb disclosure — Codex / califio publication path, MADBugs identifier, named authors, CVE token"
-        author      = "synthetic-detections"
-        date        = "2026-06-04"
-        severity    = "high"
-        family      = "http2-bomb"
-        reference   = "https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb"
-
+        author = "synthetic-detections"
+        date = "2026-06-04"
+        severity = "high"
+        family = "http2-bomb"
+        reference = "https://blog.calif.io/p/codex-discovered-a-hidden-http2-bomb"
     strings:
-        // Publication-specific anchors — safe to fire standalone.
-        $repo_path  = "califio/publications/tree/main/MADBugs/http2-bomb" ascii nocase
-        $repo_short = "MADBugs/http2-bomb" ascii nocase
-        $madbugs    = "MADBugs" ascii
-        $codex_blog = "blog.calif.io" ascii nocase
-
-        // CVE id — corroborating only. It appears in the Apache CHANGES entry
-        // that FIXES this bug, so it must not fire alone.
-        $cve_apache = "CVE-2026-49975" ascii nocase
-
-        // Removed from matching: the researcher names (Quang Luong / Jun Rong /
-        // Duc Phan — attribution now lives in the header) and "Stefan Eissing",
-        // the mod_http2 maintainer who FIXED the CVE. His name is present in
-        // every Apache CHANGES / mod_http2 source file and caused the IOC rule
-        // to false-positive on Apache's own changelog.
-
+        $repo_path = "califio/publications/tree/main/MADBugs/http2-bomb" nocase
+        $repo_short = "MADBugs/http2-bomb" nocase
+        $madbugs = "MADBugs"
+        $codex_blog = "blog.calif.io" nocase
+        $cve_apache = "CVE-2026-49975" nocase
     condition:
-        filesize < 50MB
-        and (
-            any of ($repo_path, $repo_short, $madbugs, $codex_blog)
-            or ($cve_apache and any of ($repo_path, $repo_short, $madbugs, $codex_blog))
-        )
+        (any of ($repo_path, $repo_short, $madbugs, $codex_blog) or $cve_apache and any of ($repo_path, $repo_short, $madbugs, $codex_blog)) and filesize < 50MB
 }

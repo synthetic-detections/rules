@@ -28,7 +28,7 @@
 
 private rule dl_is_pe {
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550
+        uint16(0) == 23117 and uint32(uint32(60)) == 17744
 }
 
 rule DeadLock_Encryptor {
@@ -40,13 +40,13 @@ rule DeadLock_Encryptor {
         family = "deadlock-ransomware"
         reference = "https://www.microsoft.com/en-us/security/blog/2026/08/10/deadlock-ransomware-breaking-down-a-rust-based-encryptor-with-decentralized-recovery-infrastructure/"
     strings:
-        $magic = "dDlK" ascii
-        $ext   = ".dlock" ascii wide
+        $magic = "dDlK"
+        $ext = ".dlock" ascii wide
         $note1 = "HOW_RECOVER" ascii wide
         $note2 = "RECOVERY_CHAT" ascii wide
-        $svc   = "windefend" ascii wide nocase
+        $svc = "windefend" ascii wide nocase
     condition:
-        dl_is_pe and $magic and $ext and (any of ($note*)) and $svc
+        dl_is_pe and $magic and $ext and any of ($note*) and $svc
 }
 
 rule DeadLock_Ransom_Note {
@@ -64,15 +64,7 @@ rule DeadLock_Ransom_Note {
         $b2 = "Session" ascii wide
         $b3 = ".dlock" ascii wide
     condition:
-        // $n1/$n2 are the recovery *tokens* that appear in the note body
-        // (HOW_RECOVER is also the note filename, which YARA cannot see, so the
-        // rule must not depend on $n1 alone). A real dropped note reliably
-        // carries the .dlock ext + Session + the leak-site domain together.
-        filesize < 100KB and (
-            (all of ($n*))
-            or (any of ($n*) and 2 of ($b*))
-            or (all of ($b*))
-        )
+        (all of ($n*) or any of ($n*) and 2 of ($b*) or all of ($b*)) and filesize < 100KB
 }
 
 rule DeadLock_Blockchain_C2 {
@@ -84,16 +76,14 @@ rule DeadLock_Blockchain_C2 {
         family = "deadlock-ransomware"
         reference = "https://thehackernews.com/2026/08/deadlock-ransomware-uses-polygon-smart.html"
     strings:
-        $c1 = "0x8EF7c3e531d871D3B9D559722DE77EB1dEc19dAe" ascii nocase
-        $c2 = "0x757984507c82c8dA1d3969c535dB5706eEE6426C" ascii nocase
-        $sel1 = "933a9ce8" ascii nocase
-        $sel2 = "d4070542" ascii nocase
-        $d1 = "deadlock.liveblog365.com" ascii nocase
-        // fullword so this does not self-match inside $d1 ("deadlock...") and
-        // defeat the 2-of count guard
-        $d2 = "dlock.liveblog365.com" ascii nocase fullword
-        $onion = "deadblogdbdu5wprek7wa2o4ce7rnt6u6ntqeud3hzjjcveosgpsqqqd" ascii nocase
-        $pk = "03bf50bbf97c4e951e66ff12b689a37a3ce675b4921e254eae76da77573843e4a9" ascii nocase
+        $c1 = "0x8EF7c3e531d871D3B9D559722DE77EB1dEc19dAe" nocase
+        $c2 = "0x757984507c82c8dA1d3969c535dB5706eEE6426C" nocase
+        $sel1 = "933a9ce8" nocase
+        $sel2 = "d4070542" nocase
+        $d1 = "deadlock.liveblog365.com" nocase
+        $d2 = "dlock.liveblog365.com" nocase fullword
+        $onion = "deadblogdbdu5wprek7wa2o4ce7rnt6u6ntqeud3hzjjcveosgpsqqqd" nocase
+        $pk = "03bf50bbf97c4e951e66ff12b689a37a3ce675b4921e254eae76da77573843e4a9" nocase
     condition:
         2 of them
 }

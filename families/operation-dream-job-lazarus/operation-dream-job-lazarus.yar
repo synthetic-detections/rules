@@ -43,7 +43,7 @@ import "pe"
 
 private rule is_pe {
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550
+        uint16(0) == 23117 and uint32(uint32(60)) == 17744
 }
 
 rule Lazarus_FudModule_GodMode {
@@ -55,16 +55,16 @@ rule Lazarus_FudModule_GodMode {
         family = "operation-dream-job-lazarus"
         reference = "https://research.checkpoint.com/2026/shattering-the-dream-when-a-job-offer-becomes-a-zero-day-attack/"
     strings:
-        $t1 = "enable_god_mode passed." ascii
-        $t2 = "GetGodMode failed" ascii
-        $t3 = "GetSystemHandle passed." ascii
-        $t4 = "CreateRemoteProcess passed." ascii
-        $t5 = "RemoteDllExecute passed." ascii
-        $t6 = "SuspendDefender passed." ascii
+        $t1 = "enable_god_mode passed."
+        $t2 = "GetGodMode failed"
+        $t3 = "GetSystemHandle passed."
+        $t4 = "CreateRemoteProcess passed."
+        $t5 = "RemoteDllExecute passed."
+        $t6 = "SuspendDefender passed."
         $sac = "VerifiedAndReputablePolicyState" ascii wide
-        $vac = "ClearVaccine" ascii
+        $vac = "ClearVaccine"
     condition:
-        is_pe and (3 of ($t*) or (2 of ($t*) and ($sac or $vac)))
+        is_pe and (3 of ($t*) or 2 of ($t*) and ($sac or $vac))
 }
 
 rule Lazarus_Troy_Backdoor {
@@ -76,16 +76,16 @@ rule Lazarus_Troy_Backdoor {
         family = "operation-dream-job-lazarus"
         reference = "https://research.checkpoint.com/2026/shattering-the-dream-when-a-job-offer-becomes-a-zero-day-attack/"
     strings:
-        $pdb = "\\Troy_Handle\\" ascii nocase
-        $pdb2 = "Troy_Create_Dll_Tool" ascii
-        $c1 = "ZIPDOWNLOAD" ascii
-        $c2 = "DEFAULTSLEEP" ascii
-        $c3 = "GET_CONFIG" ascii
-        $c4 = "SET_CONFIG" ascii
-        $c5 = "DRIVES" ascii
-        $hs = "CONNECTED" ascii
+        $pdb = "\\Troy_Handle\\" nocase
+        $pdb2 = "Troy_Create_Dll_Tool"
+        $c1 = "ZIPDOWNLOAD"
+        $c2 = "DEFAULTSLEEP"
+        $c3 = "GET_CONFIG"
+        $c4 = "SET_CONFIG"
+        $c5 = "DRIVES"
+        $hs = "CONNECTED"
     condition:
-        is_pe and ( any of ($pdb*) or (4 of ($c*) and $hs) )
+        is_pe and (any of ($pdb*) or 4 of ($c*) and $hs)
 }
 
 rule Lazarus_SecurityPDF_Decoy {
@@ -97,8 +97,8 @@ rule Lazarus_SecurityPDF_Decoy {
         family = "operation-dream-job-lazarus"
         reference = "https://research.checkpoint.com/2026/shattering-the-dream-when-a-job-offer-becomes-a-zero-day-attack/"
     strings:
-        $marker = "This document is encrypted with sumatrapdf reader!!!!!!!!!!!!!!" ascii
-        $dll = "libmupdf.dll" ascii nocase
+        $marker = "This document is encrypted with sumatrapdf reader!!!!!!!!!!!!!!"
+        $dll = "libmupdf.dll" nocase
         $pdfhdr = "%PDF-"
     condition:
         $marker and ($dll or $pdfhdr at 0 or is_pe)
@@ -113,10 +113,10 @@ rule Lazarus_RelayShell_Webshell {
         family = "operation-dream-job-lazarus"
         reference = "https://research.checkpoint.com/2026/shattering-the-dream-when-a-job-offer-becomes-a-zero-day-attack/"
     strings:
-        $php = "<?php" ascii
-        $id  = "D9hWnVEqdgzJ67/B8euS0yKCIMrw5jc:fGUX3AakLH2oYQRp" ascii
+        $php = "<?php"
+        $id = "D9hWnVEqdgzJ67/B8euS0yKCIMrw5jc:fGUX3AakLH2oYQRp"
     condition:
-        filesize < 200KB and $php and $id
+        $php and $id and filesize < 200KB
 }
 
 rule Lazarus_DreamJob_C2 {
@@ -128,11 +128,11 @@ rule Lazarus_DreamJob_C2 {
         family = "operation-dream-job-lazarus"
         reference = "https://research.checkpoint.com/2026/shattering-the-dream-when-a-job-offer-becomes-a-zero-day-attack/"
     strings:
-        $d1 = "envell.xyz" ascii nocase
-        $d2 = "enveil.online" ascii nocase
-        $d3 = "uxtramine.org" ascii nocase
-        $ip1 = "135.181.67.203" ascii
-        $ip2 = "135.181.185.158" ascii
+        $d1 = "envell.xyz" nocase
+        $d2 = "enveil.online" nocase
+        $d3 = "uxtramine.org" nocase
+        $ip1 = "135.181.67.203"
+        $ip2 = "135.181.185.158"
     condition:
         2 of them
 }

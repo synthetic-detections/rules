@@ -34,7 +34,7 @@
 
 private rule corerat_is_pe {
     condition:
-        uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550 and filesize < 12MB
+        uint16(0) == 23117 and uint32(uint32(60)) == 17744 and filesize < 12MB
 }
 
 rule CoreRAT_Behaviour {

@@ -63,135 +63,98 @@
      LazyWiper ps1  (sha256): 033cb31c…09602c2
 */
 
-rule DynoWiper_Wiper_Behavior
-{
+rule DynoWiper_Wiper_Behavior {
     meta:
         description = "DynoWiper native Win32 wiper — 'Error opening file:' plus the distinctive drive exclusion list incl the 'program files(x86)' typo, in a small PE"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "critical"
-        family      = "dynowiper-energy-sector"
-        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
-
+        author = "synthetic-detections"
+        date = "2026-08-09"
+        severity = "critical"
+        family = "dynowiper-energy-sector"
+        reference = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
         $err = "Error opening file: " wide
-
-        // drive-walk exclusion list (wide, case-insensitive); $x2 carries the
-        // attacker typo (missing space before the paren)
         $x1 = "$recycle.bin" wide nocase
         $x2 = "program files(x86)" wide nocase
         $x3 = "perflogs" wide nocase
         $x4 = "documents and settings" wide nocase
         $x5 = "system32" wide nocase
-        // ($recycle.bin already covers the recycle-bin token; a separate
-        // "recycle.bin" is a substring of $x1 and would let one indicator
-        // satisfy two slots of the 3-of guard, so it is intentionally omitted.)
-
     condition:
-        uint16(0) == 0x5A4D
-        and filesize < 500KB
-        and $err
-        and 3 of ($x*)
+        uint16(0) == 23117 and $err and 3 of ($x*) and filesize < 500KB
 }
 
-rule DynoWiper_PDB_Guarded
-{
+rule DynoWiper_PDB_Guarded {
     meta:
         description = "DynoWiper build artifact — the vagrant VS2013 Source.pdb path, gated on a PE and an exclusion-list string so the forgeable path cannot fire alone"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "high"
-        family      = "dynowiper-energy-sector"
-        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
-
+        author = "synthetic-detections"
+        date = "2026-08-09"
+        severity = "high"
+        family = "dynowiper-energy-sector"
+        reference = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
-        $pdb = "\\Documents\\Visual Studio 2013\\Projects\\Source\\Release\\Source.pdb" ascii nocase
-        $vag = "Users\\vagrant\\" ascii nocase
-        $x1  = "program files(x86)" wide nocase
-        $x2  = "Error opening file: " wide
-
+        $pdb = "\\Documents\\Visual Studio 2013\\Projects\\Source\\Release\\Source.pdb" nocase
+        $vag = "Users\\vagrant\\" nocase
+        $x1 = "program files(x86)" wide nocase
+        $x2 = "Error opening file: " wide
     condition:
-        uint16(0) == 0x5A4D and filesize < 500KB
-        and $pdb and ($vag or any of ($x*))
+        uint16(0) == 23117 and $pdb and ($vag or any of ($x*)) and filesize < 500KB
 }
 
-rule DynoWiper_GPO_Distributor
-{
+rule DynoWiper_GPO_Distributor {
     meta:
         description = "DynoWiper PowerShell GPO distributor — hijacks Default Domain Policy as 'Custom Domain Policy' + SYSTEM 'Custom GPO Task' with the hardcoded filter GUID"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "critical"
-        family      = "dynowiper-energy-sector"
-        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
-
+        author = "synthetic-detections"
+        date = "2026-08-09"
+        severity = "critical"
+        family = "dynowiper-energy-sector"
+        reference = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
         $guid = "79A87EBB-4DF6-4541-9530-CAD8BEE8A7AD" ascii wide nocase
-        $n1   = "Custom Domain Policy" ascii wide nocase
-        $n2   = "Custom GPO Task" ascii wide nocase
-        $n3   = "MachineVersionNumber" ascii wide nocase
-        $del  = "schtasks.exe /delete /TN \"Custom GPO Task\" /F" ascii wide nocase
-
+        $n1 = "Custom Domain Policy" ascii wide nocase
+        $n2 = "Custom GPO Task" ascii wide nocase
+        $n3 = "MachineVersionNumber" ascii wide nocase
+        $del = "schtasks.exe /delete /TN \"Custom GPO Task\" /F" ascii wide nocase
     condition:
-        filesize < 1MB and (
-            $guid                               // the GUID is a strong single pin
-            or ($n1 and $n2)                    // both hardcoded names co-occur
-            or ($del)                           // exact self-delete line
-            or ($n2 and $n3)
-        )
+        ($guid or $n1 and $n2 or $del or $n2 and $n3) and filesize < 1MB
 }
 
-rule LazyWiper_Build
-{
+rule LazyWiper_Build {
     meta:
         description = "LazyWiper PowerShell wiper (this build) — WriteRandomBytes helper + the misspelled .pcks/.pcks12/.pcks7 extensions + DC-abort; LLM-generated, pins THIS build, not durable across regeneration"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "low"
-        family      = "dynowiper-energy-sector"
-        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
-
+        author = "synthetic-detections"
+        date = "2026-08-09"
+        severity = "low"
+        family = "dynowiper-energy-sector"
+        reference = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
-        $fn   = "WriteRandomBytes" ascii wide nocase
-        $e1   = ".pcks12" ascii wide nocase
-        $e2   = ".pcks7" ascii wide nocase
-        $e3   = "\".pcks\"" ascii wide nocase
-        $dc1  = "DomainController" ascii wide nocase
-        $dc2  = "ProductType" ascii wide nocase
-
+        $fn = "WriteRandomBytes" ascii wide nocase
+        $e1 = ".pcks12" ascii wide nocase
+        $e2 = ".pcks7" ascii wide nocase
+        $e3 = "\".pcks\"" ascii wide nocase
+        $dc1 = "DomainController" ascii wide nocase
+        $dc2 = "ProductType" ascii wide nocase
     condition:
-        $fn and (2 of ($e*)) and (any of ($dc*))
-        and filesize < 200KB
+        $fn and 2 of ($e*) and any of ($dc*) and filesize < 200KB
 }
 
-rule DynoWiper_Campaign_IOCs
-{
+rule DynoWiper_Campaign_IOCs {
     meta:
         description = "DynoWiper/LazyWiper campaign hard IOCs — sample sha256/sha1 pins and the Static-Tundra relay C2 IPs (atomic, decay expected — rotate)"
-        author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "high"
-        family      = "dynowiper-energy-sector"
-        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
-
+        author = "synthetic-detections"
+        date = "2026-08-09"
+        severity = "high"
+        family = "dynowiper-energy-sector"
+        reference = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
-        // DynoWiper EXE sha256
-        $s1 = "65099f306d27c8bcdd7ba3062c012d2471812ec5e06678096394b238210f0f7c" ascii nocase
-        $s2 = "835b0d87ed2d49899ab6f9479cddb8b4e03f5aeb2365c50a51f9088dcede68d5" ascii nocase
-        $s3 = "60c70cdcb1e998bffed2e6e7298e1ab6bb3d90df04e437486c04e77c411cae4b" ascii nocase
-        $s4 = "d1389a1ff652f8ca5576f10e9fa2bf8e8398699ddfc87ddd3e26adb201242160" ascii nocase
-        // LazyWiper + GPO dropper sha256
-        $s5 = "033cb31c081ff4292f82e528f5cb78a503816462daba8cc18a6c4531009602c2" ascii nocase
-        $s6 = "8759e79cf3341406564635f3f08b2f333b0547c444735dba54ea6fce8539cf15" ascii nocase
-        $s7 = "f4e9a3ddb83c53f5b7717af737ab0885abd2f1b89b2c676d3441a793f65ffaee" ascii nocase
-        $s8 = "68192ca0fde951d973eb41a07814f402f2b46e610889224bd54583d8a332a464" ascii nocase
-        // C2 / relay IPs (Static Tundra infra)
+        $s1 = "65099f306d27c8bcdd7ba3062c012d2471812ec5e06678096394b238210f0f7c" nocase
+        $s2 = "835b0d87ed2d49899ab6f9479cddb8b4e03f5aeb2365c50a51f9088dcede68d5" nocase
+        $s3 = "60c70cdcb1e998bffed2e6e7298e1ab6bb3d90df04e437486c04e77c411cae4b" nocase
+        $s4 = "d1389a1ff652f8ca5576f10e9fa2bf8e8398699ddfc87ddd3e26adb201242160" nocase
+        $s5 = "033cb31c081ff4292f82e528f5cb78a503816462daba8cc18a6c4531009602c2" nocase
+        $s6 = "8759e79cf3341406564635f3f08b2f333b0547c444735dba54ea6fce8539cf15" nocase
+        $s7 = "f4e9a3ddb83c53f5b7717af737ab0885abd2f1b89b2c676d3441a793f65ffaee" nocase
+        $s8 = "68192ca0fde951d973eb41a07814f402f2b46e610889224bd54583d8a332a464" nocase
         $ip1 = "185.200.177.10" ascii wide fullword
         $ip2 = "31.172.71.5" ascii wide fullword
-
     condition:
-        // Full SHA-256 hashes are unambiguous and may fire alone; the two C2
-        // IPs are substring-prone (e.g. 185.200.177.10 matches 185.200.177.100),
-        // so require BOTH relay IPs together rather than either one.
-        filesize < 4MB and (any of ($s*) or all of ($ip*))
+        (any of ($s*) or all of ($ip*)) and filesize < 4MB
 }

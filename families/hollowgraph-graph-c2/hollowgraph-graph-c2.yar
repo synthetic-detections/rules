@@ -38,121 +38,67 @@
    Related: [[cavern-manticore]] — HollowGraph is a Cavern-framework component.
 */
 
-rule HollowGraph_GraphCalendar_C2_Behavior
-{
+rule HollowGraph_GraphCalendar_C2_Behavior {
     meta:
         description = "HollowGraph M365 Graph/calendar covert C2 — logAzure.txt credential config + 2050-05-13 magic event date + Graph calendar API usage + GET/SEND tasking + RSA/AES-256-GCM hybrid"
-        author      = "synthetic-detections"
-        date        = "2026-07-22"
-        severity    = "critical"
-        family      = "hollowgraph-graph-c2"
-        reference   = "https://www.group-ib.com/blog/hollowgraph-microsoft-365/"
-
+        author = "synthetic-detections"
+        date = "2026-07-22"
+        severity = "critical"
+        family = "hollowgraph-graph-c2"
+        reference = "https://www.group-ib.com/blog/hollowgraph-microsoft-365/"
     strings:
-        // Campaign-specific credential/config file
         $cfg = "logAzure.txt" ascii wide nocase
-
-        // Magic far-future calendar date used to hide C2 events
-        $date_iso  = "2050-05-13" ascii wide
-        $date_us   = "5/13/2050" ascii wide
+        $date_iso = "2050-05-13" ascii wide
+        $date_us = "5/13/2050" ascii wide
         $date_2050 = "2050" ascii wide
-
-        // Microsoft Graph calendar API surface
-        $g_host  = "graph.microsoft.com" ascii wide nocase
-        $g_events= "/me/events" ascii wide nocase
-        $g_cal   = "/me/calendar" ascii wide nocase
-        $g_attach= "attachments" ascii wide nocase
+        $g_host = "graph.microsoft.com" ascii wide nocase
+        $g_events = "/me/events" ascii wide nocase
+        $g_cal = "/me/calendar" ascii wide nocase
+        $g_attach = "attachments" ascii wide nocase
         $g_token = "login.microsoftonline.com" ascii wide nocase
-
-        // Hybrid crypto (AES-256-GCM is the strong, campaign-consistent atom;
-        // bare "RSA"/"GET" are too short/generic to be usable signals)
         $c_aes = "AES-256-GCM" ascii wide nocase
         $c_gcm = "AesGcm" ascii wide nocase
-
-        // Hardcoded tenant/secret material read from the config
         $t_tenant = "tenant" ascii wide nocase
         $t_secret = "client_secret" ascii wide nocase
-
     condition:
-        filesize < 10MB
-        and (
-            // Path 1: the config filename is campaign-unique
-            $cfg
-            or
-            // Path 2: the 2050-05-13 magic date used with Graph calendar API
-            (
-                any of ($date_iso, $date_us)
-                and any of ($g_host, $g_events, $g_cal)
-            )
-            or
-            // Path 3: full behavioral shape — Graph calendar + attachment
-            // dead-drop + AES-256-GCM payload crypto + hardcoded app
-            // credential material, none of which alone is attributable but
-            // together match the implant.
-            (
-                any of ($g_host, $g_events, $g_cal)
-                and $g_attach
-                and any of ($c_aes, $c_gcm)
-                and (any of ($t_secret, $g_token) or ($t_tenant and $date_2050))
-            )
-        )
+        ($cfg or any of ($date_iso, $date_us) and any of ($g_host, $g_events, $g_cal) or any of ($g_host, $g_events, $g_cal) and $g_attach and any of ($c_aes, $c_gcm) and (any of ($t_secret, $g_token) or $t_tenant and $date_2050)) and filesize < 10MB
 }
 
-rule HollowGraph_IOC
-{
+rule HollowGraph_IOC {
     meta:
         description = "HollowGraph IOC — config filename logAzure.txt and the 2050-05-13 magic calendar date, guarded by co-occurrence with Graph/M365 usage so benign calendar tooling does not match"
-        author      = "synthetic-detections"
-        date        = "2026-07-22"
-        severity    = "high"
-        family      = "hollowgraph-graph-c2"
-        reference   = "https://thehackernews.com/2026/07/hollowgraph-malware-hides-c2-and-stolen.html"
-
+        author = "synthetic-detections"
+        date = "2026-07-22"
+        severity = "high"
+        family = "hollowgraph-graph-c2"
+        reference = "https://thehackernews.com/2026/07/hollowgraph-malware-hides-c2-and-stolen.html"
     strings:
-        $cfg      = "logAzure.txt" ascii wide nocase
+        $cfg = "logAzure.txt" ascii wide nocase
         $date_iso = "2050-05-13" ascii wide
-        $date_us  = "5/13/2050" ascii wide
-        $g_host   = "graph.microsoft.com" ascii wide nocase
+        $date_us = "5/13/2050" ascii wide
+        $g_host = "graph.microsoft.com" ascii wide nocase
         $g_events = "/me/events" ascii wide nocase
-        $g_cal    = "/me/calendar" ascii wide nocase
-        $g_token  = "login.microsoftonline.com" ascii wide nocase
-
+        $g_cal = "/me/calendar" ascii wide nocase
+        $g_token = "login.microsoftonline.com" ascii wide nocase
     condition:
-        filesize < 10MB
-        and (
-            // Config filename alone is a strong signal
-            $cfg
-            or
-            // Magic date must co-occur with Graph/M365 usage
-            (
-                any of ($date_iso, $date_us)
-                and any of ($g_host, $g_events, $g_cal, $g_token)
-            )
-        )
+        ($cfg or any of ($date_iso, $date_us) and any of ($g_host, $g_events, $g_cal, $g_token)) and filesize < 10MB
 }
 
-rule HollowGraph_Implant_Specimen
-{
+rule HollowGraph_Implant_Specimen {
     meta:
         description = "HollowGraph specimen pin — full implant shape: logAzure.txt config + Graph calendar dead-drop on 2050-05-13 + GET/SEND tasking + RSA/AES-256-GCM"
-        author      = "synthetic-detections"
-        date        = "2026-07-22"
-        severity    = "critical"
-        family      = "hollowgraph-graph-c2"
-        reference   = "https://www.group-ib.com/blog/hollowgraph-microsoft-365/"
-
+        author = "synthetic-detections"
+        date = "2026-07-22"
+        severity = "critical"
+        family = "hollowgraph-graph-c2"
+        reference = "https://www.group-ib.com/blog/hollowgraph-microsoft-365/"
     strings:
-        $cfg      = "logAzure.txt" ascii wide nocase
+        $cfg = "logAzure.txt" ascii wide nocase
         $date_iso = "2050-05-13" ascii wide
-        $g_host   = "graph.microsoft.com" ascii wide nocase
+        $g_host = "graph.microsoft.com" ascii wide nocase
         $g_events = "/me/events" ascii wide nocase
-        $c_aes    = "AES-256-GCM" ascii wide nocase
-        $c_gcm    = "AesGcm" ascii wide nocase
-
+        $c_aes = "AES-256-GCM" ascii wide nocase
+        $c_gcm = "AesGcm" ascii wide nocase
     condition:
-        filesize < 10MB
-        and $cfg
-        and $date_iso
-        and any of ($g_host, $g_events)
-        and any of ($c_aes, $c_gcm)
+        $cfg and $date_iso and any of ($g_host, $g_events) and any of ($c_aes, $c_gcm) and filesize < 10MB
 }

@@ -26,86 +26,67 @@
      https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html
 */
 
-rule ChainVeil_ViteVenom_Package_IOC
-{
+rule ChainVeil_ViteVenom_Package_IOC {
     meta:
         description = "ViteVenom/ChainVeil — known malicious npm package names (manifest / lockfile / advisory)"
-        author      = "synthetic-detections"
-        date        = "2026-07-18"
-        severity    = "high"
-        family      = "chainveil-vitevenom-npm-rat"
-        reference   = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
-
+        author = "synthetic-detections"
+        date = "2026-07-18"
+        severity = "high"
+        family = "chainveil-vitevenom-npm-rat"
+        reference = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
     strings:
-        $p1 = "@uw010010/vite-tree" ascii nocase
-        $p2 = "@vite-tab/tab" ascii nocase
-        $p3 = "@vite-ln/build-ts" ascii nocase
-        $p4 = "@vite-mcp/vite-type" ascii nocase
-        $p5 = "@vite-pro/vite-ui" ascii nocase
-        $p6 = "@vitets/vite-ts" ascii nocase
-        $p7 = "@vite-ts/vite-ui" ascii nocase
-
+        $p1 = "@uw010010/vite-tree" nocase
+        $p2 = "@vite-tab/tab" nocase
+        $p3 = "@vite-ln/build-ts" nocase
+        $p4 = "@vite-mcp/vite-type" nocase
+        $p5 = "@vite-pro/vite-ui" nocase
+        $p6 = "@vitets/vite-ts" nocase
+        $p7 = "@vite-ts/vite-ui" nocase
     condition:
-        filesize < 5MB and any of ($p*)
+        any of ($p*) and filesize < 5MB
 }
 
-rule ChainVeil_ViteVenom_Behavior
-{
+rule ChainVeil_ViteVenom_Behavior {
     meta:
         description = "ViteVenom/ChainVeil RAT loader — blockchain-C2 retrieval + shell-rc persistence + process spawn in one JS module"
-        author      = "synthetic-detections"
-        date        = "2026-07-18"
-        severity    = "critical"
-        family      = "chainveil-vitevenom-npm-rat"
-        reference   = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
-
+        author = "synthetic-detections"
+        date = "2026-07-18"
+        severity = "critical"
+        family = "chainveil-vitevenom-npm-rat"
+        reference = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
     strings:
-        // blockchain C2 (Tron / Aptos / BSC)
-        $bc_tron   = "tronweb" ascii nocase
-        $bc_tgrid  = "trongrid.io" ascii nocase
-        $bc_aptos  = "@aptos-labs" ascii nocase
-        $bc_aptos2 = "aptos" ascii nocase
-        $bc_bsc    = "bsc-dataseed" ascii nocase
-
-        // shell-rc persistence
-        $rc_bash   = ".bashrc" ascii
-        $rc_zsh    = ".zshrc" ascii
-        $rc_prof   = ".profile" ascii
-        $rc_append = "appendFileSync" ascii
-
-        // process spawn / reverse shell
-        $ex_spawn  = "child_process" ascii
-        $ex_spawn2 = "spawn(" ascii
-        $ex_sh     = "/bin/sh" ascii
-
+        $bc_tron = "tronweb" nocase
+        $bc_tgrid = "trongrid.io" nocase
+        $bc_aptos = "@aptos-labs" nocase
+        $bc_aptos2 = "aptos" nocase
+        $bc_bsc = "bsc-dataseed" nocase
+        $rc_bash = ".bashrc"
+        $rc_zsh = ".zshrc"
+        $rc_prof = ".profile"
+        $rc_append = "appendFileSync"
+        $ex_spawn = "child_process"
+        $ex_spawn2 = "spawn("
+        $ex_sh = "/bin/sh"
     condition:
-        filesize < 2MB
-        and (any of ($bc_*))
-        and (any of ($rc_bash, $rc_zsh, $rc_prof) and $rc_append)
-        and (any of ($ex_*))
+        any of ($bc_*) and any of ($rc_bash, $rc_zsh, $rc_prof) and $rc_append and any of ($ex_*) and filesize < 2MB
 }
 
-rule ChainVeil_ViteVenom_Specimen
-{
+rule ChainVeil_ViteVenom_Specimen {
     meta:
         description = "ViteVenom/ChainVeil — tight specimen pin (blockchain C2 + multi shell-rc append + spawn)"
-        author      = "synthetic-detections"
-        date        = "2026-07-18"
-        severity    = "critical"
-        family      = "chainveil-vitevenom-npm-rat"
-        reference   = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
-
+        author = "synthetic-detections"
+        date = "2026-07-18"
+        severity = "critical"
+        family = "chainveil-vitevenom-npm-rat"
+        reference = "https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html"
     strings:
-        $tron    = "tronweb" ascii nocase
-        $aptos   = "aptos" ascii nocase
-        $bash    = ".bashrc" ascii
-        $zsh     = ".zshrc" ascii
-        $prof    = ".profile" ascii
-        $append  = "appendFileSync" ascii
-        $spawn   = "spawn(" ascii
-
+        $tron = "tronweb" nocase
+        $aptos = "aptos" nocase
+        $bash = ".bashrc"
+        $zsh = ".zshrc"
+        $prof = ".profile"
+        $append = "appendFileSync"
+        $spawn = "spawn("
     condition:
-        filesize < 2MB
-        and $tron and $aptos and $append and $spawn
-        and 2 of ($bash, $zsh, $prof)
+        $tron and $aptos and $append and $spawn and 2 of ($bash, $zsh, $prof) and filesize < 2MB
 }

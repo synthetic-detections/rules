@@ -39,83 +39,57 @@
      2d91a78e739891c9854c254f5b2a6b84c0e167dfa253466cbccd2cdd1c20145d  (g11.sys / PoisonX)
 */
 
-rule GodDamn_Ransomware_Binary
-{
+rule GodDamn_Ransomware_Binary {
     meta:
         description = "GodDamn ransomware (Beast/Monster rebrand by Hyadina) — .God8Damn extension marker and GUI encrypter name in a PE"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "critical"
-        family      = "goddamn-poisonx-ransomware"
-        reference   = "https://www.security.com/blog-post/goddamn-ransomware-beast-rebrand"
-
+        author = "synthetic-detections"
+        date = "2026-07-10"
+        severity = "critical"
+        family = "goddamn-poisonx-ransomware"
+        reference = "https://www.security.com/blog-post/goddamn-ransomware-beast-rebrand"
     strings:
-        $ext1  = ".God8Damn" ascii wide
-        $ext2  = "God8Damn" ascii wide
-        $enc   = "encrypter-windows-gui-x86.exe" ascii wide nocase
-        // Beast/Monster lineage supporting markers
-        $b1    = "Beast" ascii wide
-        $b2    = "Monster" ascii wide
-
+        $ext1 = ".God8Damn" ascii wide
+        $ext2 = "God8Damn" ascii wide
+        $enc = "encrypter-windows-gui-x86.exe" ascii wide nocase
+        $b1 = "Beast" ascii wide
+        $b2 = "Monster" ascii wide
     condition:
-        uint16(0) == 0x5A4D and filesize < 30MB and (
-            $ext1
-            or $enc
-            or ($ext2 and (any of ($b*)))
-        )
+        uint16(0) == 23117 and ($ext1 or $enc or $ext2 and any of ($b*)) and filesize < 30MB
 }
 
-rule PoisonX_Signed_BYOVD_Driver
-{
+rule PoisonX_Signed_BYOVD_Driver {
     meta:
         description = "PoisonX malicious kernel driver (g11.sys) abused by GodDamn — killer driver signed via 'Microsoft Windows Hardware Compatibility Publisher'; signer never matches alone"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "critical"
-        family      = "goddamn-poisonx-ransomware"
-        reference   = "https://thehackernews.com/2026/07/goddamn-ransomware-uses-poisonx-driver.html"
-
+        author = "synthetic-detections"
+        date = "2026-07-10"
+        severity = "critical"
+        family = "goddamn-poisonx-ransomware"
+        reference = "https://thehackernews.com/2026/07/goddamn-ransomware-uses-poisonx-driver.html"
     strings:
-        $drv    = "g11.sys" ascii wide nocase
+        $drv = "g11.sys" ascii wide nocase
         $signer = "Microsoft Windows Hardware Compatibility Publisher" ascii wide
-        // driver process-kill / hook-removal surface (supporting)
-        $k1     = "ZwTerminateProcess" ascii
-        $k2     = "ObRegisterCallbacks" ascii
-        $k3     = "PsSetCreateProcessNotifyRoutine" ascii
-
+        $k1 = "ZwTerminateProcess"
+        $k2 = "ObRegisterCallbacks"
+        $k3 = "PsSetCreateProcessNotifyRoutine"
     condition:
-        uint16(0) == 0x5A4D and filesize < 5MB and (
-            // the driver filename is specific enough with any driver context
-            ($drv and (any of ($k*) or $signer))
-            // the abused signer only counts alongside kernel-kill behaviour
-            or ($signer and 2 of ($k*))
-        )
+        uint16(0) == 23117 and ($drv and (any of ($k*) or $signer) or $signer and 2 of ($k*)) and filesize < 5MB
 }
 
-rule GodDamn_IOC
-{
+rule GodDamn_IOC {
     meta:
         description = "GodDamn intrusion IOCs — AnyDesk masquerade service+path combo and AnyDesk relay C2 addresses"
-        author      = "synthetic-detections"
-        date        = "2026-07-10"
-        severity    = "high"
-        family      = "goddamn-poisonx-ransomware"
-        reference   = "https://www.security.com/blog-post/goddamn-ransomware-beast-rebrand"
-
+        author = "synthetic-detections"
+        date = "2026-07-10"
+        severity = "high"
+        family = "goddamn-poisonx-ransomware"
+        reference = "https://www.security.com/blog-post/goddamn-ransomware-beast-rebrand"
     strings:
-        // distinctive second AnyDesk service + its data dir (legit AnyDesk uses neither)
-        $svc     = "AnyDesk_D-Drive Service" ascii wide
-        $addata  = "D:\\ad_data" ascii wide nocase
-        // AnyDesk relay C2 addresses observed in the intrusion
-        $c2_1    = "15.235.230.188" ascii wide
-        $c2_2    = "185.229.191.39" ascii wide
-        $c2_3    = "141.95.145.210" ascii wide
-        $c2_4    = "162.19.171.150" ascii wide
-
+        $svc = "AnyDesk_D-Drive Service" ascii wide
+        $addata = "D:\\ad_data" ascii wide nocase
+        $c2_1 = "15.235.230.188" ascii wide
+        $c2_2 = "185.229.191.39" ascii wide
+        $c2_3 = "141.95.145.210" ascii wide
+        $c2_4 = "162.19.171.150" ascii wide
     condition:
-        filesize < 30MB and (
-            $svc
-            or $addata
-            or 2 of ($c2_*)
-        )
+        ($svc or $addata or 2 of ($c2_*)) and filesize < 30MB
 }
