@@ -41,7 +41,7 @@
      https://www.securityweek.com/brevo-supply-chain-attack-injects-malware-into-100000-websites/
 */
 
-rule BREVO_ClickFix_Injected_Loader
+rule BREVO_ClickFix_Injected_Loader : loader phishing supply_chain
 {
     meta:
         description = "Brevo supply-chain injected loader — dynamic createElement script pointing at a sendibt1.com CDN /f.js payload"
@@ -61,7 +61,7 @@ rule BREVO_ClickFix_Injected_Loader
         $host and $fjs and any of ($ce, $ce2) and any of ($app, $async) and filesize < 300KB
 }
 
-rule BREVO_IOC
+rule BREVO_IOC : c2 ioc phishing supply_chain
 {
     meta:
         description = "Brevo supply-chain hard IOCs — sendibt1.com staging CDNs, /api/v1/<hex> C2 endpoints, wm.zip WordPress plugin path (>=2 co-occurring to avoid IOC-doc FPs)"
@@ -90,7 +90,7 @@ rule BREVO_IOC
         2 of them and filesize < 300KB
 }
 
-rule BREVO_WP_Admin_Plugin_Drop
+rule BREVO_WP_Admin_Plugin_Drop : exploit phishing
 {
     meta:
         description = "Brevo injection WordPress stage — admin-session check plus wp-admin plugin upload/activate chain dropping wm.zip"

@@ -32,7 +32,7 @@
      https://www.securityweek.com/http-2-bomb-exploit-knocks-web-servers-offline-in-seconds/
 */
 
-rule HTTP2_Bomb_PoC_SourceCode
+rule HTTP2_Bomb_PoC_SourceCode : exploit
 {
     meta:
         description = "PoC / derivative exploit source for the HTTP/2 Bomb DoS: HPACK indexed-reference amplification + zero-window flow-control stall"
@@ -76,7 +76,7 @@ rule HTTP2_Bomb_PoC_SourceCode
         and filesize < 5MB
 }
 
-rule HTTP2_Bomb_PoC_IOC
+rule HTTP2_Bomb_PoC_IOC : ioc
 {
     meta:
         description = "Static IOCs for the HTTP/2 Bomb disclosure — Codex / califio publication path, MADBugs identifier, named authors, CVE token"

@@ -66,7 +66,7 @@
    detection sit in one place.
 */
 
-rule MoonlightMaze_LOKI2
+rule MoonlightMaze_LOKI2 : backdoor
 {
     meta:
         description = "LOKI2 covert-channel backdoor (Phrack 51 #6, 1997) — original tool used in Moonlight Maze, still appearing in modern derivatives via code reuse"
@@ -115,7 +115,7 @@ rule MoonlightMaze_LOKI2
         and filesize < 50MB
 }
 
-rule Penquin_Turla_LinuxBackdoor
+rule Penquin_Turla_LinuxBackdoor : backdoor
 {
     meta:
         description = "Penquin Turla Linux backdoor (Penquin_x64 era, 2020 Leonardo disclosure) — modern descendant of Moonlight Maze toolchain"
@@ -143,10 +143,10 @@ rule Penquin_Turla_LinuxBackdoor
         // with the community signature. ELF magic at offset 0; reject any
         // sample over 5 MiB (Penquin samples are small statically-linked
         // ELFs in the 50 KiB - 2 MiB band).
-        uint16(0) == 17791 and 4 of them and filesize < 5MB
+        uint16(0) == 0x457f and 4 of them and filesize < 5MB
 }
 
-rule MoonlightMaze_Penquin_IOC
+rule MoonlightMaze_Penquin_IOC : ioc
 {
     meta:
         description = "Static IOC sweep — campaign markers and known SHA-256 of Penquin Turla samples from the Moonlight Maze code-lineage chain"
@@ -192,7 +192,7 @@ rule MoonlightMaze_Penquin_IOC
         and filesize < 50MB
 }
 
-rule Penquin_Turla_2014Era
+rule Penquin_Turla_2014Era : backdoor c2
 {
     meta:
         description = "2014-era Penquin Turla Linux backdoor — C2 hostname, IP, MD5 sample hashes, statically-linked-glibc/openssl/libpcap fingerprint (Kaspersky Securelist 2014)"
@@ -226,12 +226,12 @@ rule Penquin_Turla_2014Era
             $c2_dom or
             $c2_ip or
             any of ($md5_*) or
-            (uint16(0) == 17791 and 2 of ($glibc_old, $openssl_old, $libpcap_old) and $sh_wrapper)
+            (uint16(0) == 0x457f and 2 of ($glibc_old, $openssl_old, $libpcap_old) and $sh_wrapper)
         )
         and filesize < 5MB
 }
 
-rule Penquin_Turla_MagicPacket
+rule Penquin_Turla_MagicPacket : malware
 {
     meta:
         description = "Penquin Turla BPF magic-packet authentication anchors — verbatim libpcap filter expressions (2014 IDs 123/321) and the 2020 Penquin_x64 0xbdbd0560 mask"
@@ -272,12 +272,12 @@ rule Penquin_Turla_MagicPacket
             $mask_2020_str or
             $mask_2020_le or
             $mask_2020_be or
-            (uint16(0) == 17791 and $pcap_setfilter and $pcap_open_live and $eth0_iface)
+            (uint16(0) == 0x457f and $pcap_setfilter and $pcap_open_live and $eth0_iface)
         )
         and filesize < 5MB
 }
 
-rule Penquin_Turla_Opcode_Leonardo
+rule Penquin_Turla_Opcode_Leonardo : malware
 {
     meta:
         description = "Penquin_x64 opcode patterns republished verbatim from Leonardo S.p.A. 2026-04-24 (also in Neo23x0/signature-base apt_turla_penquin.yar). Catches Penquin samples that have had their strings stripped"
@@ -297,5 +297,5 @@ rule Penquin_Turla_Opcode_Leonardo
         $op6 = { 8D 5A 05 32 9A 60 26 0C 08 88 9A 20 F4 0E 08 42 83 FA 48 76 EB }
         $op7 = { 8D 4A 05 32 8A 25 26 0C 08 88 8A 20 F4 0E 08 42 83 FA 08 76 EB }
     condition:
-        uint16(0) == 17791 and 2 of them and filesize < 5MB
+        uint16(0) == 0x457f and 2 of them and filesize < 5MB
 }

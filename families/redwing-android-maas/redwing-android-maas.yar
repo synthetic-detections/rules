@@ -53,7 +53,7 @@
      https://github.com/Zimperium/IOC/tree/master/2026-07-RedWing
 */
 
-rule RedWing_MaaS_Behavior
+rule RedWing_MaaS_Behavior : behavioral c2
 {
     meta:
         description = "RedWing Android MaaS — C2 telemetry schema, silent call-forwarding 2FA interception, and financial-data extraction regexes"
@@ -101,7 +101,7 @@ rule RedWing_MaaS_Behavior
         and filesize < 100MB
 }
 
-rule RedWing_IOC
+rule RedWing_IOC : c2 ioc
 {
     meta:
         description = "RedWing static IOC sweep — C2 domains, distribution hosts, Cloudflare Worker, masquerade filename"
@@ -128,7 +128,7 @@ rule RedWing_IOC
         and filesize < 200MB
 }
 
-rule RedWing_Specimen
+rule RedWing_Specimen : specimen
 {
     meta:
         description = "RedWing published APK SHA-256 hashes (60 samples, Zimperium IOC repo)"

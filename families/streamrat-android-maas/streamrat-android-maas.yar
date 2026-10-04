@@ -49,7 +49,7 @@
      https://www.malwarebytes.com/blog/news/2026/09/streamrat-android-malware-spreads-through-meta-and-tiktok-ads
 */
 
-rule StreamRat_Behavior
+rule StreamRat_Behavior : behavioral exploit loader
 {
     meta:
         description = "StreamRat Android MaaS — custom WebSocket registration headers, HTML dropper page set, overlay-injection + screen-capture cluster"
@@ -92,7 +92,7 @@ rule StreamRat_Behavior
         and filesize < 100MB
 }
 
-rule StreamRat_IOC
+rule StreamRat_IOC : c2 ioc loader phishing supply_chain
 {
     meta:
         description = "StreamRat static IOC sweep — dropper package names, C2 IPs, app labels and ad lure paired"
@@ -116,7 +116,7 @@ rule StreamRat_IOC
         (any of ($pkg*) or any of ($ip*) or 2 of ($lbl*, $lure)) and filesize < 100MB
 }
 
-rule StreamRat_Specimen_Pin
+rule StreamRat_Specimen_Pin : specimen
 {
     meta:
         description = "Hash pin for the two published StreamRat APK samples (SHA-256, matched as text)"

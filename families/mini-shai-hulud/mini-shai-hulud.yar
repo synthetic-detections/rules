@@ -24,7 +24,7 @@
      FBI FLASH-20260702-01 (TLP:CLEAR)
 */
 
-rule MiniShaiHulud_CorePayload
+rule MiniShaiHulud_CorePayload : supply_chain
 {
     meta:
         description = "Mini Shai-Hulud core payload — hardcoded strings shared across all delivery variants (npm, GitHub Actions, AI-agent configs)"
@@ -69,7 +69,7 @@ rule MiniShaiHulud_CorePayload
         and filesize < 20MB
 }
 
-rule MiniShaiHulud_GitHubAction_IOC
+rule MiniShaiHulud_GitHubAction_IOC : ioc
 {
     meta:
         description = "Mini Shai-Hulud GitHub Actions delivery — actions-cool/issues-helper and maintain-one-comment hijack IOCs + exfil domain"
@@ -103,7 +103,7 @@ rule MiniShaiHulud_GitHubAction_IOC
         and filesize < 50MB
 }
 
-rule MiniShaiHulud_SpecimenPin
+rule MiniShaiHulud_SpecimenPin : specimen
 {
     meta:
         description = "Mini Shai-Hulud specimen hash pin — FBI FLASH-20260702-01 published SHA-256 values for TeamPCP payloads"

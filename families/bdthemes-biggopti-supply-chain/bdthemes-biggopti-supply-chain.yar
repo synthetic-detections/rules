@@ -53,7 +53,7 @@
      e450ae5bc4bfc0d960dded06a76bb8e9  wp-cache-optimizer.php ("Health Check")
 */
 
-rule Biggopti_Poisoned_Banner_Payload
+rule Biggopti_Poisoned_Banner_Payload : supply_chain
 {
     meta:
         description = "BdThemes/Biggopti poisoned banner-JSON: onanimationstart id-attribute breakout + fromCharCode stager fetching the Sigmative payload"
@@ -80,7 +80,7 @@ rule Biggopti_Poisoned_Banner_Payload
         (any of ($brk*) or any of ($stg*)) and any of ($ctx*) and filesize < 512KB
 }
 
-rule Biggopti_Dropped_Webshell_Backdoor
+rule Biggopti_Dropped_Webshell_Backdoor : stealer supply_chain webshell
 {
     meta:
         description = "BdThemes/Biggopti on-disk PHP artifacts: emer-run webshell, ?_wplogin magic-login MU-plugin, or deterministic bd_ credential scheme"
@@ -114,7 +114,7 @@ rule Biggopti_Dropped_Webshell_Backdoor
         and filesize < 256KB
 }
 
-rule Biggopti_IOCs
+rule Biggopti_IOCs : c2 ioc supply_chain
 {
     meta:
         description = "BdThemes/Biggopti hard IOCs — C2 ia-cdn.com/fz/c, Sigmative staging host, and dropped-artifact md5 pins"

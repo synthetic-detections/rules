@@ -28,7 +28,7 @@
 
 import "pe"
 
-rule Mistic_Sideload_Behavior
+rule Mistic_Sideload_Behavior : backdoor behavioral
 {
     meta:
         description = "Detects Mistic/MLTBackdoor DLL sideloading chain via MpExtMs.exe + API hooking pattern"
@@ -71,7 +71,7 @@ rule Mistic_Sideload_Behavior
         and filesize < 15MB
 }
 
-rule Mistic_IOC
+rule Mistic_IOC : backdoor c2 ioc
 {
     meta:
         description = "Known Mistic/MLTBackdoor IOCs — C2 domains, delivery infrastructure, file hashes"
@@ -113,7 +113,7 @@ rule Mistic_IOC
         any of them and filesize < 50MB
 }
 
-rule Mistic_Specimen_Pin
+rule Mistic_Specimen_Pin : backdoor specimen
 {
     meta:
         description = "Exact hash pin for known Mistic/MLTBackdoor EndpointDlp.dll specimens"

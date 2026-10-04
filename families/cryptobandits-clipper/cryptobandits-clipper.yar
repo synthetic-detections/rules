@@ -38,7 +38,7 @@
      https://thehackernews.com/2026/06/microsoft-details-windows-clipper.html
 */
 
-rule CryptoBandits_Clipper_Behavior
+rule CryptoBandits_Clipper_Behavior : behavioral c2
 {
     meta:
         description = "CryptoBandits clipper — C2 protocol action codes, clipboard crypto monitoring, Tor SOCKS5 proxy, anti-analysis via WMI"
@@ -105,7 +105,7 @@ rule CryptoBandits_Clipper_Behavior
         and filesize < 5MB
 }
 
-rule CryptoBandits_Worm_Structure
+rule CryptoBandits_Worm_Structure : persistence stealer worm
 {
     meta:
         description = "CryptoBandits worm/stealer — JavaScript payload structure, staging paths, scheduled task patterns, USB propagation"
@@ -162,7 +162,7 @@ rule CryptoBandits_Worm_Structure
         and filesize < 5MB
 }
 
-rule CryptoBandits_IOC
+rule CryptoBandits_IOC : c2 ioc
 {
     meta:
         description = "Static IOC sweep — Tor .onion C2 domains, C2 endpoints, file hashes"

@@ -47,7 +47,7 @@
 
 import "hash"
 
-rule Virtualizor_BGP_Hijack_Implant_Behaviour
+rule Virtualizor_BGP_Hijack_Implant_Behaviour : backdoor behavioral loader rat
 {
     meta:
         description = "Injected Virtualizor update loader: ne-rat payload fetch + java-jre-update.service persistence + proxyuser/root-SSH backdoor constellation"
@@ -76,7 +76,7 @@ rule Virtualizor_BGP_Hijack_Implant_Behaviour
         (any of ($c2a, $c2b) and any of ($svc, $acct, $vf1, $vf2, $vf3)) or ($svc and $acct and $ssh)
 }
 
-rule Virtualizor_BGP_Hijack_IOC
+rule Virtualizor_BGP_Hijack_IOC : c2 ioc rat supply_chain
 {
     meta:
         description = "ne-rat C2 / delivery domains and attacker SSH source from the 2026-08 Virtualizor BGP-hijack supply-chain compromise"
@@ -96,7 +96,7 @@ rule Virtualizor_BGP_Hijack_IOC
         any of them
 }
 
-rule Virtualizor_BGP_Hijack_Payload_Pin
+rule Virtualizor_BGP_Hijack_Payload_Pin : specimen
 {
     meta:
         description = "Hash pin for the published Virtualizor BGP-hijack Java payload (SHA-256)"

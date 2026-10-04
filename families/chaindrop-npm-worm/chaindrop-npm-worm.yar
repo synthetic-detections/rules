@@ -46,7 +46,7 @@
 
 import "hash"
 
-rule ChainDrop_NpmManifest
+rule ChainDrop_NpmManifest : supply_chain worm
 {
     meta:
         description = "npm package.json carrying the ChainDrop preinstall wiring \"preinstall\": \"node setup.mjs\" — worm dropper hook"
@@ -70,7 +70,7 @@ rule ChainDrop_NpmManifest
         $pkg_name and $pkg_scripts and $preinst and filesize < 128KB
 }
 
-rule ChainDrop_IOC
+rule ChainDrop_IOC : c2 evm ioc loader supply_chain worm
 {
     meta:
         description = "ChainDrop static IOC sweep — EtherHiding contract, HTTP C2, GitHub dead-drop strings, payload filenames, exfil marker"
@@ -107,7 +107,7 @@ rule ChainDrop_IOC
         and filesize < 50MB
 }
 
-rule ChainDrop_Stage2_Specimen
+rule ChainDrop_Stage2_Specimen : loader specimen supply_chain worm
 {
     meta:
         description = "ChainDrop loader/harvester specimen — SHA-256 pins (setup.mjs, Math_Symbol.js) plus a size-band + AWS-IMDS heuristic"

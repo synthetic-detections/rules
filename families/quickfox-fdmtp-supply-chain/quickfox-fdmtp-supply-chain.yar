@@ -42,7 +42,7 @@
      https://thehackernews.com/2026/08/quickfox-supply-chain-attack-delivers.html
 */
 
-rule QuickFox_FDMTP_LoaderChain
+rule QuickFox_FDMTP_LoaderChain : loader supply_chain
 {
     meta:
         description = "QuickFox->FDMTP sideload chain — malicious Microsoft.ServiceHosting.Tools.dll under quickfox\\updated side-loaded via csmonitor, AES-128-ECB key POt_L[Bsh0=+@0a., DMTP GetCluster/GetEndpoints beacon on 20800-range"
@@ -76,7 +76,7 @@ rule QuickFox_FDMTP_LoaderChain
         and filesize < 50MB
 }
 
-rule QuickFox_FDMTP_LoaderShape
+rule QuickFox_FDMTP_LoaderShape : behavioral loader supply_chain
 {
     meta:
         description = "QuickFox injected-JS fingerprinting loader — r1muVuL base91 wrapper, steam.exe abort guardrail, target-process allowlist (finalshell/MobaXterm/navicat/dbeaver/Exodus/Binance/Ledger), fake Firebase SDK filenames"
@@ -106,7 +106,7 @@ rule QuickFox_FDMTP_LoaderShape
         ($wrap or ($block and 4 of ($p*)) or (all of ($fb*) and 2 of ($p*))) and filesize < 20MB
 }
 
-rule QuickFox_FDMTP_IOC
+rule QuickFox_FDMTP_IOC : c2 ioc supply_chain
 {
     meta:
         description = "Static IOC sweep — QuickFox/FDMTP C2 domains, cluster IPs, and file hashes (Fortinet appendix, 2026-08-04)"

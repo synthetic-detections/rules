@@ -42,7 +42,7 @@
      3c30deb6556a94cfb84ae51798f4aecfae8c7358e55fdb321c5f2376579631cd  (standalone wiper)
 */
 
-rule GigaWiper_Go_ToolSymbols
+rule GigaWiper_Go_ToolSymbols : backdoor supply_chain
 {
     meta:
         description = "GigaWiper assembled Go tool/package symbols (rabbit_tools wipe/wipec/ran/extort + RunOnce registry) — near-unique to the implant"
@@ -64,7 +64,7 @@ rule GigaWiper_Go_ToolSymbols
         (any of ($g*) or ($s1 and $s2)) and filesize < 80MB
 }
 
-rule GigaWiper_Wiper_FakeRansom_Artifacts
+rule GigaWiper_Wiper_FakeRansom_Artifacts : backdoor ioc ransomware wiper
 {
     meta:
         description = "GigaWiper wiper + fake-ransomware artifact cluster (.candy extension, image_danger.jpg wallpaper, OneDrive-masquerade persistence, GRAT/CWipe PDB) in a PE"
@@ -88,7 +88,7 @@ rule GigaWiper_Wiper_FakeRansom_Artifacts
         $mq2    = "cmd.Result"
     condition:
         // PDB path alone is specific
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (
             any of ($pdb*) or
             ($candy and ($img or $task or $regkey or any of ($mq*))) or
@@ -98,7 +98,7 @@ rule GigaWiper_Wiper_FakeRansom_Artifacts
         and filesize < 80MB
 }
 
-rule GigaWiper_IOC
+rule GigaWiper_IOC : backdoor c2 ioc
 {
     meta:
         description = "GigaWiper hard network IOCs — RabbitMQ/Redis C2 and secondary C2 host"

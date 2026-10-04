@@ -32,7 +32,7 @@
 
 import "hash"
 
-rule StyleSmuggler_Rust_Backdoor_HostArtifacts
+rule StyleSmuggler_Rust_Backdoor_HostArtifacts : backdoor ioc
 {
     meta:
         description = "StyleSmuggler Rust backdoor on disk: kernel-worker/fc-cache process masquerade plus hidden /tmp and ~/.local/share/.gvfsd drops and crontab persistence (>=2 categories required)"
@@ -60,7 +60,7 @@ rule StyleSmuggler_Rust_Backdoor_HostArtifacts
         ($proc1 and (any of ($gv*) or any of ($tmp*) or any of ($cron*))) or (any of ($gv*) and (any of ($tmp*) or any of ($cron*))) or (any of ($tmp*) and any of ($cron*))
 }
 
-rule StyleSmuggler_C2_Infrastructure
+rule StyleSmuggler_C2_Infrastructure : backdoor c2
 {
     meta:
         description = "StyleSmuggler typosquat C2 / malware-download infrastructure, guarded by co-occurrence so a single incidental domain does not fire"
@@ -86,7 +86,7 @@ rule StyleSmuggler_C2_Infrastructure
         2 of ($c2*) or (any of ($c2*) and any of ($imp*))
 }
 
-rule StyleSmuggler_Backdoor_KnownHashes
+rule StyleSmuggler_Backdoor_KnownHashes : backdoor
 {
     meta:
         description = "StyleSmuggler Rust backdoor / kworker builds — known SHA-256 specimens (Sansec, 2026-09-05)"

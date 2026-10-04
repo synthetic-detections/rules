@@ -36,7 +36,7 @@
      https://www.bleepingcomputer.com/news/security/malicious-sites-use-javascript-to-build-malware-in-browser-memory/
 */
 
-rule SourTrade_Browser_Assembler_JS
+rule SourTrade_Browser_Assembler_JS : malware
 {
     meta:
         description = "SourTrade browser-side malware assembler JS — /config build instructions (random.seed/size, template, standaloneUrl) + streamsaver ServiceWorker download smuggling + in-browser Bun PE assembly"
@@ -76,7 +76,7 @@ rule SourTrade_Browser_Assembler_JS
         and filesize < 3MB
 }
 
-rule SourTrade_Assembled_PE_BunSection
+rule SourTrade_Assembled_PE_BunSection : malware
 {
     meta:
         description = "SourTrade assembled Windows PE carrying a .bun section (JavaScriptCore bytecode for app.js) — the in-browser-built payload container"
@@ -93,10 +93,10 @@ rule SourTrade_Assembled_PE_BunSection
     condition:
         // MZ
         // a .bun PE section plus Bun/JSC runtime markers of the embedded app
-        uint16(0) == 23117 and $bun_sec and $bun_rt and any of ($app_js, $jsc) and filesize < 120MB
+        uint16(0) == 0x5a4d and $bun_sec and $bun_rt and any of ($app_js, $jsc) and filesize < 120MB
 }
 
-rule SourTrade_IOC_Hashes
+rule SourTrade_IOC_Hashes : malware
 {
     meta:
         description = "SourTrade SHA-256 sample pins (Confiant, 2026-07-23). Note: SourTrade mints a unique hash per victim, so these are point-in-time samples, not a stable family signature."

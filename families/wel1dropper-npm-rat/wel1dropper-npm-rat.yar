@@ -43,7 +43,7 @@
      https://research.checkpoint.com/2026/10th-august-threat-intelligence-report/
 */
 
-rule WEL1DROPPER_Loader_Behavior
+rule WEL1DROPPER_Loader_Behavior : behavioral loader rat supply_chain
 {
     meta:
         description = "WEL1DROPPER npm loader — hookless require()-triggered downloader: OS/arch fingerprint + Cloudflare Workers oob-worker host + DNS-TXT/wel1.ru staging fallback"
@@ -74,7 +74,7 @@ rule WEL1DROPPER_Loader_Behavior
         and filesize < 500KB
 }
 
-rule WEL1DROPPER_IOC
+rule WEL1DROPPER_IOC : ioc rat supply_chain
 {
     meta:
         description = "WEL1DROPPER hard IOCs — wel1.ru staging subdomains, Cloudflare Workers hosts, disguised LaunchAgent, payload paths (>=2 co-occurring to avoid IOC-doc FPs)"
@@ -101,7 +101,7 @@ rule WEL1DROPPER_IOC
         2 of them and filesize < 500KB
 }
 
-rule WEL1DROPPER_MacOS_Persistence
+rule WEL1DROPPER_MacOS_Persistence : rat supply_chain
 {
     meta:
         description = "WEL1DROPPER macOS stage — disguised WindowServer LaunchAgent persistence combined with lldb/frida/dtrace + VMware anti-analysis"

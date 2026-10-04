@@ -42,7 +42,7 @@
 
 import "elf"
 
-rule RustDuck_Botnet_Behavior
+rule RustDuck_Botnet_Behavior : behavioral botnet
 {
     meta:
         description = "RustDuck botnet — anti-analysis enumeration, honeypot detection, VM/sandbox evasion, crypto protocol markers"
@@ -91,7 +91,7 @@ rule RustDuck_Botnet_Behavior
         // normal TLS stack — plus a second cipher marker.
         // Path 6: Noise protocol + any anti-analysis
         // Path 7: honeypot + debugger detection in an ELF
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (
             (3 of ($dbg_*) and any of ($proc_*)) or
             ($hp_cowrie and any of ($vm_*) and any of ($env_*)) or
@@ -104,7 +104,7 @@ rule RustDuck_Botnet_Behavior
         and filesize < 10MB
 }
 
-rule RustDuck_ELF_Loader
+rule RustDuck_ELF_Loader : botnet loader
 {
     meta:
         description = "RustDuck loader — ELF with variant-specific overlay magic bytes, LZ4 decompression, two-stage architecture"
@@ -132,7 +132,7 @@ rule RustDuck_ELF_Loader
         // Path 1: variant 3 or 4 magic anywhere in file (overlay)
         // Path 2: LZ4 decompression + key exchange + config structure
         // Path 3: Xoshiro PRNG + LZ4 in an ELF (distinctive combo)
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (
             any of ($magic_v3, $magic_v4) or
             ($lz4_decomp1 and $kex_curve and any of ($cfg_*)) or
@@ -142,7 +142,7 @@ rule RustDuck_ELF_Loader
         and filesize < 10MB
 }
 
-rule RustDuck_IOC
+rule RustDuck_IOC : botnet c2 ioc
 {
     meta:
         description = "Static IOC sweep — RustDuck C2 domains, spreading infrastructure, sample hashes"

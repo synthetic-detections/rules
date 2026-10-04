@@ -57,7 +57,7 @@
 import "hash"
 import "pe"
 
-rule SauronLoader_Behavioral
+rule SauronLoader_Behavioral : behavioral c2 loader
 {
     meta:
         description = "Sauron Loader — config stub-selector in a 64-bit DLL, decrypted 0xBAADF00D config with embedded RSA keys, Edge143/Trident UA format pair + decoy C2 query set, or keyroll MSI triad"
@@ -101,15 +101,15 @@ rule SauronLoader_Behavioral
         // PE carrying both UA format strings plus the decoy query set
         // MSI (OLE compound file) laying down the keyroll triad
         (
-            (uint16(0) == 23117 and pe.is_64bit() and pe.is_dll() and $sel) or
-            ($cfg_hdr and $cfg_spki in (@cfg_hdr[1] .. @cfg_hdr[1] + 4200)) or
-            (uint16(0) == 23117 and $ua_edg and $ua_tri and 4 of ($q*)) or
-            (uint32(0) == 3759263696 and $m_keyroll and $m_rnpkeys and $m_rnp and $m_tdwp)
+            (uint16(0) == 0x5a4d and pe.is_64bit() and pe.is_dll() and $sel) or
+            ($cfg_hdr and $cfg_spki in (@cfg_hdr[1] .. @cfg_hdr[1] + 0x1068)) or
+            (uint16(0) == 0x5a4d and $ua_edg and $ua_tri and 4 of ($q*)) or
+            (uint32(0) == 0xe011cfd0 and $m_keyroll and $m_rnpkeys and $m_rnp and $m_tdwp)
         )
         and filesize < 50MB
 }
 
-rule SauronLoader_IOC
+rule SauronLoader_IOC : c2 ioc loader
 {
     meta:
         description = "Sauron Loader — C2 domains, keyroll drop path, tdwp.dll component, forum alias, config IDs and imphashes (co-occurrence guarded)"
@@ -140,14 +140,14 @@ rule SauronLoader_IOC
         // published imphashes, guarded by a family string in a 64-bit DLL
         (
             2 of ($d*) or
-            (any of ($d*) and (any of ($a_keyroll, $a_tdwp, $a_ua, $a_alias, $a_grp, $a_bld) or (uint16(0) == 23117 and $a_sauron))) or
+            (any of ($d*) and (any of ($a_keyroll, $a_tdwp, $a_ua, $a_alias, $a_grp, $a_bld) or (uint16(0) == 0x5a4d and $a_sauron))) or
             ($a_keyroll and $a_tdwp) or
-            (uint16(0) == 23117 and pe.is_64bit() and pe.is_dll() and (pe.imphash() == "cc4a762bd1b2eb3b54dfa46a33d5a50f" or pe.imphash() == "85b55a5c926f8ef8f4f5f7ca2070c775" or pe.imphash() == "fd90e5c28f1b4156ae7a40859b11e11c" or pe.imphash() == "f9e79734109d56f4dd73964feeaeffc0") and ($a_sauron or $a_ua or any of ($d*)))
+            (uint16(0) == 0x5a4d and pe.is_64bit() and pe.is_dll() and (pe.imphash() == "cc4a762bd1b2eb3b54dfa46a33d5a50f" or pe.imphash() == "85b55a5c926f8ef8f4f5f7ca2070c775" or pe.imphash() == "fd90e5c28f1b4156ae7a40859b11e11c" or pe.imphash() == "f9e79734109d56f4dd73964feeaeffc0") and ($a_sauron or $a_ua or any of ($d*)))
         )
         and filesize < 50MB
 }
 
-rule SauronLoader_Specimen
+rule SauronLoader_Specimen : loader specimen
 {
     meta:
         description = "Sauron Loader — SHA-256 pin of the published loader DLLs, tdwp.dll and the dropper MSI"

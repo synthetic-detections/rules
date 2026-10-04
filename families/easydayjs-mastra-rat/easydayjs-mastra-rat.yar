@@ -37,7 +37,7 @@
      https://www.stepsecurity.io/blog/mastra-npm-packages-compromised-using-easy-day-js
 */
 
-rule EasyDayJS_Dropper_Behavior
+rule EasyDayJS_Dropper_Behavior : behavioral loader rat
 {
     meta:
         description = "easy-day-js postinstall dropper — obfuscated setup.cjs with TLS disable, detached spawn, self-delete pattern"
@@ -75,7 +75,7 @@ rule EasyDayJS_Dropper_Behavior
         and filesize < 100KB
 }
 
-rule EasyDayJS_RAT_Persistence
+rule EasyDayJS_RAT_Persistence : rat
 {
     meta:
         description = "easy-day-js cross-platform RAT persistence — protocal.cjs payload with NvmProtocal/com.nvm.protocal/nvmconf artifacts"
@@ -121,7 +121,7 @@ rule EasyDayJS_RAT_Persistence
         and filesize < 5MB
 }
 
-rule EasyDayJS_IOC
+rule EasyDayJS_IOC : c2 ioc rat supply_chain
 {
     meta:
         description = "Static IOC sweep — C2 infrastructure, campaign ID, hijacked account, affected @mastra package coordinates"

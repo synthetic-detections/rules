@@ -31,7 +31,7 @@
      https://phoenix.security/ironworm-npm-supply-chain-worm-rust-ebpf-rootkit-tor/
 */
 
-rule IronWorm_NpmPackageManifest
+rule IronWorm_NpmPackageManifest : stealer supply_chain worm
 {
     meta:
         description = "npm package.json with IronWorm-style preinstall hook invoking a binary in tools/ — co-occurrence with scripts/credential targets"
@@ -59,7 +59,7 @@ rule IronWorm_NpmPackageManifest
         and filesize < 256KB
 }
 
-rule IronWorm_LinuxELF_Dropper
+rule IronWorm_LinuxELF_Dropper : loader supply_chain worm
 {
     meta:
         description = "UPX-packed Rust ELF dropper in the ~976 KB size band — IronWorm tools/setup specimen profile"
@@ -80,14 +80,14 @@ rule IronWorm_LinuxELF_Dropper
         // sample to also carry the agent C2 path; the unique post-unpack BIP-39
         // operator seed fires on its own.
         // EI_CLASS = ELFCLASS64
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and uint8(4) == 2
         and ($bip39 or ($upx_magic and $c2_endpoint))
         and filesize > 700KB
         and filesize < 1500KB
 }
 
-rule IronWorm_IOC
+rule IronWorm_IOC : ioc supply_chain worm
 {
     meta:
         description = "Static IOC sweep — publisher, attacker handles, wallet seed/address, fake commit messages, 37 affected npm package coordinates"

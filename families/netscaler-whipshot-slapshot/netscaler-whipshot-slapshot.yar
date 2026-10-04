@@ -22,7 +22,7 @@
 
 import "hash"
 
-rule NetScaler_WHIPSHOT_SLAPSHOT_Behavior
+rule NetScaler_WHIPSHOT_SLAPSHOT_Behavior : behavioral webshell
 {
     meta:
         description = "WHIPSHOT/SLAPSHOT NetScaler implants — shared IPC + web-shell/tunneler behaviour (HTTP_X_UX header dispatch, /tmp/.uxdport IPC, SLAPSHOT command verbs)"
@@ -58,7 +58,7 @@ rule NetScaler_WHIPSHOT_SLAPSHOT_Behavior
         and filesize < 80KB
 }
 
-rule NetScaler_WebShell_httpd_Handler_Abuse
+rule NetScaler_WebShell_httpd_Handler_Abuse : exploit webshell
 {
     meta:
         description = "NetScaler post-exploit persistence — httpd.conf abuse registering .deb/.sig/.ico as PHP handlers + web-shell staging paths"
@@ -87,7 +87,7 @@ rule NetScaler_WebShell_httpd_Handler_Abuse
         and filesize < 64KB
 }
 
-rule NetScaler_WHIPSHOT_WebShell_SpecimenPin
+rule NetScaler_WHIPSHOT_WebShell_SpecimenPin : specimen webshell
 {
     meta:
         description = "NetScaler WHIPSHOT web shell — pinned SHA-256 of the GreyNoise-observed .ctxs.receiver/receiver.min.css sample"

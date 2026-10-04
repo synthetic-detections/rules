@@ -39,7 +39,7 @@
      2d91a78e739891c9854c254f5b2a6b84c0e167dfa253466cbccd2cdd1c20145d  (g11.sys / PoisonX)
 */
 
-rule GodDamn_Ransomware_Binary
+rule GodDamn_Ransomware_Binary : ransomware
 {
     meta:
         description = "GodDamn ransomware (Beast/Monster rebrand by Hyadina) — .God8Damn extension marker and GUI encrypter name in a PE"
@@ -56,10 +56,10 @@ rule GodDamn_Ransomware_Binary
         $b1   = "Beast" ascii wide
         $b2   = "Monster" ascii wide
     condition:
-        uint16(0) == 23117 and ($ext1 or $enc or ($ext2 and any of ($b*))) and filesize < 30MB
+        uint16(0) == 0x5a4d and ($ext1 or $enc or ($ext2 and any of ($b*))) and filesize < 30MB
 }
 
-rule PoisonX_Signed_BYOVD_Driver
+rule PoisonX_Signed_BYOVD_Driver : ransomware
 {
     meta:
         description = "PoisonX malicious kernel driver (g11.sys) abused by GodDamn — killer driver signed via 'Microsoft Windows Hardware Compatibility Publisher'; signer never matches alone"
@@ -78,12 +78,12 @@ rule PoisonX_Signed_BYOVD_Driver
     condition:
         // the driver filename is specific enough with any driver context
         // the abused signer only counts alongside kernel-kill behaviour
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (($drv and (any of ($k*) or $signer)) or ($signer and 2 of ($k*)))
         and filesize < 5MB
 }
 
-rule GodDamn_IOC
+rule GodDamn_IOC : c2 ioc ransomware
 {
     meta:
         description = "GodDamn intrusion IOCs — AnyDesk masquerade service+path combo and AnyDesk relay C2 addresses"

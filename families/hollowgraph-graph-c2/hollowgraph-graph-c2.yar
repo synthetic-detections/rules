@@ -38,7 +38,7 @@
    Related: [[cavern-manticore]] — HollowGraph is a Cavern-framework component.
 */
 
-rule HollowGraph_GraphCalendar_C2_Behavior
+rule HollowGraph_GraphCalendar_C2_Behavior : behavioral c2 stealer
 {
     meta:
         description = "HollowGraph M365 Graph/calendar covert C2 — logAzure.txt credential config + 2050-05-13 magic event date + Graph calendar API usage + GET/SEND tasking + RSA/AES-256-GCM hybrid"
@@ -82,7 +82,7 @@ rule HollowGraph_GraphCalendar_C2_Behavior
         and filesize < 10MB
 }
 
-rule HollowGraph_IOC
+rule HollowGraph_IOC : c2 ioc
 {
     meta:
         description = "HollowGraph IOC — config filename logAzure.txt and the 2050-05-13 magic calendar date, guarded by co-occurrence with Graph/M365 usage so benign calendar tooling does not match"
@@ -106,7 +106,7 @@ rule HollowGraph_IOC
         and filesize < 10MB
 }
 
-rule HollowGraph_Implant_Specimen
+rule HollowGraph_Implant_Specimen : c2 loader specimen
 {
     meta:
         description = "HollowGraph specimen pin — full implant shape: logAzure.txt config + Graph calendar dead-drop on 2050-05-13 + GET/SEND tasking + RSA/AES-256-GCM"

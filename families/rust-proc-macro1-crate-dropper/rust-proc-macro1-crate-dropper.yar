@@ -47,7 +47,7 @@
      https://thehackernews.com/2026/08/rust-supply-chain-attack-puts-build.html
 */
 
-rule Rust_ProcMacro1_Dropper_Behavior
+rule Rust_ProcMacro1_Dropper_Behavior : behavioral loader
 {
     meta:
         description = "proc-macro1 crates.io build-script dropper — build.rs base64 URL reassembly + TLS-verify bypass + rust-setup payload drop/exec"
@@ -103,7 +103,7 @@ rule Rust_ProcMacro1_Dropper_Behavior
         and filesize < 2MB
 }
 
-rule Rust_ProcMacro1_Dropper_IOC
+rule Rust_ProcMacro1_Dropper_IOC : ioc loader
 {
     meta:
         description = "proc-macro1 crates.io dropper — infra IPs/host/paths, dropper+persistence file names, attacker crate names, .crate SHA-256s"
@@ -163,7 +163,7 @@ rule Rust_ProcMacro1_Dropper_IOC
         and filesize < 5MB
 }
 
-rule Rust_ProcMacro1_Dropper_Specimen
+rule Rust_ProcMacro1_Dropper_Specimen : loader specimen
 {
     meta:
         description = "proc-macro1 crates.io dropper — tight specimen pin (build.rs dropper shape + host reassembly)"

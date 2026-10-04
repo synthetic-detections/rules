@@ -44,7 +44,7 @@
      https://thecybersecguru.com/news/miasma-worm-targets-ai-coding-agents-github-microsoft/
 */
 
-rule Miasma_Azure_AIAgentConfigInjection
+rule Miasma_Azure_AIAgentConfigInjection : supply_chain
 {
     meta:
         description = "Workspace AI-coding-agent config (.claude / .cursor / .gemini / .vscode / package.json) wired to invoke .github/setup.js — the Miasma Azure trigger primitive"
@@ -93,7 +93,7 @@ rule Miasma_Azure_AIAgentConfigInjection
 // Or co-occurrence of any two of the path-listing anchors
 // (catches IOC dumps and forensic artefact listings).
 
-rule Miasma_Azure_PayloadRunner
+rule Miasma_Azure_PayloadRunner : stealer
 {
     meta:
         description = "Miasma Azure setup.js runner — 4.3 MiB Bun-based credential-sweep payload (two published SHA-256 + behavioural anchors)"
@@ -129,7 +129,7 @@ rule Miasma_Azure_PayloadRunner
         any of ($h_pub_*) or (any of ($bun_release, $bun_run, $tmp_b) and 3 of ($cred_aws, $cred_az, $cred_gcp, $cred_kube, $cred_npm, $cred_gha, $cred_gh_pat, $cred_ssh) and filesize > 1MB and filesize < 20MB)
 }
 
-rule Miasma_Azure_IOC
+rule Miasma_Azure_IOC : ioc
 {
     meta:
         description = "Static IOCs — Miasma Azure exfil GitHub accounts, campaign theme strings, sample affected Microsoft repo names"

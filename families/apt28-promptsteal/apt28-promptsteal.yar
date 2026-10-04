@@ -41,7 +41,7 @@
      384e8f3d300205546fb8c9b9224011b3b3cb71adc994180ff55e1e6416f65715 (image.py, v1)
 */
 
-rule APT28_PROMPTSTEAL_LLM_Behavior
+rule APT28_PROMPTSTEAL_LLM_Behavior : backdoor behavioral
 {
     meta:
         description = "PROMPTSTEAL runtime LLM query pattern -- Hugging Face API + Qwen model + staging directory co-occurrence"
@@ -74,7 +74,7 @@ rule APT28_PROMPTSTEAL_LLM_Behavior
         2 of ($api_*, $model, $role) and any of ($staging_*, $prompt_*) and filesize < 10MB
 }
 
-rule APT28_PROMPTSTEAL_IOCs
+rule APT28_PROMPTSTEAL_IOCs : backdoor c2 ioc
 {
     meta:
         description = "PROMPTSTEAL/LAMEHUG IOCs -- C2, exfil endpoints, delivery filenames"
@@ -104,7 +104,7 @@ rule APT28_PROMPTSTEAL_IOCs
         any of them and filesize < 50MB
 }
 
-rule APT28_PROMPTSTEAL_Script_Shape
+rule APT28_PROMPTSTEAL_Script_Shape : backdoor behavioral
 {
     meta:
         description = "PROMPTSTEAL script structure -- PROMPTSTEAL-unique function names in raw Python or PyInstaller PE"

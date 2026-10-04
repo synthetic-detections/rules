@@ -40,7 +40,7 @@
 
 import "hash"
 
-rule Zbtlink_Backdoor_Behaviour
+rule Zbtlink_Backdoor_Behaviour : backdoor behavioral
 {
     meta:
         description = "SPEAKINGSTONE/DARKLANTERN Zbtlink router implant -- ELF with the revProto/zbtProtocol proto vocabulary, MD5 salt mqonu.com, exec prefix /etc/exec/cmd, or implant binary names co-occurring"
@@ -64,7 +64,7 @@ rule Zbtlink_Backdoor_Behaviour
         // implant-specific config path
         $cfg    = "/tmp/yunclient.conf"
     condition:
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (
             (any of ($proto*) and any of ($salt, $exec, $bin1, $bin2, $bin3, $cfg)) or
             ($salt and $exec) or
@@ -73,7 +73,7 @@ rule Zbtlink_Backdoor_Behaviour
         and filesize < 8MB
 }
 
-rule Zbtlink_Backdoor_IOC
+rule Zbtlink_Backdoor_IOC : backdoor c2 ioc
 {
     meta:
         description = "SPEAKINGSTONE/DARKLANTERN Zbtlink implant IOCs -- proto strings, salt, exec prefix, binary names, OEM contact, and C2 domains (VulnCheck, 2026-08-27)"
@@ -105,7 +105,7 @@ rule Zbtlink_Backdoor_IOC
         and filesize < 50MB
 }
 
-rule Zbtlink_Backdoor_Specimen_Pin
+rule Zbtlink_Backdoor_Specimen_Pin : backdoor specimen
 {
     meta:
         description = "SPEAKINGSTONE (yunmgrd), DARKLANTERN (infosrvd), and inetdetect -- pinned by the three VulnCheck SHA-256"
@@ -118,7 +118,7 @@ rule Zbtlink_Backdoor_Specimen_Pin
         // yunmgrd / SPEAKINGSTONE
         // infosrvd / DARKLANTERN
         // inetdetect
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and filesize < 8MB
         and (
             hash.sha256(0, filesize) == "b77811db4d218c65670a6c9a5b33c30ff81c6d779e15d658643138771178a818" or

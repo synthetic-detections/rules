@@ -39,10 +39,10 @@
 private rule sleepwalker_is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744 and filesize < 8MB
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550 and filesize < 8MB
 }
 
-rule SLEEPWALKER_ESET_Sideload
+rule SLEEPWALKER_ESET_Sideload : backdoor
 {
     meta:
         description = "SLEEPWALKER dpapi.dll side-load into ESET ERAAgent — spoofed DPAPI exports + ESET/dpapisvc host marker"
@@ -65,7 +65,7 @@ rule SLEEPWALKER_ESET_Sideload
         sleepwalker_is_pe and 3 of ($x*) and any of ($host*) and filesize < 8MB
 }
 
-rule SLEEPWALKER_Host_Weakening
+rule SLEEPWALKER_Host_Weakening : backdoor
 {
     meta:
         description = "SLEEPWALKER host weakening — anonymous-access registry changes co-occurring with ESET/dpapisvc host markers"
@@ -83,7 +83,7 @@ rule SLEEPWALKER_Host_Weakening
         sleepwalker_is_pe and $r1 and $r2 and any of ($h*) and filesize < 8MB
 }
 
-rule SLEEPWALKER_Crypto_Pin
+rule SLEEPWALKER_Crypto_Pin : backdoor specimen
 {
     meta:
         description = "SLEEPWALKER embedded AES-256-CCM key / config nonce (specimen pin)"

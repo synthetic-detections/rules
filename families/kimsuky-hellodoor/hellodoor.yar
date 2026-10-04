@@ -38,7 +38,7 @@
 
 import "pe"
 
-rule Kimsuky_HelloDoor_LLM_Tells
+rule Kimsuky_HelloDoor_LLM_Tells : malware
 {
     meta:
         description = "HelloDoor AI-authorship tells — emoji telemetry + phonetic typos"
@@ -67,7 +67,7 @@ rule Kimsuky_HelloDoor_LLM_Tells
         any of ($emoji_*) and any of ($typo_*) and filesize < 10MB
 }
 
-rule Kimsuky_HelloDoor_IOCs
+rule Kimsuky_HelloDoor_IOCs : c2 ioc
 {
     meta:
         description = "HelloDoor IOCs — C2 host, RC4 key, PebbleDash query fingerprint, persistence"
@@ -90,7 +90,7 @@ rule Kimsuky_HelloDoor_IOCs
         any of them and filesize < 50MB
 }
 
-rule Kimsuky_HelloDoor_PE_DLL
+rule Kimsuky_HelloDoor_PE_DLL : malware
 {
     meta:
         description = "HelloDoor compiled Rust DLL — PE + HelloDoor-unique discriminator"
@@ -109,8 +109,8 @@ rule Kimsuky_HelloDoor_PE_DLL
     condition:
         // Universally-portable PE+DLL gate (works in both classic YARA and
         // YARA-X). pe.is_pe / pe.is_dll are inconsistent between engines.
-        uint16(0) == 23117
-        and uint32(uint32(60)) == 17744
+        uint16(0) == 0x5a4d
+        and uint32(uint32(60)) == 0x4550
         and pe.characteristics & pe.DLL != 0
         and any of ($rc4_key, $emoji_*, $typo_*)
         and filesize > 20KB

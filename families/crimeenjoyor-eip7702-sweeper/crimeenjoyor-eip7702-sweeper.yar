@@ -48,7 +48,7 @@
      https://eth.blockscout.com/address/0xb59f313dcf8c8107adffeabd0c041c896c64dfca
 */
 
-rule CrimeEnjoyor_Sweeper_Behavior
+rule CrimeEnjoyor_Sweeper_Behavior : behavioral evm
 {
     meta:
         description = "CrimeEnjoyor family — Solidity sweeper contract source with EIP-7702 delegation abuse patterns"
@@ -191,7 +191,7 @@ rule CrimeEnjoyor_Sweeper_Behavior
         )
 }
 
-rule CrimeEnjoyor_Phishing_Frontend
+rule CrimeEnjoyor_Phishing_Frontend : evm
 {
     meta:
         description = "CrimeEnjoyor family — web3 frontend code performing EIP-7702 delegation phishing or interacting with known sweeper ABIs"
@@ -255,7 +255,7 @@ rule CrimeEnjoyor_Phishing_Frontend
         and filesize < 5MB
 }
 
-rule CrimeEnjoyor_IOC
+rule CrimeEnjoyor_IOC : evm ioc
 {
     meta:
         description = "CrimeEnjoyor family — static IOC sweep for known contract addresses, deployer identifiers, and EVM bytecode markers"

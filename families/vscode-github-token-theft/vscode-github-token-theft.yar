@@ -26,7 +26,7 @@
      https://www.bleepingcomputer.com/news/security/vs-code-zero-day-lets-hackers-steal-github-tokens-in-one-click/
 */
 
-rule VSCode_GitHub_Token_Theft_WebviewChain
+rule VSCode_GitHub_Token_Theft_WebviewChain : malware
 {
     meta:
         description = "Webview-message-passing + synthetic-keypress chain used to bypass VS Code marketplace trust and steal github.dev OAuth tokens"
@@ -69,7 +69,7 @@ rule VSCode_GitHub_Token_Theft_WebviewChain
 // GitHub OAuth / token exfiltration surface
 // Co-occurrence: webview API + synthetic keypress + extension-install OR palette OR notification accept
 
-rule VSCode_GitHub_Token_Theft_IOC
+rule VSCode_GitHub_Token_Theft_IOC : ioc
 {
     meta:
         description = "Static IOCs for the Askar VS Code github.dev OAuth-theft PoC — extension id, repo coordinate, exact PoC strings"
@@ -91,7 +91,7 @@ rule VSCode_GitHub_Token_Theft_IOC
         any of them and filesize < 50MB
 }
 
-rule VSCode_GitHub_Token_Theft_MaliciousExtensionManifest
+rule VSCode_GitHub_Token_Theft_MaliciousExtensionManifest : supply_chain
 {
     meta:
         description = "VS Code extension package.json that binds workbench.extensions.installExtension to a keybinding with skipPublisherTrust — the marketplace-trust-bypass primitive at the heart of the Askar chain"

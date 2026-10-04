@@ -28,7 +28,7 @@
 
 import "hash"
 
-rule DirtyBlanket_NpmManifest
+rule DirtyBlanket_NpmManifest : loader supply_chain worm
 {
     meta:
         description = "npm package.json carrying a DirtyBlanket typosquat package name with a lifecycle hook — worm dropper"
@@ -59,7 +59,7 @@ rule DirtyBlanket_NpmManifest
         $pkg_name and $pkg_scripts and any of ($typo*) and any of ($hook*) and filesize < 128KB
 }
 
-rule DirtyBlanket_IOC
+rule DirtyBlanket_IOC : c2 ioc supply_chain worm
 {
     meta:
         description = "DirtyBlanket IOC sweep — Tor C2, Codeberg infra, fake systemd service, campaign email, Wayback download"
@@ -94,7 +94,7 @@ rule DirtyBlanket_IOC
         and filesize < 50MB
 }
 
-rule DirtyBlanket_Specimen
+rule DirtyBlanket_Specimen : loader specimen supply_chain worm
 {
     meta:
         description = "DirtyBlanket specimen pin — SHA-256 for linux.sh dropper and systemd-fontd binary"

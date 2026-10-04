@@ -39,7 +39,7 @@
      https://thehackernews.com/2026/06/fluttershell-backdoor-spreads-to-macos.html
 */
 
-rule FlutterShell_MachOBundle
+rule FlutterShell_MachOBundle : malware
 {
     meta:
         description = "FlutterShell macOS Mach-O — verbatim bundle IDs + Apple Developer IDs from the three FlutterBridge variants"
@@ -79,7 +79,7 @@ rule FlutterShell_MachOBundle
         and filesize < 200MB
 }
 
-rule FlutterShell_WebViewJSBridge
+rule FlutterShell_WebViewJSBridge : c2
 {
     meta:
         description = "FlutterShell WebView JS-to-native bridge — flutterInvoke channel + command name set + C2 path-shape"
@@ -137,7 +137,7 @@ rule FlutterShell_WebViewJSBridge
         and filesize < 200MB
 }
 
-rule FlutterShell_IOC
+rule FlutterShell_IOC : c2 ioc
 {
     meta:
         description = "FlutterShell static IOC sweep — campaign markers, 9 SHA-256, 4 C2 hostnames, the three signing Team IDs"

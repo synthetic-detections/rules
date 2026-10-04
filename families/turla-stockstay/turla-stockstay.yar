@@ -48,7 +48,7 @@
      b287347a5bff8af360ce0e6500c336b6fe6d97920abc26202c9d843ffebc5f89 (ms-lib-math-core.dll)
 */
 
-rule Turla_STOCKSTAY_Component_Strings
+rule Turla_STOCKSTAY_Component_Strings : malware
 {
     meta:
         description = "STOCKSTAY component class/method names, SQL schema, and window names"
@@ -113,7 +113,7 @@ rule Turla_STOCKSTAY_Component_Strings
         and filesize < 15MB
 }
 
-rule Turla_STOCKSTAY_IOCs
+rule Turla_STOCKSTAY_IOCs : c2 ioc
 {
     meta:
         description = "STOCKSTAY IOCs — C2 WebSocket endpoints, staging URLs, delivery artifacts, persistence"
@@ -159,7 +159,7 @@ rule Turla_STOCKSTAY_IOCs
         any of them and filesize < 50MB
 }
 
-rule Turla_STOCKSTAY_K1Morpher
+rule Turla_STOCKSTAY_K1Morpher : malware
 {
     meta:
         description = "K1MORPHER Squirrel3 string obfuscation — shared between STOCKSTAY and KAZUAR"

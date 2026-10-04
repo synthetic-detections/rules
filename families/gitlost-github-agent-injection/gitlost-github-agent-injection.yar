@@ -31,7 +31,7 @@
      https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/
 */
 
-rule GitLost_IssueBody_Injection_Exfil
+rule GitLost_IssueBody_Injection_Exfil : exploit
 {
     meta:
         description = "GitHub Issue/PR body (or agent transcript) combining an agent-directed prompt-injection framing, a private-repo/secret target, and exfiltration via a public comment (GitLost technique)"
@@ -68,7 +68,7 @@ rule GitLost_IssueBody_Injection_Exfil
         any of ($inj*) and any of ($tgt*) and any of ($exf*)
 }
 
-rule GitLost_AgenticWorkflow_Context
+rule GitLost_AgenticWorkflow_Context : exploit
 {
     meta:
         description = "GitLost payload with explicit GitHub Agentic Workflows / Copilot-agent context alongside the injection+exfil triad (higher confidence)"

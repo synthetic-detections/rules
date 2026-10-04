@@ -33,7 +33,7 @@
             PolySwarm, SlowMist, glueckkanja, Pedrinazzi
 */
 
-rule ClawHavoc_SKILL_Dropper
+rule ClawHavoc_SKILL_Dropper : loader
 {
     meta:
         description = "Malicious agent-skill manifest (SKILL.md / README) with dropper instructions, ClawHavoc campaign"
@@ -78,7 +78,7 @@ rule ClawHavoc_SKILL_Dropper
         and filesize < 256KB
 }
 
-rule ClawHavoc_IOCs
+rule ClawHavoc_IOCs : c2 ioc
 {
     meta:
         description = "ClawHavoc infrastructure IOCs — C2, exfil, distribution, accounts"
@@ -168,7 +168,7 @@ rule ClawHavoc_IOCs
         any of them and filesize < 50MB
 }
 
-rule ClawHavoc_macOS_Binary
+rule ClawHavoc_macOS_Binary : loader stealer
 {
     meta:
         description = "ClawHavoc macOS Mach-O — AMOS stealer dropper / cluw infostealer"
@@ -218,7 +218,7 @@ rule ClawHavoc_macOS_Binary
         and filesize < 10MB
 }
 
-rule ClawHavoc_Windows_Artifacts
+rule ClawHavoc_Windows_Artifacts : ioc
 {
     meta:
         description = "ClawHavoc Windows-side payloads — fake installers, GhostSocks, PureLogs, Stealc"

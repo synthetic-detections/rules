@@ -49,7 +49,7 @@
      https://www.helpnetsecurity.com/2026/07/23/anthropic-claude-artifacts-download-malware/
 */
 
-rule FakeAgent_SectopRAT_SideloadChain
+rule FakeAgent_SectopRAT_SideloadChain : c2 loader
 {
     meta:
         description = "FakeAgent fake-Claude-Desktop -> SectopRAT side-load chain — ClaudeDesktop/DockerDesktop jcef sideload of malicious libcef.dll + sslconf/tempdir second stage + EtherHiding BSC C2, anchored on campaign-specific combinations"
@@ -92,7 +92,7 @@ rule FakeAgent_SectopRAT_SideloadChain
         and filesize < 60MB
 }
 
-rule FakeAgent_SectopRAT_ShaderStagingShape
+rule FakeAgent_SectopRAT_ShaderStagingShape : behavioral
 {
     meta:
         description = "FakeAgent tempdir.dll staging shape — GPU/VRAM anti-VM gate (QEMU/VMware device IDs) plus DirectX shader-based AES-256-CTR decrypt of the appcfg.dat SectopRAT payload"
@@ -127,7 +127,7 @@ rule FakeAgent_SectopRAT_ShaderStagingShape
         and filesize < 60MB
 }
 
-rule FakeAgent_SectopRAT_IOC
+rule FakeAgent_SectopRAT_IOC : c2 ioc
 {
     meta:
         description = "Static IOC sweep — FakeAgent sample hashes (Huntress), EtherHiding BNB Smart Chain contracts, delivery/C2 domains, current C2 IP, and the abused claude.ai artifact UUID"

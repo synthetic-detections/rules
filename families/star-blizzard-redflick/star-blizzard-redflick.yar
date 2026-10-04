@@ -38,7 +38,7 @@
 
 import "hash"
 
-rule StarBlizzard_RedFlick_Behavior
+rule StarBlizzard_RedFlick_Behavior : backdoor behavioral persistence
 {
     meta:
         description = "RedFlick delivery chain artifacts: .mollis registry key, scheduled task names, CPL applet masquerading, CosmicPulse Python backdoor markers, WebDAV UNC patterns"
@@ -93,7 +93,7 @@ rule StarBlizzard_RedFlick_Behavior
         and filesize < 50MB
 }
 
-rule StarBlizzard_RedFlick_IOCs
+rule StarBlizzard_RedFlick_IOCs : backdoor c2 ioc
 {
     meta:
         description = "RedFlick/CosmicPulse IOCs — C2 domains, IPs, and delivery artifact indicators"
@@ -128,7 +128,7 @@ rule StarBlizzard_RedFlick_IOCs
         and filesize < 50MB
 }
 
-rule StarBlizzard_RedFlick_Specimens
+rule StarBlizzard_RedFlick_Specimens : backdoor
 {
     meta:
         description = "Known Star Blizzard RedFlick campaign samples — exact SHA-256 hash matches"

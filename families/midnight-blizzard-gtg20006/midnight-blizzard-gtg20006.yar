@@ -31,7 +31,7 @@
 
 import "hash"
 
-rule MidnightBlizzard_GTG20006_Behavioural
+rule MidnightBlizzard_GTG20006_Behavioural : behavioral c2
 {
     meta:
         description = "Midnight Blizzard GTG-20006 behavioural — Microsoft-impersonation C2 domain patterns combined with campaign executable naming"
@@ -79,7 +79,7 @@ rule MidnightBlizzard_GTG20006_Behavioural
         and filesize < 50MB
 }
 
-rule MidnightBlizzard_GTG20006_IOC
+rule MidnightBlizzard_GTG20006_IOC : c2 ioc
 {
     meta:
         description = "Midnight Blizzard GTG-20006 IOC sweep — C2 domains and IPs with co-occurrence guard (at least 2 indicators must match)"
@@ -116,7 +116,7 @@ rule MidnightBlizzard_GTG20006_IOC
         2 of ($d*, $ip*) and filesize < 50MB
 }
 
-rule MidnightBlizzard_GTG20006_Specimen
+rule MidnightBlizzard_GTG20006_Specimen : specimen
 {
     meta:
         description = "Midnight Blizzard GTG-20006 specimen pin — SHA-256 hashes for known campaign samples"

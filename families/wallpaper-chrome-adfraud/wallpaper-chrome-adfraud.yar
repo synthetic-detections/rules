@@ -33,7 +33,7 @@
      https://gbhackers.com/malicious-152-chrome-extensions-google-search/
 */
 
-rule WallpaperAdfraud_ServiceWorkerBehavior
+rule WallpaperAdfraud_ServiceWorkerBehavior : behavioral
 {
     meta:
         description = "Service worker JS matching the 152-extension wallpaper ad-fraud family — IndexedDB wipe-all loop, forged Google organic install attribution, and setUninstallURL SERP cloaking"
@@ -72,7 +72,7 @@ rule WallpaperAdfraud_ServiceWorkerBehavior
         and filesize < 1MB
 }
 
-rule WallpaperAdfraud_ExtensionManifest
+rule WallpaperAdfraud_ExtensionManifest : malware
 {
     meta:
         description = "Chrome extension manifest.json matching the wallpaper ad-fraud family — MV3 with service_worker and newtab override pointing to an operator domain"
@@ -96,7 +96,7 @@ rule WallpaperAdfraud_ExtensionManifest
         $mv3 and $newtab and ($sw or $bg_js) and any of ($dom_*) and filesize < 64KB
 }
 
-rule WallpaperAdfraud_IOC
+rule WallpaperAdfraud_IOC : ioc
 {
     meta:
         description = "Static IOC sweep — operator domains, Hostinger origin IPs, Advergic header-bidding domain, and forensic log string for the 152-extension wallpaper ad-fraud campaign"

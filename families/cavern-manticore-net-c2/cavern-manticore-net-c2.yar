@@ -33,7 +33,7 @@
 
 import "hash"
 
-rule Cavern_Manticore_Agent_Behavior
+rule Cavern_Manticore_Agent_Behavior : behavioral c2
 {
     meta:
         description = "Cavern/Cav3rn .NET agent operational shape: the developer PDB prefix, or the MYMUTEX123HELLP mutex co-occurring with a Cavern internal marker, or two misspelled internal strings together"
@@ -56,7 +56,7 @@ rule Cavern_Manticore_Agent_Behavior
         $pdb or ($mtx and any of ($proj, $err1, $err2, $err3, $steg1, $steg2, $steg3)) or 2 of ($err1, $err2, $err3, $steg1, $steg2, $steg3)
 }
 
-rule Cavern_Manticore_IOC
+rule Cavern_Manticore_IOC : c2 ioc
 {
     meta:
         description = "Cavern Manticore distinctive tokens: fixed mutex, Cvn.cfg config, C2 domains, and the unusual n-*.dll transport/recon/tunnel module names (generic mhm/db/ode.dll excluded)"
@@ -78,7 +78,7 @@ rule Cavern_Manticore_IOC
         $mtx or $cfg or any of ($c2a, $c2b, $c2c) or any of ($mod1, $mod2, $mod3)
 }
 
-rule Cavern_Manticore_Specimen
+rule Cavern_Manticore_Specimen : c2 specimen
 {
     meta:
         description = "Published Cavern Manticore sample SHA-256 pins (Check Point appendix): uxtheme.dll agents, n-HTCommp.dll comms, mhm.dll file manager"

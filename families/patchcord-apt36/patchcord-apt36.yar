@@ -42,10 +42,10 @@ import "hash"
 private rule patchcord_is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550
 }
 
-rule PATCHCORD_Beacon
+rule PATCHCORD_Beacon : c2
 {
     meta:
         description = "PATCHCORD implant — Beacon/1.0.0 UA guarded by APT36 campaign token or C2 IP"
@@ -66,7 +66,7 @@ rule PATCHCORD_Beacon
         patchcord_is_pe and $ua and any of ($camp*, $c2*)
 }
 
-rule PATCHCORD_Campaign_Artifacts
+rule PATCHCORD_Campaign_Artifacts : ioc phishing
 {
     meta:
         description = "APT36 PATCHCORD/SHEETCORD campaign — distinctive lure/persistence file names (>=2)"
@@ -86,7 +86,7 @@ rule PATCHCORD_Campaign_Artifacts
         2 of ($f*) and filesize < 40MB
 }
 
-rule PATCHCORD_Samples
+rule PATCHCORD_Samples : malware
 {
     meta:
         description = "PATCHCORD/SHEETCORD/HACKERAI — Acronis TRU SHA-256 sample pins"

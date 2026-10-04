@@ -31,7 +31,7 @@
 
 import "pe"
 
-rule TerminalFix_DLL_Sideload
+rule TerminalFix_DLL_Sideload : c2 loader
 {
     meta:
         description = "Detects DLL sideloading payloads and Lorem Ipsum Loader used by TerminalFix/STAC4924"
@@ -86,7 +86,7 @@ rule TerminalFix_DLL_Sideload
         and filesize < 10MB
 }
 
-rule TerminalFix_IOC
+rule TerminalFix_IOC : c2 ioc
 {
     meta:
         description = "Known TerminalFix/STAC4924 IOCs — C2 domains, staging infra, file hashes, persistence names"
@@ -151,7 +151,7 @@ rule TerminalFix_IOC
         any of them and filesize < 50MB
 }
 
-rule TerminalFix_Lure_Page
+rule TerminalFix_Lure_Page : phishing
 {
     meta:
         description = "Detects TerminalFix/ClickFix HTML lure pages with clipboard hijack and fake CAPTCHA"
