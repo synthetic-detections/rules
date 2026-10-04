@@ -21,7 +21,7 @@
      https://thehackernews.com/2026/06/unpatched-windows-search-uri.html
 */
 
-rule WindowsSearch_URI_NTLM_Leak_Lure
+rule WindowsSearch_URI_NTLM_Leak_Lure : lure
 {
     meta:
         description = "Windows search: / search-ms: URI carrying crumb=location: pointing to an SMB UNC — NTLMv2 hash leak primitive (Huntress 2026-06-03)"
@@ -47,7 +47,7 @@ rule WindowsSearch_URI_NTLM_Leak_Lure
         and filesize < 1MB
 }
 
-rule WindowsSearch_URI_NTLM_Leak_HtmlAnchor
+rule WindowsSearch_URI_NTLM_Leak_HtmlAnchor : phishing
 {
     meta:
         description = "HTML / HTA / Markdown-rendered anchor that delivers the Windows Search URI NTLM-leak lure in a single click"
@@ -67,7 +67,7 @@ rule WindowsSearch_URI_NTLM_Leak_HtmlAnchor
         any of them and filesize < 1MB
 }
 
-rule WindowsSearch_URI_NTLM_Leak_RegistryAnchor
+rule WindowsSearch_URI_NTLM_Leak_RegistryAnchor : malware
 {
     meta:
         description = "Registry / config file referencing the search: URI DelegateExecute CLSID alongside the leak primitive — useful for hardening surveys and forensic snapshots"

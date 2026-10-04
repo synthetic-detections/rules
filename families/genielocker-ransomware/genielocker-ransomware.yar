@@ -25,7 +25,7 @@
      https://securelist.com/genielocker-ransomware-for-windows-linux-and-esxi/120843/
 */
 
-rule GenieLocker_Ransomware_Behavior
+rule GenieLocker_Ransomware_Behavior : behavioral ransomware
 {
     meta:
         description = "GenieLocker ransomware (Toy Ghouls/Bearlyfy) - hardcoded .03ffc1c4a3da0f02 extension, VCJOURN journal magic, libsodium XChaCha20 + Curve25519 key wrap, SHA-256 secret-gated exec, ESXi /etc/vmware/welcome rewrite"
@@ -50,12 +50,12 @@ rule GenieLocker_Ransomware_Behavior
         // journal magic is campaign-unique
         // exact kill-list fragment
         // ESXi build + the key-wrap scheme
-        (uint16(0) == 23117 or uint32(0) == 1179403647)
+        (uint16(0) == 0x5a4d or uint32(0) == 0x464c457f)
         and ($ext or $journ or any of ($kp, $ks) or ($esxi and $wrap))
         and filesize < 30MB
 }
 
-rule GenieLocker_IOC
+rule GenieLocker_IOC : c2 ioc ransomware
 {
     meta:
         description = "GenieLocker hard IOCs - encrypted-file extension, C2 IP, and Kaspersky sample MD5 pins (Windows PE + Linux/ESXi ELF)"

@@ -44,10 +44,10 @@ import "pe"
 private rule is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550
 }
 
-rule Lazarus_FudModule_GodMode
+rule Lazarus_FudModule_GodMode : rootkit
 {
     meta:
         description = "Lazarus FudModule kernel rootkit (v3.1) — god-mode telemetry + Smart App Control tamper"
@@ -69,7 +69,7 @@ rule Lazarus_FudModule_GodMode
         is_pe and (3 of ($t*) or (2 of ($t*) and ($sac or $vac)))
 }
 
-rule Lazarus_Troy_Backdoor
+rule Lazarus_Troy_Backdoor : backdoor
 {
     meta:
         description = "Lazarus Troy backdoor — PDB fragment and command-word protocol"
@@ -91,7 +91,7 @@ rule Lazarus_Troy_Backdoor
         is_pe and (any of ($pdb*) or (4 of ($c*) and $hs))
 }
 
-rule Lazarus_SecurityPDF_Decoy
+rule Lazarus_SecurityPDF_Decoy : loader
 {
     meta:
         description = "Lazarus SecurityPDF trojanized viewer / decoy PDF — SumatraPDF encrypted marker + libmupdf sideload"
@@ -108,7 +108,7 @@ rule Lazarus_SecurityPDF_Decoy
         $marker and ($dll or $pdfhdr at 0 or is_pe)
 }
 
-rule Lazarus_RelayShell_Webshell
+rule Lazarus_RelayShell_Webshell : webshell
 {
     meta:
         description = "Lazarus RelayShell PHP webshell — embedded operator identifier and session naming"
@@ -124,7 +124,7 @@ rule Lazarus_RelayShell_Webshell
         $php and $id and filesize < 200KB
 }
 
-rule Lazarus_DreamJob_C2
+rule Lazarus_DreamJob_C2 : c2
 {
     meta:
         description = "Operation Dream Job 2026-wave C2 indicators (domains/IPs) — count-guarded"

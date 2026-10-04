@@ -36,7 +36,7 @@
      https://access.redhat.com/security/vulnerabilities/RHSB-2026-006
 */
 
-rule Miasma_ObfuscatedIndexJS
+rule Miasma_ObfuscatedIndexJS : stealer supply_chain
 {
     meta:
         description = "Heavily obfuscated index.js payload pattern used by Miasma — eval + ROT-decoding + Google API UA + credential-sweep target list"
@@ -74,7 +74,7 @@ rule Miasma_ObfuscatedIndexJS
         and filesize < 5MB
 }
 
-rule Miasma_NpmPackageManifest
+rule Miasma_NpmPackageManifest : supply_chain
 {
     meta:
         description = "package.json under @redhat-cloud-services scope wired to run index.js as a preinstall hook — the Miasma delivery shape"
@@ -92,7 +92,7 @@ rule Miasma_NpmPackageManifest
         $scope and $pkg_scripts and $pkg_preinst and $preinst_idx and filesize < 256KB
 }
 
-rule Miasma_IOC
+rule Miasma_IOC : ioc supply_chain
 {
     meta:
         description = "Static IOC sweep — 32 @redhat-cloud-services package coordinates, Miasma/spartan thematic strings, GCP user-agent fingerprint"

@@ -54,7 +54,7 @@
      https://techcrunch.com/2026/08/20/someone-targeted-security-researchers-using-a-fake-crypto-conference-as-a-lure/
 */
 
-rule DefconDocsendPhish_Behavior
+rule DefconDocsendPhish_Behavior : behavioral phishing
 {
     meta:
         description = "Post-DEF CON researcher phishing (Huntress 2026-08-19) — campaign-specific persistence/staging/config artefacts: com.xdivcmp LaunchDaemon, Cache_328189ho staging, forged GTS WR3 CA + LocalProxy, Ledger Wallet Installer implant, NetSupport NSM1234/2RMS build"
@@ -117,7 +117,7 @@ rule DefconDocsendPhish_Behavior
         and filesize < 40MB
 }
 
-rule DefconDocsendPhish_IOC
+rule DefconDocsendPhish_IOC : c2 ioc phishing
 {
     meta:
         description = "Post-DEF CON researcher phishing (Huntress 2026-08-19) — C2/delivery domains, IPs, URL paths, payload file names, sample hashes"
@@ -174,7 +174,7 @@ rule DefconDocsendPhish_IOC
         and filesize < 60MB
 }
 
-rule DefconDocsendPhish_Specimen
+rule DefconDocsendPhish_Specimen : c2 phishing specimen
 {
     meta:
         description = "Post-DEF CON researcher phishing (Huntress 2026-08-19) — tight specimen pin: known sample hash, or the campaign's unique staging token plus its C2/persistence artefacts"

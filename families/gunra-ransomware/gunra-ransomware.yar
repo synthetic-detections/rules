@@ -34,10 +34,10 @@
 private rule gunra_is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550
 }
 
-rule Gunra_Encryptor
+rule Gunra_Encryptor : ransomware
 {
     meta:
         description = "Gunra ransomware encryptor — .ENCRT extension + R3ADM3 note name co-occurrence"
@@ -55,7 +55,7 @@ rule Gunra_Encryptor
         gunra_is_pe and any of ($ext*) and any of ($note*)
 }
 
-rule Gunra_Ransom_Note
+rule Gunra_Ransom_Note : ransomware
 {
     meta:
         description = "Gunra ransom note — R3ADM3 recovery text (Client ID + qTox + deadline)"
@@ -76,7 +76,7 @@ rule Gunra_Ransom_Note
         $e and $q and any of ($c, $t, $r1) and filesize < 64KB
 }
 
-rule Gunra_Campaign_C2
+rule Gunra_Campaign_C2 : c2 ransomware
 {
     meta:
         description = "Gunra AA26-222A C2 indicators (IPs + clearnet DLS mirror), count-guarded"

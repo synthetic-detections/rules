@@ -39,7 +39,7 @@
      https://www.kaspersky.com/about/press-releases/prints-of-darkness-hackers-printing-demands-during-ransomware-campaigns-across-latin-america-kaspersky
 */
 
-rule XEntry_Team_RansomNote_Behavior
+rule XEntry_Team_RansomNote_Behavior : behavioral
 {
     meta:
         description = "XEntry Team ransom note — the two reused 'guarantee' sentences seen across the LATAM BitLocker/printer extortion incidents"
@@ -58,7 +58,7 @@ rule XEntry_Team_RansomNote_Behavior
         all of them and filesize < 200KB
 }
 
-rule XEntry_Team_Branding_IOC
+rule XEntry_Team_Branding_IOC : ioc
 {
     meta:
         description = "XEntry Team brand string 'Hacked by XEntry Team' co-occurring with a supporting extortion artifact"
@@ -85,7 +85,7 @@ rule XEntry_Team_Branding_IOC
         and filesize < 5MB
 }
 
-rule XEntry_Team_RansomNote_Pin
+rule XEntry_Team_RansomNote_Pin : specimen
 {
     meta:
         description = "XEntry Team full ransom note — brand string with both reused guarantee sentences (specimen pin, near-zero FP)"

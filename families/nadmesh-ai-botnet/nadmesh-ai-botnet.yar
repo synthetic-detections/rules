@@ -32,7 +32,7 @@
      https://cyberpress.org/nadmesh-targets-ai-servers/
 */
 
-rule NadMesh_Botnet_Behavior
+rule NadMesh_Botnet_Behavior : behavioral botnet exploit
 {
     meta:
         description = "NadMesh Go botnet — n4d-mesh control marker co-occurring with AI-platform targeting and exposed-service RCE (post-unpack / memory)"
@@ -62,7 +62,7 @@ rule NadMesh_Botnet_Behavior
         any of ($marker*) and 2 of ($ai_*) and 2 of ($svc_*) and filesize < 40MB
 }
 
-rule NadMesh_IOC
+rule NadMesh_IOC : botnet c2 ioc
 {
     meta:
         description = "NadMesh network IOCs (XLab): C2 IP / domain, guarded by co-occurrence with a family or Go-mesh marker"
@@ -83,7 +83,7 @@ rule NadMesh_IOC
         any of ($c2_*) and any of ($g_*) and filesize < 40MB
 }
 
-rule NadMesh_Agent_Specimen
+rule NadMesh_Agent_Specimen : botnet specimen
 {
     meta:
         description = "NadMesh — pins the XLab-published agent sample by distinctive string set + size"

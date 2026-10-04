@@ -26,7 +26,7 @@
 
 import "pe"
 
-rule Antino_DllSideload_Behavioral
+rule Antino_DllSideload_Behavioral : backdoor behavioral c2
 {
     meta:
         description = "Antino backdoor behavioural — DLL sideloading via GatherOsState.exe with Outlook Graph API C2 subject prefix"
@@ -54,7 +54,7 @@ rule Antino_DllSideload_Behavioral
         and filesize < 10MB
 }
 
-rule Antino_IOC
+rule Antino_IOC : backdoor c2 ioc loader
 {
     meta:
         description = "Antino IOC sweep — C2 domains, DLL names, .NET loader, Outlook subject prefix, build metadata"
@@ -90,7 +90,7 @@ rule Antino_IOC
         and filesize < 50MB
 }
 
-rule Antino_Specimen
+rule Antino_Specimen : backdoor c2 specimen
 {
     meta:
         description = "Antino Rust backdoor specimen — PE/DLL with Rust markers, Outlook Graph API C2 strings, and sideloading anchor"

@@ -35,10 +35,10 @@
 private rule corerat_is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744 and filesize < 12MB
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550 and filesize < 12MB
 }
 
-rule CoreRAT_Behaviour
+rule CoreRAT_Behaviour : behavioral c2 rat
 {
     meta:
         description = "CoreRAT C++ RAT — hardcoded mutex co-occurring with a CoreRAT C2 URI path or deployment EXE name"
@@ -60,7 +60,7 @@ rule CoreRAT_Behaviour
         corerat_is_pe and $mutex and (any of ($uri*) or any of ($exe*))
 }
 
-rule CoreRAT_C2_IOC
+rule CoreRAT_C2_IOC : c2 ioc
 {
     meta:
         description = "CoreRAT command-and-control infrastructure — Core Werewolf 2026 campaign (>=2 distinct hosts)"
@@ -88,7 +88,7 @@ rule CoreRAT_C2_IOC
         2 of them
 }
 
-rule CoreRAT_Delivery_Pin
+rule CoreRAT_Delivery_Pin : specimen
 {
     meta:
         description = "CoreRAT delivery specimen — decoy PDF name co-occurring with a deployment EXE name"

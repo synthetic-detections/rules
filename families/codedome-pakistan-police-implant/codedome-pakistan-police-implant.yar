@@ -35,7 +35,7 @@
 
 import "hash"
 
-rule Codedome_CMS_Implant_Behavior
+rule Codedome_CMS_Implant_Behavior : behavioral phishing rat
 {
     meta:
         description = "codedome-cluster implant: the shared D:\\codedome\\ build path co-occurring with a campaign marker (fake-update lure, 360Safe masquerade, pinyin build tag), or the exact AsyncRAT PDB path"
@@ -54,7 +54,7 @@ rule Codedome_CMS_Implant_Behavior
         $pdbfull or ($build and any of ($upd, $pin, $masq))
 }
 
-rule Codedome_CMS_Implant_IOC
+rule Codedome_CMS_Implant_IOC : c2 ioc rat
 {
     meta:
         description = "codedome CMS watering-hole delivery IOCs: the Balochistan Police CMS download path/host, the cms_plugin.exe stager name, and the AsyncRAT C2 — guarded by co-occurrence so a bare filename does not fire"
@@ -72,7 +72,7 @@ rule Codedome_CMS_Implant_IOC
         $path or ($dom and $fn) or ($c2 and $fn) or 2 of ($dom, $c2, $path)
 }
 
-rule Codedome_CMS_Implant_Specimen
+rule Codedome_CMS_Implant_Specimen : specimen
 {
     meta:
         description = "Published cms_plugin.exe artifacts (SentinelLABS SHA-1 pins) — codedome Pakistani-police espionage cluster"

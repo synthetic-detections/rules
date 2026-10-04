@@ -34,7 +34,7 @@
      https://blog.gridinsoft.com/endlessdoors-zbtlink-router-backdoor/
 */
 
-rule ENDLESSDOORS_Implant_Behavior
+rule ENDLESSDOORS_Implant_Behavior : backdoor behavioral
 {
     meta:
         description = "ENDLESSDOORS Zbtlink router backdoor -- rctl-derived implant: rctlbash reverse-root-shell protocol, kworker masquerade (skworker/librctl.so/kworker.cfg), popen root command exec on ports 7000/7001"
@@ -57,11 +57,11 @@ rule ENDLESSDOORS_Implant_Behavior
         $exec = "popen"
     condition:
         // ELF, with the rctl protocol OR two masquerade paths, plus a corroborator
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (any of ($p1, $p2) or ($lib and any of ($a*)) or (2 of ($a*) and $exec))
 }
 
-rule ENDLESSDOORS_IOC
+rule ENDLESSDOORS_IOC : backdoor c2 ioc
 {
     meta:
         description = "ENDLESSDOORS Zbtlink backdoor C2 -- domains and IPs (VulnCheck, 2026-08-06)"
@@ -84,7 +84,7 @@ rule ENDLESSDOORS_IOC
         any of ($d*) or 2 of ($ip*)
 }
 
-rule ENDLESSDOORS_Artifacts
+rule ENDLESSDOORS_Artifacts : backdoor ioc
 {
     meta:
         description = "ENDLESSDOORS Zbtlink backdoor -- implant filesystem-path constellation (skworker init + librctl.so + kworker.cfg); pins a firmware image or unpacked rootfs containing the implant"

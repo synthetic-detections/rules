@@ -27,7 +27,7 @@
      https://www.bleepingcomputer.com/news/security/new-amnesiastealer-macos-malware-hijacks-browser-sessions-via-remote-control/
 */
 
-rule AmnesiaStealer_macOS_Behavior
+rule AmnesiaStealer_macOS_Behavior : behavioral stealer
 {
     meta:
         description = "AmnesiaStealer macOS Rust stealer — distinctive build/config/module artifacts (leetspeak XOR key, HYBRID_DEBUG, stream module, v3 markers)"
@@ -65,7 +65,7 @@ rule AmnesiaStealer_macOS_Behavior
         and filesize < 30MB
 }
 
-rule AmnesiaStealer_macOS_IOC
+rule AmnesiaStealer_macOS_IOC : c2 ioc stealer
 {
     meta:
         description = "AmnesiaStealer macOS stealer — C2/delivery domains, API path + X-API-Key, sample SHA-256 hashes"
@@ -92,7 +92,7 @@ rule AmnesiaStealer_macOS_IOC
         and filesize < 60MB
 }
 
-rule AmnesiaStealer_macOS_Specimen
+rule AmnesiaStealer_macOS_Specimen : specimen stealer
 {
     meta:
         description = "AmnesiaStealer macOS stealer — tight specimen pin (distinctive artifact combination)"

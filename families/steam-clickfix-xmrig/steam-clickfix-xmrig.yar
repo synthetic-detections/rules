@@ -37,7 +37,7 @@
      https://www.techechelon.com/post/steam-forums-weaponized-in-clickfix-campaign-distributing-xmrig-cryptominers
 */
 
-rule Steam_ClickFix_XMRig_Dropper
+rule Steam_ClickFix_XMRig_Dropper : loader persistence phishing
 {
     meta:
         description = "Steam-forum ClickFix PowerShell dropper for XMRig — 'msf utility/PC Opt' lure that adds a Defender exclusion for C:\\Windows\\Background, fetches system.exe from msfconfig[.]icu, and installs an XMRig-<host> scheduled task as SYSTEM"
@@ -75,7 +75,7 @@ rule Steam_ClickFix_XMRig_Dropper
         and filesize < 2MB
 }
 
-rule Steam_ClickFix_XMRig_Config
+rule Steam_ClickFix_XMRig_Config : cryptominer phishing
 {
     meta:
         description = "XMRig config.json pinned to the Steam-ClickFix install dir — miner config referencing C:\\Windows\\Background\\system.exe / the msfconfig[.]icu pool"
@@ -99,7 +99,7 @@ rule Steam_ClickFix_XMRig_Config
         2 of ($x*) and any of ($dir, $exe, $c2) and filesize < 256KB
 }
 
-rule Steam_ClickFix_XMRig_IOC
+rule Steam_ClickFix_XMRig_IOC : c2 ioc phishing
 {
     meta:
         description = "Steam-ClickFix XMRig hard IOCs — C2 domain msfconfig[.]icu, payload URL, install path, and XMRig-<host> task name"

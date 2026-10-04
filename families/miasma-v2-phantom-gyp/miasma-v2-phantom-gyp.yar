@@ -51,7 +51,7 @@
      https://thehackernews.com/2026/06/ironworm-and-new-miasma-worm-variant.html
 */
 
-rule MiasmaV2_PhantomGyp_BindingGypTrigger
+rule MiasmaV2_PhantomGyp_BindingGypTrigger : supply_chain
 {
     meta:
         description = "binding.gyp with a `<!(<cmd>)` command-substitution action that triggers code execution during npm install — Phantom Gyp delivery primitive"
@@ -81,7 +81,7 @@ rule MiasmaV2_PhantomGyp_BindingGypTrigger
         and filesize < 8KB
 }
 
-rule MiasmaV2_PhantomGyp_ObfuscatedPayload
+rule MiasmaV2_PhantomGyp_ObfuscatedPayload : stealer
 {
     meta:
         description = "Obfuscated index.js root payload — Phantom Gyp campaign-unique markers + credential-sweep co-occurrence"
@@ -128,7 +128,7 @@ rule MiasmaV2_PhantomGyp_ObfuscatedPayload
         and filesize < 20MB
 }
 
-rule MiasmaV2_PhantomGyp_IOC
+rule MiasmaV2_PhantomGyp_IOC : backdoor ioc supply_chain
 {
     meta:
         description = "Static IOCs for Miasma v2 / Phantom Gyp — campaign markers, attacker GitHub account, backdoor file paths, representative compromised package coordinates"

@@ -9,7 +9,7 @@
 
 import "hash"
 
-rule BraZetsu_Behavioural
+rule BraZetsu_Behavioural : behavioral
 {
     meta:
         description = "Detects BraZetsu IAB framework via behavioural strings"
@@ -30,7 +30,7 @@ rule BraZetsu_Behavioural
         $xor_key or ($reg_name and $cnab) or $dll1 or $dll2 or (any of ($exe1, $pastebin) and $reg_name)
 }
 
-rule BraZetsu_IOC
+rule BraZetsu_IOC : c2 ioc
 {
     meta:
         description = "Detects BraZetsu via C2 infrastructure IOCs"
@@ -49,7 +49,7 @@ rule BraZetsu_IOC
         any of them
 }
 
-rule BraZetsu_Specimen
+rule BraZetsu_Specimen : specimen
 {
     meta:
         description = "Pins known BraZetsu samples by SHA-256"

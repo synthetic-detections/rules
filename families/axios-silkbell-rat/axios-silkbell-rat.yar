@@ -38,7 +38,7 @@
      https://research.jfrog.com/post/easy-day-js/ (tradecraft comparison)
 */
 
-rule Axios_SILKBELL_Dropper
+rule Axios_SILKBELL_Dropper : loader rat
 {
     meta:
         description = "SILKBELL dropper — obfuscated setup.js with OrDeR_7077 XOR key, platform fingerprinting POST bodies, and self-delete"
@@ -82,7 +82,7 @@ rule Axios_SILKBELL_Dropper
         and filesize < 500KB
 }
 
-rule Axios_WAVESHAPER_RAT
+rule Axios_WAVESHAPER_RAT : rat
 {
     meta:
         description = "WAVESHAPER.V2 cross-platform RAT — persistence artifacts (MicrosoftUpdate/com.apple.act.mond/ld.py), beacon protocol, command set"
@@ -141,7 +141,7 @@ rule Axios_WAVESHAPER_RAT
         and filesize < 10MB
 }
 
-rule Axios_SILKBELL_IOC
+rule Axios_SILKBELL_IOC : c2 ioc rat supply_chain
 {
     meta:
         description = "Static IOC sweep — C2 infrastructure, file hashes, hijacked accounts, package coordinates, Sapphire Sleet infrastructure overlaps"

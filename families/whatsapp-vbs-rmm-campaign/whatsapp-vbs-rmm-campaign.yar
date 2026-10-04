@@ -31,7 +31,7 @@
      https://securityaffairs.com/194031/malware/whatsapp-malware-campaign-hijacks-trust-installs-legitimate-admin-tools.html
 */
 
-rule WhatsApp_VBS_RMM_Technique
+rule WhatsApp_VBS_RMM_Technique : loader
 {
     meta:
         description = "VBScript dropper — UAC bypass via ConsentPromptBehaviorAdmin + ManageEngine silent install chain"
@@ -75,7 +75,7 @@ rule WhatsApp_VBS_RMM_Technique
         and filesize < 5MB
 }
 
-rule WhatsApp_VBS_RMM_ManageEngine_Package
+rule WhatsApp_VBS_RMM_ManageEngine_Package : supply_chain
 {
     meta:
         description = "Attacker-crafted ManageEngine Endpoint Central deployment package with rogue CA certificates"
@@ -108,7 +108,7 @@ rule WhatsApp_VBS_RMM_ManageEngine_Package
         and filesize < 50MB
 }
 
-rule WhatsApp_VBS_RMM_IOC
+rule WhatsApp_VBS_RMM_IOC : ioc phishing
 {
     meta:
         description = "Static IOC sweep — campaign domains, staging paths, lure filenames, cloud payload buckets"

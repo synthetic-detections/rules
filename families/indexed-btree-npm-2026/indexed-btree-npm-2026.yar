@@ -41,7 +41,7 @@
      https://www.bleepingcomputer.com/news/security/malicious-npm-packages-evade-install-script-defenses-at-runtime/
 */
 
-rule INDEXEDBTREE_Loader_Behavior
+rule INDEXEDBTREE_Loader_Behavior : behavioral evm loader supply_chain
 {
     meta:
         description = "indexed-btree npm loader — payload hidden in BTree.prototype.set runtime method co-occurring with an Ethereum Sepolia contract X25519/AES second-stage fetch"
@@ -67,7 +67,7 @@ rule INDEXEDBTREE_Loader_Behavior
         any of ($m*) and any of ($sep*) and 2 of ($c*) and filesize < 800KB
 }
 
-rule INDEXEDBTREE_IOC
+rule INDEXEDBTREE_IOC : c2 evm ioc supply_chain
 {
     meta:
         description = "indexed-btree hard IOCs — Sepolia C2 contract, attacker X25519 public key, Slack channel + Telegram chat IDs, Sepolia RPC endpoints (>=2 co-occurring to avoid IOC-doc FPs)"
@@ -87,7 +87,7 @@ rule INDEXEDBTREE_IOC
         2 of them and filesize < 800KB
 }
 
-rule INDEXEDBTREE_Package_Pin
+rule INDEXEDBTREE_Package_Pin : c2 loader specimen supply_chain
 {
     meta:
         description = "indexed-btree cluster — the 11 typosquat package names co-occurring with the runtime-loader method / Sepolia C2"

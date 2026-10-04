@@ -24,7 +24,7 @@
    Rule 3 — IOC: wallet + known contract addresses in source/config/reports.
 */
 
-rule EVM_Drainer_2a98_Bytecode
+rule EVM_Drainer_2a98_Bytecode : evm
 {
     meta:
         description = "Contract bytecode embedding the 0x2a9874…0760 wallet-drainer operator's hardcoded payout wallet"
@@ -42,7 +42,7 @@ rule EVM_Drainer_2a98_Bytecode
         $wallet and filesize < 64KB
 }
 
-rule EVM_Drainer_2a98_Toolkit_Behavior
+rule EVM_Drainer_2a98_Toolkit_Behavior : behavioral evm exploit
 {
     meta:
         description = "0x2a9874…0760 wallet-drainer toolkit — payout wallet co-occurring with attack/exploit dispatcher selectors"
@@ -82,7 +82,7 @@ rule EVM_Drainer_2a98_Toolkit_Behavior
         $wallet and 2 of ($s_*) and filesize < 64KB
 }
 
-rule EVM_Drainer_2a98_IOC
+rule EVM_Drainer_2a98_IOC : evm ioc
 {
     meta:
         description = "0x2a9874…0760 wallet-drainer operator — payout wallet and known contract addresses (source/config/IOC lists)"

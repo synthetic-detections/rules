@@ -40,7 +40,7 @@
      https://www.scworld.com/brief/screenconnect-used-to-deploy-asyncrat-in-widespread-campaign
 */
 
-rule AsyncRAT_ScreenConnect_SEO_Behavior
+rule AsyncRAT_ScreenConnect_SEO_Behavior : behavioral loader persistence rat
 {
     meta:
         description = "SEO-poisoned ScreenConnect->AsyncRAT loader/injector chain — side-load DLL, PowerShell loader that disables Defender/UAC, libPK injector into AppLaunch, FlowProxy Monitor V3 build, scheduled-task persistence"
@@ -94,7 +94,7 @@ rule AsyncRAT_ScreenConnect_SEO_Behavior
         and filesize < 20MB
 }
 
-rule AsyncRAT_ScreenConnect_SEO_LoaderShape
+rule AsyncRAT_ScreenConnect_SEO_LoaderShape : behavioral loader rat
 {
     meta:
         description = "Multi-stage loader artifact shape — VBS/PowerShell/LNK launchers plus the .txt/.idk/.idr staging blobs used to assemble the AsyncRAT payload"
@@ -132,7 +132,7 @@ rule AsyncRAT_ScreenConnect_SEO_LoaderShape
         and filesize < 20MB
 }
 
-rule AsyncRAT_ScreenConnect_SEO_IOC
+rule AsyncRAT_ScreenConnect_SEO_IOC : c2 ioc rat
 {
     meta:
         description = "Static IOC sweep — tracked C2 IPs, disposable domains, delivery hosts, and file hashes (Hunt.io) for the SEO-poisoned ScreenConnect/AsyncRAT campaign"

@@ -42,7 +42,7 @@
 
 import "hash"
 
-rule Injective_SDK_KeyExfil_Behavior
+rule Injective_SDK_KeyExfil_Behavior : behavioral stealer supply_chain
 {
     meta:
         description = "Trojanised @injectivelabs/sdk-ts accounts module — trackKeyDerivation exfil handler hooking fromMnemonic/fromHex and base64-POSTing seed/key material to the crafted grpc-web endpoint"
@@ -70,7 +70,7 @@ rule Injective_SDK_KeyExfil_Behavior
         and filesize < 8MB
 }
 
-rule Injective_SDK_IOC
+rule Injective_SDK_IOC : ioc stealer supply_chain
 {
     meta:
         description = "Static IOC sweep for the Injective SDK compromise — crafted exfil endpoint, unique hashed dist filenames, and the malicious 1.20.21 version pin under @injectivelabs scope (bare scope names are not IOCs)"
@@ -100,7 +100,7 @@ rule Injective_SDK_IOC
         and filesize < 50MB
 }
 
-rule Injective_SDK_Specimen
+rule Injective_SDK_Specimen : specimen stealer supply_chain
 {
     meta:
         description = "Exact SHA-256 pin on the two published malicious dist artifacts (accounts-Cy0p4lLW.cjs / accounts-jQ1GSgaW.js) of @injectivelabs/sdk-ts@1.20.21"
@@ -112,7 +112,7 @@ rule Injective_SDK_Specimen
         hash_cjs    = "103c4e6181151c1bcfedc41506cd1815458c38375d08a8fcd9981dbe0b965ce0"
         hash_esm    = "9a59eb454f3ca3fe91214136ee5edd417cc47a80e6f169b52099d6561944baf9"
     condition:
-        filesize > 256
+        filesize > 0x100
         and filesize < 8MB
         and (
             hash.sha256(0, filesize) == "103c4e6181151c1bcfedc41506cd1815458c38375d08a8fcd9981dbe0b965ce0" or

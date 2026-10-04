@@ -26,7 +26,7 @@
      https://thehackernews.com/2026/07/seven-malicious-vite-npm-packages-use.html
 */
 
-rule ChainVeil_ViteVenom_Package_IOC
+rule ChainVeil_ViteVenom_Package_IOC : ioc rat supply_chain
 {
     meta:
         description = "ViteVenom/ChainVeil — known malicious npm package names (manifest / lockfile / advisory)"
@@ -47,7 +47,7 @@ rule ChainVeil_ViteVenom_Package_IOC
         any of ($p*) and filesize < 5MB
 }
 
-rule ChainVeil_ViteVenom_Behavior
+rule ChainVeil_ViteVenom_Behavior : behavioral c2 loader rat supply_chain
 {
     meta:
         description = "ViteVenom/ChainVeil RAT loader — blockchain-C2 retrieval + shell-rc persistence + process spawn in one JS module"
@@ -80,7 +80,7 @@ rule ChainVeil_ViteVenom_Behavior
         and filesize < 2MB
 }
 
-rule ChainVeil_ViteVenom_Specimen
+rule ChainVeil_ViteVenom_Specimen : c2 rat specimen supply_chain
 {
     meta:
         description = "ViteVenom/ChainVeil — tight specimen pin (blockchain C2 + multi shell-rc append + spawn)"

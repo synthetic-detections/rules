@@ -29,10 +29,10 @@
 private rule dl_is_pe
 {
     condition:
-        uint16(0) == 23117 and uint32(uint32(60)) == 17744
+        uint16(0) == 0x5a4d and uint32(uint32(60)) == 0x4550
 }
 
-rule DeadLock_Encryptor
+rule DeadLock_Encryptor : ransomware
 {
     meta:
         description = "DeadLock ransomware Rust encryptor — dDlK footer + .dlock extension + ransom-note artifacts"
@@ -51,7 +51,7 @@ rule DeadLock_Encryptor
         dl_is_pe and $magic and $ext and any of ($note*) and $svc
 }
 
-rule DeadLock_Ransom_Note
+rule DeadLock_Ransom_Note : ransomware
 {
     meta:
         description = "DeadLock ransom note — recovery filenames + Session/Polygon recovery instructions"
@@ -74,7 +74,7 @@ rule DeadLock_Ransom_Note
         (all of ($n*) or (any of ($n*) and 2 of ($b*)) or all of ($b*)) and filesize < 100KB
 }
 
-rule DeadLock_Blockchain_C2
+rule DeadLock_Blockchain_C2 : c2 evm ransomware
 {
     meta:
         description = "DeadLock Polygon smart-contract C2 and leak-site indicators (count-guarded)"
