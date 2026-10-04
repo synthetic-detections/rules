@@ -59,4 +59,4 @@ Updated DLL_Sideload and IOC rules with Sophos STAC4924 report data:
 - Added 20+ Sophos-sourced C2 domains and 8 staging domains to IOC rule.
 - Added Letsdiskuss dead-drop resolver pattern.
 
-All existing specimens still match. Benign cases remain clean. Corpus FP scan pending.
+All existing specimens still match. Benign cases remain clean. Corpus FP scan pending (gate requires single-rule submission; will scan individually when available).
