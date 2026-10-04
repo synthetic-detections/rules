@@ -69,6 +69,7 @@ statistics recorded in each transcript.
 | `dirtyblanket-npm-worm` | ✅ | — | 2026-10-03 SafeDep — self-propagating npm worm typosquatting Express.js/React packages, Tor C2 (`s5n2…nid.onion`), fake `systemd-fontd` service, SSH/AUR/npm-token propagation |
 | `antino-outlook-c2` | ✅ | — | 2026-10-03 The Hacker News — Rust backdoor (actor UAT-11587) using Outlook/OneDrive Graph API C2, `GatherOsState.exe` DLL sideloading (`slc.dll`), `command_req_` subject prefix |
 | `cisco-sdwan-cve-2026-76504` | — | ✅ | 2026-10-03 HelpNetSecurity — Cisco Catalyst SD-WAN Manager API auth bypass via URI encoding (CVSS 9.8, zero-day in the wild) |
+| `mistic-backdoor` | ✅ | — | 2026-10-04 Symantec — Mistic/MLTBackdoor fileless backdoor by KongTuke/TAG-124, MpExtMs.exe DLL sideloading chain (version.dll → EndpointDlp.dll), in-memory execution, VICE SPIDER ecosystem |
 
 ## Layout
 
