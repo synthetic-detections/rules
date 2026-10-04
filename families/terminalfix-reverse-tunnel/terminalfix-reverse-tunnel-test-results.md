@@ -2,7 +2,7 @@
 
 Rules: `TerminalFix_DLL_Sideload`, `TerminalFix_IOC`, `TerminalFix_Lure_Page`.
 
-YARA 4.5.2, Linux x86_64, 2026-09-12.
+YARA 4.5.2, Linux x86_64, 2026-09-12 (initial), 2026-10-04 (STAC4924 update).
 
 ## Specimen matrix
 
@@ -50,3 +50,13 @@ YARA 4.5.2, Linux x86_64, 2026-09-12.
 | Lure_Page | 6,834 | 0 | 14m22s | PASS |
 
 Zero false positives across all three rules. Scanned 2026-09-12 against the MalShare corpus (~497k samples).
+
+## STAC4924 update (2026-10-04)
+
+Updated DLL_Sideload and IOC rules with Sophos STAC4924 report data:
+- Added Phase 2 sideloading pairs: `changepk.exe` → `faultrep.dll`/`sppcext.dll`, `embeddedapplauncher.exe` + tunnel implant.
+- Added `\\Users\\Public\\indigo` Python staging path.
+- Added 20+ Sophos-sourced C2 domains and 8 staging domains to IOC rule.
+- Added Letsdiskuss dead-drop resolver pattern.
+
+All existing specimens still match. Benign cases remain clean. Corpus FP scan pending.
