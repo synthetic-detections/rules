@@ -40,7 +40,7 @@
             [[famous-chollima-packagist]] — 2026 registry supply-chain wave.
 */
 
-rule SleeperGem_Backdoor_Behavior
+rule SleeperGem_Backdoor_Behavior : backdoor behavioral loader
 {
     meta:
         description = "SleeperGem RubyGems backdoor behavior — CI-evasion env checks + ~/.local/share/gcm daemon drop + cron/systemd persistence + setuid /usr/local/sbin/ping6 shell + second-stage fetch"
@@ -81,7 +81,7 @@ rule SleeperGem_Backdoor_Behavior
         and filesize < 5MB
 }
 
-rule SleeperGem_Malicious_Gem_IOC
+rule SleeperGem_Malicious_Gem_IOC : ioc loader
 {
     meta:
         description = "SleeperGem IOC — the three trojanised gems + malicious version pins, guarded by co-occurrence with a malicious version or a payload drop-path so legitimate same-named projects do not match"
@@ -118,7 +118,7 @@ rule SleeperGem_Malicious_Gem_IOC
         and filesize < 5MB
 }
 
-rule SleeperGem_Malicious_Gemspec_Specimen
+rule SleeperGem_Malicious_Gemspec_Specimen : specimen
 {
     meta:
         description = "SleeperGem specimen pin — malicious gemspec/native-extension shape that fetches a second stage and installs the gcm daemon + setuid shell during gem install"

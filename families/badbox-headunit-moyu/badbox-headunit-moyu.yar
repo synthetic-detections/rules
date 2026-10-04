@@ -55,7 +55,7 @@
      TWCore     : 2a64c3ef…6446c9, 7a4d3ba2…ee2671, ea244879…63bcc5
 */
 
-rule MoYu_BADBOX_HeadUnit_Behavior
+rule MoYu_BADBOX_HeadUnit_Behavior : behavioral
 {
     meta:
         description = "MoYu Group / BADBOX Android car head-unit malware — distinctive multi-stage class/thread/service artifacts"
@@ -75,7 +75,7 @@ rule MoYu_BADBOX_HeadUnit_Behavior
         3 of them and filesize < 50MB
 }
 
-rule MoYu_BADBOX_HeadUnit_IOC
+rule MoYu_BADBOX_HeadUnit_IOC : c2 ioc
 {
     meta:
         description = "MoYu Group / BADBOX head-unit malware — C2 domains and API paths (co-occurrence guarded)"
@@ -102,7 +102,7 @@ rule MoYu_BADBOX_HeadUnit_IOC
         (2 of ($d*) or (any of ($d*) and any of ($api*)) or 2 of ($api*)) and filesize < 50MB
 }
 
-rule MoYu_BADBOX_HeadUnit_Specimen
+rule MoYu_BADBOX_HeadUnit_Specimen : loader specimen
 {
     meta:
         description = "MoYu Group / BADBOX head-unit malware — tight specimen pin (loader thread + MoYu service + Zhima client)"

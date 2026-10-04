@@ -25,7 +25,7 @@
 
 import "hash"
 
-rule Mimbrob_Behavioural
+rule Mimbrob_Behavioural : behavioral c2 rat
 {
     meta:
         description = "Mimbrob espionage campaign — FBULoader DLL sideloading, RAT-Go cmd.exe patterns, Dronner language checks and C2 domain patterns"
@@ -72,7 +72,7 @@ rule Mimbrob_Behavioural
         (any of ($fbu_*) and $c2_yandex_upd) or 2 of ($ratgo_*) or 2 of ($drn_*) or ($c2_ydx_stat and any of ($dll_*)) or ($c2_yandex_upd and any of ($dll_*)) or $ratgo_stub
 }
 
-rule Mimbrob_IOC
+rule Mimbrob_IOC : c2 ioc
 {
     meta:
         description = "Mimbrob C2 and phishing infrastructure IOCs (domains + IPs, >=2 co-occurrence)"
@@ -100,7 +100,7 @@ rule Mimbrob_IOC
         2 of them
 }
 
-rule Mimbrob_Specimen
+rule Mimbrob_Specimen : specimen
 {
     meta:
         description = "Pins known Mimbrob campaign samples by MD5"

@@ -44,7 +44,7 @@
 
 import "pe"
 
-rule HeadMare_PhantomGraph_Artifacts
+rule HeadMare_PhantomGraph_Artifacts : backdoor c2 ioc
 {
     meta:
         description = "Head Mare PhantomGraph backdoor: SysExcSvc/SysReadSvc DLLs, inetsrv install path, OneDrive C2 tasking artifacts"
@@ -63,11 +63,11 @@ rule HeadMare_PhantomGraph_Artifacts
         $io2   = "\\share\\output_" ascii wide nocase
         $clsid = "{0340F119-A598-4ed9-B0AC-6F6A12D3E755}" ascii wide nocase
     condition:
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (any of ($path*) or $clsid or (all of ($svc*) and ($dat or any of ($io*))))
 }
 
-rule HeadMare_TrueConf_Linux_Persistence
+rule HeadMare_TrueConf_Linux_Persistence : malware
 {
     meta:
         description = "Head Mare Linux persistence masquerading as Acronis/OMI services (TrueConf campaign)"
@@ -87,7 +87,7 @@ rule HeadMare_TrueConf_Linux_Persistence
         2 of them
 }
 
-rule HeadMare_TrueConf_IOC
+rule HeadMare_TrueConf_IOC : ioc webshell
 {
     meta:
         description = "Head Mare TrueConf campaign IOC pins: web shell, trojanized installer, PhantomCore/PhantomGraph sample hashes"

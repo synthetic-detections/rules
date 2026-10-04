@@ -19,7 +19,7 @@
 
 import "hash"
 
-rule FamousChollima_Packagist_TailwindJS_Loader
+rule FamousChollima_Packagist_TailwindJS_Loader : c2
 {
     meta:
         description = "Behavioural: blockchain-RPC-as-C2 pointer + XOR/eval + hidden detached spawn used by Famous Chollima in roberts/leads tailwind.js"
@@ -50,7 +50,7 @@ rule FamousChollima_Packagist_TailwindJS_Loader
         (any of ($m_*) or (2 of ($rpc_*) and all of ($spawn*) and $eval)) and filesize < 2MB
 }
 
-rule FamousChollima_Packagist_TailwindJS_IOC
+rule FamousChollima_Packagist_TailwindJS_IOC : ioc
 {
     meta:
         description = "Static IOC sweep — Packagist coord, commit, TRON/Aptos wallets, XOR keys, payload hashes"
@@ -77,7 +77,7 @@ rule FamousChollima_Packagist_TailwindJS_IOC
         any of them and filesize < 50MB
 }
 
-rule FamousChollima_Packagist_TailwindJS_Specimen
+rule FamousChollima_Packagist_TailwindJS_Specimen : specimen
 {
     meta:
         description = "Exact-hash pin on the malicious tailwind.js shipped in roberts/leads dev-drewroberts/feature/test-case"

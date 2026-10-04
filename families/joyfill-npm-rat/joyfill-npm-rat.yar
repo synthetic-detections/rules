@@ -30,7 +30,7 @@
      https://thehackernews.com/2026/07/two-compromised-joyfill-npm-packages.html
 */
 
-rule Joyfill_NPM_RAT_Loader
+rule Joyfill_NPM_RAT_Loader : c2 exploit loader rat supply_chain
 {
     meta:
         description = "Joyfill npm import-time RAT loader - campaign injection sentinels + Sec-V:A9-0135-3 marker + Tron/Aptos/BNB blockchain-C2 resolver + self-injection into VS Code/Discord/GitHub Desktop/npm CLI"
@@ -72,7 +72,7 @@ rule Joyfill_NPM_RAT_Loader
         and filesize < 8MB
 }
 
-rule Joyfill_NPM_RAT_Decoder
+rule Joyfill_NPM_RAT_Decoder : rat supply_chain
 {
     meta:
         description = "Joyfill RAT string-obfuscation shape - seeded string-shuffle PRNG constants + repeating-key XOR keys used to decode the embedded implant"
@@ -92,7 +92,7 @@ rule Joyfill_NPM_RAT_Decoder
         (any of ($xor*) or all of ($prng*)) and filesize < 8MB
 }
 
-rule Joyfill_NPM_RAT_IOC
+rule Joyfill_NPM_RAT_IOC : c2 ioc rat stealer supply_chain
 {
     meta:
         description = "Joyfill hard IOCs - compromised package versions, RAT/stealer SHA-256, C2 IPs and request paths"

@@ -36,7 +36,7 @@
 
 import "pe"
 
-rule PrinzEugen_Encryptor_Behavior
+rule PrinzEugen_Encryptor_Behavior : behavioral ransomware supply_chain
 {
     meta:
         description = "Prinz Eugen Go-based encryptor — scorched-earth-ausfc package with ChaCha20 encryption routines"
@@ -76,7 +76,7 @@ rule PrinzEugen_Encryptor_Behavior
         and filesize < 30MB
 }
 
-rule PrinzEugen_Encrypted_File
+rule PrinzEugen_Encrypted_File : ransomware
 {
     meta:
         description = "File encrypted by Prinz Eugen ransomware — CHV1 magic header with ChaCha20-Poly1305 ciphertext"
@@ -94,7 +94,7 @@ rule PrinzEugen_Encrypted_File
         $magic at 0 and filesize > 128 and filesize < 500MB
 }
 
-rule PrinzEugen_IOC
+rule PrinzEugen_IOC : c2 ioc ransomware
 {
     meta:
         description = "Static IOC sweep — Prinz Eugen C2 infrastructure, actor contacts, stager URLs, operational commands"

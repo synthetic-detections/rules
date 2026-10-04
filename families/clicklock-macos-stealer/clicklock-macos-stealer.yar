@@ -29,7 +29,7 @@
      https://thehackernews.com/2026/07/new-clicklock-macos-stealer-kills-apps.html
 */
 
-rule ClickLock_macOS_Stealer_Behavior
+rule ClickLock_macOS_Stealer_Behavior : behavioral phishing stealer
 {
     meta:
         description = "ClickLock macOS stealer — orchestrator/module shell + osascript behavior (ClickFix banner, kill-loop coercion, Keychain theft)"
@@ -71,7 +71,7 @@ rule ClickLock_macOS_Stealer_Behavior
         and filesize < 512KB
 }
 
-rule ClickLock_macOS_Stealer_IOC
+rule ClickLock_macOS_Stealer_IOC : ioc stealer
 {
     meta:
         description = "ClickLock macOS stealer — network IOCs, LaunchAgent labels, and sample SHA1 hashes"
@@ -112,7 +112,7 @@ rule ClickLock_macOS_Stealer_IOC
         and filesize < 50MB
 }
 
-rule ClickLock_macOS_Stealer_Specimen
+rule ClickLock_macOS_Stealer_Specimen : specimen stealer
 {
     meta:
         description = "ClickLock macOS stealer — tight specimen pin (distinctive artifact combination)"

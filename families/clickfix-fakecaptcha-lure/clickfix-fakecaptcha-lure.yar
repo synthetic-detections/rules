@@ -62,7 +62,7 @@ private rule cf_verify_ploy
         any of them
 }
 
-rule clickfix_stageclipboard_routine
+rule clickfix_stageclipboard_routine : phishing
 {
     meta:
         description = "ClickFix lure: the near-unique clipboard-staging routine (stageClipboard/setClipboardCopyData)"
@@ -77,7 +77,7 @@ rule clickfix_stageclipboard_routine
         any of them and filesize < 3MB
 }
 
-rule clickfix_clipboard_staged_cradle
+rule clickfix_clipboard_staged_cradle : phishing
 {
     meta:
         description = "ClickFix lure: a clipboard-copy of an obfuscated/remote-exec command cradle"
@@ -89,7 +89,7 @@ rule clickfix_clipboard_staged_cradle
         cf_clipboard_write and cf_exec_cradle and filesize < 3MB
 }
 
-rule clickfix_fakecaptcha_verify_ploy
+rule clickfix_fakecaptcha_verify_ploy : phishing
 {
     meta:
         description = "ClickFix lure: fake human-verification ploy + clipboard staging or a command cradle"
@@ -101,7 +101,7 @@ rule clickfix_fakecaptcha_verify_ploy
         cf_verify_ploy and (cf_clipboard_write or cf_exec_cradle) and filesize < 3MB
 }
 
-rule clickfix_run_dialog_instructions
+rule clickfix_run_dialog_instructions : phishing
 {
     meta:
         description = "ClickFix lure: paste-and-run (Win+R / File Explorer / PowerShell) instructions with a command cradle"

@@ -33,7 +33,7 @@
             caller-invocable destroy/drain surface.
 */
 
-rule EVM_Unguarded_SelfDestruct_Bytecode
+rule EVM_Unguarded_SelfDestruct_Bytecode : evm wiper
 {
     meta:
         description = "EVM runtime bytecode exposing a caller-invocable self-destruct / drain function with no access-control guard"
@@ -96,7 +96,7 @@ rule EVM_Unguarded_SelfDestruct_Bytecode
         and filesize < 24KB
 }
 
-rule EVM_Unguarded_SelfDestruct_Source
+rule EVM_Unguarded_SelfDestruct_Source : evm wiper
 {
     meta:
         description = "Solidity source or ABI advertising a public, unguarded self-destruct / drain surface"

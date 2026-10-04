@@ -35,7 +35,7 @@
 
 import "pe"
 
-rule GentleKiller_EDR_KillList
+rule GentleKiller_EDR_KillList : malware
 {
     meta:
         description = "GentleKiller EDR-killer — high density of security vendor process names targeted for termination (post-unpack / memory)"
@@ -96,13 +96,13 @@ rule GentleKiller_EDR_KillList
         // no legitimate application references this many competing
         // security products by their internal process names
         // 5+ EDR names + kernel driver interaction API
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (8 of ($edr_*) or (5 of ($edr_*) and $api_ioctl))
         and filesize > 20KB
         and filesize < 10MB
 }
 
-rule GentleKiller_Variant_Artifacts
+rule GentleKiller_Variant_Artifacts : ioc
 {
     meta:
         description = "GentleKiller variant — impersonated vendor PE with BYOVD driver filenames embedded"
@@ -142,7 +142,7 @@ rule GentleKiller_Variant_Artifacts
         // Any BYOVD driver filename + any variant executable name
         // 2+ driver filenames in a single binary (loader or config)
         // OxideHarvest alongside any driver (affiliate kit bundle)
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (
             (any of ($drv_*) and any of ($var_*)) or
             2 of ($drv_*) or
@@ -152,7 +152,7 @@ rule GentleKiller_Variant_Artifacts
         and filesize < 10MB
 }
 
-rule GentleKiller_IOC
+rule GentleKiller_IOC : ioc
 {
     meta:
         description = "Static IOC sweep — GentlemenCollection staging, known filenames, driver artifacts, OxideHarvest"

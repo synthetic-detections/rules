@@ -51,7 +51,7 @@
 
 import "hash"
 
-rule GoldenChickens_TAG195_Implant_Behavior
+rule GoldenChickens_TAG195_Implant_Behavior : behavioral
 {
     meta:
         description = "Golden Chickens TAG-195 implant host artifacts — WinComCtl Run persistence, hidden-Chrome CDP session theft, and .ocx staging filenames co-occurring"
@@ -90,7 +90,7 @@ rule GoldenChickens_TAG195_Implant_Behavior
         and filesize < 30MB
 }
 
-rule GoldenChickens_TAG195_Modular_Shape
+rule GoldenChickens_TAG195_Modular_Shape : behavioral
 {
     meta:
         description = "Golden Chickens TAG-195 modular controller / WebSocket-agent shape — /ws/agent channel plus controller .ocx filenames"
@@ -123,7 +123,7 @@ rule GoldenChickens_TAG195_Modular_Shape
         and filesize < 30MB
 }
 
-rule GoldenChickens_TAG195_IOC
+rule GoldenChickens_TAG195_IOC : c2 ioc phishing
 {
     meta:
         description = "Golden Chickens TAG-195 network + sample IOCs — C2/lure domains, IPs, and SHA-256 hashes for TinyEgg/ChonkyChicken/ChromEggscalator"
@@ -149,7 +149,7 @@ rule GoldenChickens_TAG195_IOC
         any of them and filesize < 30MB
 }
 
-rule GoldenChickens_TAG195_SampleHash
+rule GoldenChickens_TAG195_SampleHash : malware
 {
     meta:
         description = "Golden Chickens TAG-195 pinned SHA-256 sample hashes (TinyEgg, ChonkyChicken, modular ChonkyChicken, ChromEggscalator) — Recorded Future Insikt Group"

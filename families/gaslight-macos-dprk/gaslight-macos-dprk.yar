@@ -49,7 +49,7 @@
      b3c56d689414343589f38394d19ba2fe9a518133281200faa0556ba4e4136394 (bash installer)
 */
 
-rule Gaslight_PromptInjection_AntiAnalysis
+rule Gaslight_PromptInjection_AntiAnalysis : exploit
 {
     meta:
         description = "Gaslight LLM anti-analysis prompt injection — {{DATA}} delimiters with fabricated system messages"
@@ -72,7 +72,7 @@ rule Gaslight_PromptInjection_AntiAnalysis
         $delim and 3 of ($fake_*) and filesize < 20MB
 }
 
-rule Gaslight_Backdoor_IOCs
+rule Gaslight_Backdoor_IOCs : ioc
 {
     meta:
         description = "Gaslight IOCs — persistence label, signing ID, installer constants, Telegram error handling"
@@ -116,7 +116,7 @@ rule Gaslight_Backdoor_IOCs
         and filesize < 50MB
 }
 
-rule Gaslight_Rust_MachO_Shape
+rule Gaslight_Rust_MachO_Shape : behavioral
 {
     meta:
         description = "Gaslight Rust Mach-O — macOS API pattern for persistence, sleep prevention, cert pinning"

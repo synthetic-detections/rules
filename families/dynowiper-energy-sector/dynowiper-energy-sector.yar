@@ -63,7 +63,7 @@
      LazyWiper ps1  (sha256): 033cb31c…09602c2
 */
 
-rule DynoWiper_Wiper_Behavior
+rule DynoWiper_Wiper_Behavior : behavioral wiper
 {
     meta:
         description = "DynoWiper native Win32 wiper — 'Error opening file:' plus the distinctive drive exclusion list incl the 'program files(x86)' typo, in a small PE"
@@ -82,10 +82,10 @@ rule DynoWiper_Wiper_Behavior
         $x4  = "documents and settings" wide nocase
         $x5  = "system32" wide nocase
     condition:
-        uint16(0) == 23117 and $err and 3 of ($x*) and filesize < 500KB
+        uint16(0) == 0x5a4d and $err and 3 of ($x*) and filesize < 500KB
 }
 
-rule DynoWiper_PDB_Guarded
+rule DynoWiper_PDB_Guarded : malware
 {
     meta:
         description = "DynoWiper build artifact — the vagrant VS2013 Source.pdb path, gated on a PE and an exclusion-list string so the forgeable path cannot fire alone"
@@ -100,10 +100,10 @@ rule DynoWiper_PDB_Guarded
         $x1  = "program files(x86)" wide nocase
         $x2  = "Error opening file: " wide
     condition:
-        uint16(0) == 23117 and $pdb and ($vag or any of ($x*)) and filesize < 500KB
+        uint16(0) == 0x5a4d and $pdb and ($vag or any of ($x*)) and filesize < 500KB
 }
 
-rule DynoWiper_GPO_Distributor
+rule DynoWiper_GPO_Distributor : malware
 {
     meta:
         description = "DynoWiper PowerShell GPO distributor — hijacks Default Domain Policy as 'Custom Domain Policy' + SYSTEM 'Custom GPO Task' with the hardcoded filter GUID"
@@ -125,7 +125,7 @@ rule DynoWiper_GPO_Distributor
         ($guid or ($n1 and $n2) or $del or ($n2 and $n3)) and filesize < 1MB
 }
 
-rule LazyWiper_Build
+rule LazyWiper_Build : wiper
 {
     meta:
         description = "LazyWiper PowerShell wiper (this build) — WriteRandomBytes helper + the misspelled .pcks/.pcks12/.pcks7 extensions + DC-abort; LLM-generated, pins THIS build, not durable across regeneration"
@@ -145,7 +145,7 @@ rule LazyWiper_Build
         $fn and 2 of ($e*) and any of ($dc*) and filesize < 200KB
 }
 
-rule DynoWiper_Campaign_IOCs
+rule DynoWiper_Campaign_IOCs : c2 ioc
 {
     meta:
         description = "DynoWiper/LazyWiper campaign hard IOCs — sample sha256/sha1 pins and the Static-Tundra relay C2 IPs (atomic, decay expected — rotate)"

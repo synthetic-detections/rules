@@ -27,7 +27,7 @@
      https://securelist.com/mirage-kitten-new-tools/120811/
 */
 
-rule MirageKitten_NightLedger_Backdoor
+rule MirageKitten_NightLedger_Backdoor : backdoor c2
 {
     meta:
         description = "Mirage Kitten NightLedger backdoor - unique mutex GUID, '#%%#' C2 response delimiter, and the campaign's random-looking API endpoint paths (masquerades as SspiCli.dll via AppVShNotify delay-load hijack)"
@@ -46,10 +46,10 @@ rule MirageKitten_NightLedger_Backdoor
         // DLL-hijack chain artefact
         $chain = "AppVShNotify" ascii wide nocase
     condition:
-        uint16(0) == 23117 and ($mutex or any of ($ep*) or ($delim and $chain)) and filesize < 20MB
+        uint16(0) == 0x5a4d and ($mutex or any of ($ep*) or ($delim and $chain)) and filesize < 20MB
 }
 
-rule MirageKitten_Tunnelers_BridgeHead_ArcBridge
+rule MirageKitten_Tunnelers_BridgeHead_ArcBridge : malware
 {
     meta:
         description = "Mirage Kitten BridgeHead/ArcBridge WebSocket SOCKS5 tunnelers - ArcBridge embedded config markers + mutex, or the tunneler WebSocket/username-gate constants (dropped under legit DLL names unbcl/libwinpthread-1/IPHLPAPI)"
@@ -70,7 +70,7 @@ rule MirageKitten_Tunnelers_BridgeHead_ArcBridge
         $cmd_open     = "OPEN:" ascii wide
         $cmd_dns      = "DNS:" ascii wide
     condition:
-        uint16(0) == 23117
+        uint16(0) == 0x5a4d
         and (
             ($cfg_start and $cfg_end) or
             $arc_mutex or
@@ -81,7 +81,7 @@ rule MirageKitten_Tunnelers_BridgeHead_ArcBridge
         and filesize < 20MB
 }
 
-rule MirageKitten_IOC
+rule MirageKitten_IOC : c2 ioc
 {
     meta:
         description = "Mirage Kitten hard IOCs - NightLedger/BridgeHead/ArcBridge MD5 pins and C2 domains"

@@ -36,7 +36,7 @@
 
 import "hash"
 
-rule FalconFlank_EDR_LPE_PoC_Behaviour
+rule FalconFlank_EDR_LPE_PoC_Behaviour : behavioral
 {
     meta:
         description = "FalconFlank CrowdStrike Falcon LPE PoC -- FALCONFLANK named pipe + planted PowerShell bcrypt.dll + MareBackup task-abuse + oplock/reparse race strings"
@@ -62,7 +62,7 @@ rule FalconFlank_EDR_LPE_PoC_Behaviour
         any of ($pipe*) or (any of ($dll*) and $mare) or 2 of ($flank, $task, $task_src, $m1, $m2, $m3, $m4)
 }
 
-rule FalconFlank_EDR_LPE_PoC_IOC
+rule FalconFlank_EDR_LPE_PoC_IOC : ioc
 {
     meta:
         description = "FalconFlank PoC repository artifacts (MSNightmare / Nightmare Eclipse) -- project filenames and unique markers"
@@ -81,7 +81,7 @@ rule FalconFlank_EDR_LPE_PoC_IOC
         any of ($f1, $f2, $f3) or all of ($n1, $n2)
 }
 
-rule FalconFlank_EDR_LPE_PoC_Pin
+rule FalconFlank_EDR_LPE_PoC_Pin : specimen
 {
     meta:
         description = "Hash pin for the compiled FalconFlank PoC binary (SHA-256) -- populate when a sample is captured"

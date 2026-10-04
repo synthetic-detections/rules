@@ -50,7 +50,7 @@
      https://github.com/Zimperium/IOC/tree/master/2026-06-Rokarolla/
 */
 
-rule Rokarolla_Banker_Behavior
+rule Rokarolla_Banker_Behavior : behavioral
 {
     meta:
         description = "Rokarolla banking trojan — developer typos and unique compound command names in DEX bytecode"
@@ -124,7 +124,7 @@ rule Rokarolla_Banker_Behavior
         and filesize < 100MB
 }
 
-rule Rokarolla_Command_Protocol
+rule Rokarolla_Command_Protocol : c2 stealer
 {
     meta:
         description = "Rokarolla 137-command C2 protocol — credential theft, VNC, keylogger, SMS, overlay, and device control subsystems"
@@ -204,7 +204,7 @@ rule Rokarolla_Command_Protocol
         and filesize < 100MB
 }
 
-rule Rokarolla_IOC
+rule Rokarolla_IOC : c2 ioc
 {
     meta:
         description = "Static IOC sweep — C2 domains, distribution URL, APK sample hashes"
