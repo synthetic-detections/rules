@@ -1,0 +1,36 @@
+# ClingSTUN IoT Backdoor — Suricata Rules
+#
+# Linux back-connect proxy backdoor abusing STUN protocol for C2.
+# Commands embedded in STUN transaction IDs; contacts 13+ hardcoded
+# STUN servers every ~5 seconds.
+#
+# Sources:
+#   - https://www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure
+#   - https://www.securityweek.com/linux-backdoor-abuses-stun-protocol-exploits-dozens-of-flaws/
+#
+# [[clingstun-iot-backdoor]]
+
+# --- STUN-based C2 detection ---
+
+# ClingSTUN operator STUN server (145.249.115[.]184)
+alert udp $HOME_NET any -> 145.249.115.184 3478 (msg:"SYNTHDET ClingSTUN C2 STUN Binding Request to operator server"; content:"|00 01|"; offset:0; depth:2; content:"|00 00|"; offset:2; depth:2; sid:2026100601; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# ClingSTUN STUN Binding Request with zero-length body (anomalous — normal STUN has attributes)
+alert udp $HOME_NET any -> $EXTERNAL_NET 3478 (msg:"SYNTHDET ClingSTUN anomalous STUN Binding Request zero-length body"; content:"|00 01 00 00|"; offset:0; depth:4; threshold:type both, track by_src, count 5, seconds 30; sid:2026100602; rev:1; metadata:severity high, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# ClingSTUN spoofed Google STUN response (commands from 74.125.250.129 — not real Google)
+alert udp 74.125.250.129 19302 -> $HOME_NET any (msg:"SYNTHDET ClingSTUN spoofed Google STUN response with embedded C2 command"; content:"|01 01|"; offset:0; depth:2; threshold:type both, track by_dst, count 3, seconds 60; sid:2026100603; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# --- Download / propagation detection ---
+
+# ClingSTUN dropper HTTP request with clingwashere User-Agent
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"SYNTHDET ClingSTUN HTTP request with clingwashere User-Agent"; http.user_agent; content:"clingwashere"; nocase; sid:2026100604; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# ClingSTUN Realtek SDK exploitation attempt (POST /picsdesc.xml)
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"SYNTHDET ClingSTUN Realtek SDK exploit POST /picsdesc.xml"; http.method; content:"POST"; http.uri; content:"/picsdesc.xml"; sid:2026100605; rev:1; metadata:severity high, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2021-35394; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# ClingSTUN download from known staging servers
+alert http $HOME_NET any -> [124.163.212.119,222.223.152.97,118.45.196.225,120.193.219.210,58.211.144.243] any (msg:"SYNTHDET ClingSTUN payload download from known staging server"; flow:to_server,established; sid:2026100606; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# ClingSTUN single-instance check port (33957/tcp)
+alert tcp $HOME_NET any -> $HOME_NET 33957 (msg:"SYNTHDET ClingSTUN single-instance mutex port 33957"; flow:to_server; threshold:type limit, track by_src, count 1, seconds 3600; sid:2026100607; rev:1; metadata:severity medium, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
