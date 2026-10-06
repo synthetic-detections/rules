@@ -1,5 +1,3 @@
-import "hash"
-
 /*
  * ClingSTUN IoT Backdoor
  *
@@ -15,6 +13,8 @@ import "hash"
  * [[clingstun-iot-backdoor-suricata]]
  */
 
+import "hash"
+
 rule ClingSTUN_Backdoor_Behavior
 {
     meta:
@@ -24,71 +24,44 @@ rule ClingSTUN_Backdoor_Behavior
         severity    = "critical"
         family      = "ClingSTUN"
         reference   = "https://www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure"
-
     strings:
         // persistence paths
         $path_cling1  = "/root/.cling"
         $path_cling2  = "/usr/local/bin/.cling"
-
         // init script targets for persistence
         $init_inittab = "/etc/inittab"
         $init_rcs     = "/etc/init.d/rcS"
         $init_rcboot  = "/etc/rc.d/rc.boot"
-
         // wget replacement (backs up original, replaces with self)
         $wget_backup  = "wget.r"
         $wget_track   = "wget.p"
-
         // self-rep infection tags
         $tag_realtek  = "realtek.selfrep"
         $tag_router   = "selfrep.router"
-
         // user-agent marker
         $ua_cling     = "clingwashere"
-
         // proc hiding
         $proc_mount   = "mount --bind /tmp /proc/"
         $proc_cmdline = "/proc/%d/cmdline"
         $proc_exe     = "/proc/%d/exe"
-
         // watchdog disarm
         $watchdog1    = "/dev/watchdog"
         $watchdog2    = "/dev/misc/watchdog"
-
         // single-instance mutex port
-        $mutex_port   = { 84 9D }  // 33957 big-endian
-
+        // 33957 big-endian
+        $mutex_port   = { 84 9D }
         // STUN binding request magic (0x0001) + zero-padded length
         $stun_magic   = { 00 01 00 00 }
-
     condition:
-        (uint32(0) == 0x464c457f) and
-        (filesize < 5MB) and
-        (
-            (
-                ($path_cling1 or $path_cling2) and
-                ($tag_realtek or $tag_router or $ua_cling)
-            )
-            or
-            (
-                ($path_cling1 or $path_cling2) and
-                ($init_inittab or $init_rcs or $init_rcboot) and
-                ($proc_mount or $proc_cmdline)
-            )
-            or
-            (
-                ($ua_cling) and
-                ($tag_realtek or $tag_router) and
-                any of ($wget_*)
-            )
-            or
-            (
-                3 of ($path_cling*, $tag_*, $ua_cling) and
-                2 of ($init_*, $proc_*, $watchdog*, $mutex_port, $stun_magic)
-            )
+        uint32(0) == 1179403647
+        and (
+            (($path_cling1 or $path_cling2) and ($tag_realtek or $tag_router or $ua_cling)) or
+            (($path_cling1 or $path_cling2) and ($init_inittab or $init_rcs or $init_rcboot) and ($proc_mount or $proc_cmdline)) or
+            ($ua_cling and ($tag_realtek or $tag_router) and any of ($wget_*)) or
+            (3 of ($path_cling*, $tag_*, $ua_cling) and 2 of ($init_*, $proc_*, $watchdog*, $mutex_port, $stun_magic))
         )
+        and filesize < 5MB
 }
-
 
 rule ClingSTUN_IOC_Infrastructure
 {
@@ -99,60 +72,53 @@ rule ClingSTUN_IOC_Infrastructure
         severity    = "high"
         family      = "ClingSTUN"
         reference   = "https://www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure"
-
     strings:
         // operator-controlled STUN server
-        $stun_op  = "145.249.115.184"
-
+        $stun_op          = "145.249.115.184"
         // hardcoded STUN endpoints (distinctive subset — not Google/Cloudflare)
-        $stun_1   = "5.39.72.109"
-        $stun_2   = "81.187.30.115"
-        $stun_3   = "207.38.82.134"
-        $stun_4   = "83.211.9.232"
-        $stun_5   = "212.53.40.43"
-        $stun_6   = "85.17.88.164"
-        $stun_7   = "216.93.246.18"
-        $stun_8   = "77.72.169.213"
-        $stun_9   = "77.72.169.211"
-        $stun_10  = "212.227.67.34"
-        $stun_11  = "212.227.67.33"
-        $stun_12  = "154.73.34.8"
-        $stun_13  = "64.131.63.217"
-        $stun_14  = "82.113.193.63"
-        $stun_15  = "185.125.180.70"
-        $stun_16  = "66.51.128.1"
-        $stun_17  = "139.162.62.29"
-        $stun_18  = "85.93.219.114"
-        $stun_19  = "77.72.169.210"
-        $stun_20  = "77.72.169.212"
-        $stun_21  = "217.0.0.249"
-
+        $stun_1           = "5.39.72.109"
+        $stun_2           = "81.187.30.115"
+        $stun_3           = "207.38.82.134"
+        $stun_4           = "83.211.9.232"
+        $stun_5           = "212.53.40.43"
+        $stun_6           = "85.17.88.164"
+        $stun_7           = "216.93.246.18"
+        $stun_8           = "77.72.169.213"
+        $stun_9           = "77.72.169.211"
+        $stun_10          = "212.227.67.34"
+        $stun_11          = "212.227.67.33"
+        $stun_12          = "154.73.34.8"
+        $stun_13          = "64.131.63.217"
+        $stun_14          = "82.113.193.63"
+        $stun_15          = "185.125.180.70"
+        $stun_16          = "66.51.128.1"
+        $stun_17          = "139.162.62.29"
+        $stun_18          = "85.93.219.114"
+        $stun_19          = "77.72.169.210"
+        $stun_20          = "77.72.169.212"
+        $stun_21          = "217.0.0.249"
         // download servers
-        $dl_1     = "124.163.212.119"
-        $dl_2     = "222.223.152.97"
-        $dl_3     = "118.45.196.225"
-        $dl_4     = "120.193.219.210"
-        $dl_5     = "58.211.144.243"
-        $dl_6     = "121.32.243.81"
-
+        $dl_1             = "124.163.212.119"
+        $dl_2             = "222.223.152.97"
+        $dl_3             = "118.45.196.225"
+        $dl_4             = "120.193.219.210"
+        $dl_5             = "58.211.144.243"
+        $dl_6             = "121.32.243.81"
         // exploit target paths
         $exploit_picsdesc = "POST /picsdesc.xml"
-
         // self-propagation marker
-        $selfrep  = ".selfrep"
-
+        $selfrep          = ".selfrep"
     condition:
-        (uint32(0) == 0x464c457f) and
-        (filesize < 5MB) and
-        (
+        uint32(0) == 1179403647
+        and (
             ($stun_op and 2 of ($stun_*)) or
-            (4 of ($stun_*)) or
-            (2 of ($dl_*) and 1 of ($stun_*)) or
-            ($selfrep and 2 of ($stun_*) and 1 of ($dl_*)) or
-            ($exploit_picsdesc and 1 of ($dl_*))
+            4 of ($stun_*) or
+            (2 of ($dl_*) and any of ($stun_*)) or
+            ($selfrep and 2 of ($stun_*) and any of ($dl_*)) or
+            ($exploit_picsdesc and any of ($dl_*))
         )
+        and filesize < 5MB
 }
-
 
 rule ClingSTUN_Specimen_Pin
 {
@@ -163,11 +129,10 @@ rule ClingSTUN_Specimen_Pin
         severity    = "critical"
         family      = "ClingSTUN"
         reference   = "https://www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure"
-
     condition:
-        (uint32(0) == 0x464c457f) and
-        (filesize < 5MB) and
-        (
+        uint32(0) == 1179403647
+        and filesize < 5MB
+        and (
             hash.sha256(0, filesize) == "dc892f5013edb0aa1e61e808511387373d8d120348b5be0929621d21e6e9946a" or
             hash.sha256(0, filesize) == "a297eddfa7abea8d411afc0f150f8f6f30e470a77204de87e3b0815fa9bb8a84" or
             hash.sha256(0, filesize) == "4fbd61cb9181ebbc4fe9a6e59d3c346dc00001da48d66bd890556fc6fad22b07" or
