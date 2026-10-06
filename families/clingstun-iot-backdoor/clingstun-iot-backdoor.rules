@@ -34,3 +34,75 @@ alert http $HOME_NET any -> [124.163.212.119,222.223.152.97,118.45.196.225,120.1
 
 # ClingSTUN single-instance check port (33957/tcp)
 alert tcp $HOME_NET any -> $HOME_NET 33957 (msg:"SYNTHDET ClingSTUN single-instance mutex port 33957"; flow:to_server; threshold:type limit, track by_src, count 1, seconds 3600; sid:2026100607; rev:1; metadata:severity medium, family ClingSTUN, created_at 2026_10_06; classtype:trojan-activity; reference:url,www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure;)
+
+# --- CVE exploitation attempt detection ---
+# ClingSTUN worm module carries hardcoded exploits for 18 CVEs across
+# 14 vendors. Each rule below detects an active exploitation attempt
+# against the target device class.
+
+# CVE-2021-35394: Realtek Jungle SDK UDPServer (UDP:9034)
+# Payload: "orf;<shell_command>" — server passes bytes after "orf;" to system()
+alert udp any any -> $HOME_NET 9034 (msg:"SYNTHDET ClingSTUN CVE-2021-35394 Realtek Jungle SDK UDPServer command injection"; content:"orf|3b|"; depth:4; sid:2026100608; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2021-35394; reference:url,unit42.paloaltonetworks.com/realtek-sdk-vulnerability/;)
+
+# CVE-2014-8361: Realtek miniigd UPnP SOAP AddPortMapping (HTTP, commonly :52869)
+# Backtick/semicolon command injection in <NewInternalClient> XML element
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2014-8361 Realtek miniigd UPnP AddPortMapping command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/wanipcn.xml"; http.request_body; content:"AddPortMapping"; content:"NewInternalClient"; distance:0; sid:2026100609; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2014-8361; reference:url,www.exploit-db.com/exploits/37169;)
+
+# CVE-2016-20016: MVPower DVR JAWS HTTP server /shell endpoint
+# Query string after /shell? is executed directly as a shell command
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2016-20016 MVPower DVR JAWS /shell command execution"; flow:to_server,established; http.uri; content:"/shell?"; sid:2026100610; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2016-20016; reference:url,www.exploit-db.com/exploits/41471;)
+
+# CVE-2022-36553: Hytec Inter HWL-2511-SS popen.cgi unauthenticated RCE
+# GET /cgi-bin/popen.cgi?command=<shell_cmd>
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2022-36553 Hytec Inter HWL-2511-SS popen.cgi command injection"; flow:to_server,established; http.uri; content:"/cgi-bin/popen.cgi"; content:"command="; distance:0; sid:2026100611; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2022-36553; reference:url,github.com/0xNslabs/CVE-2022-36553-PoC;)
+
+# CVE-2023-26801: LB-LINK router set_LimitClient_cfg mac parameter injection
+# POST /goform/set_LimitClient_cfg with mac=;<cmd>
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2023-26801 LB-LINK router set_LimitClient_cfg command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/goform/set_LimitClient_cfg"; sid:2026100612; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2023-26801; reference:url,www.akamai.com/blog/security-research/cve-2023-26801-exploited-spreading-mirai-botnet;)
+
+# CVE-2024-3721: TBK DVR device.rsp ___S_O_S_T_R_E_A_MAX___ command injection
+# /device.rsp?opt=sys&cmd=___S_O_S_T_R_E_A_MAX___&mdc=<shell_cmd>
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2024-3721 TBK DVR device.rsp command injection"; flow:to_server,established; http.uri; content:"/device.rsp"; content:"___S_O_S_T_R_E_A_MAX___"; distance:0; sid:2026100613; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2024-3721; reference:url,github.com/netsecfish/tbk_dvr_command_injection;)
+
+# CVE-2023-1389: TP-Link Archer AX21 locale parameter command injection
+# POST /cgi-bin/luci/;stok=/locale with country=$(<cmd>)
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2023-1389 TP-Link Archer AX21 locale command injection"; flow:to_server,established; http.uri.raw; content:"/cgi-bin/luci/"; content:"stok=/locale"; distance:0; sid:2026100614; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2023-1389; reference:url,www.exploit-db.com/exploits/51677;)
+
+# CVE-2024-7029: AVTECH AVM1203 Factory.cgi brightness parameter injection
+# POST /cgi-bin/supervisor/Factory.cgi with brightness=$(<cmd>)
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2024-7029 AVTECH AVM1203 Factory.cgi brightness command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/cgi-bin/supervisor/Factory.cgi"; http.request_body; content:"brightness="; sid:2026100615; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2024-7029; reference:url,github.com/bigherocenter/CVE-2024-7029-EXPLOIT;)
+
+# CVE-2025-34035: EnGenius EnShare usbinteract.cgi path parameter injection
+# POST /web/cgi-bin/usbinteract.cgi with path="|<cmd>||" (commonly :9000)
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2025-34035 EnGenius EnShare usbinteract.cgi command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/usbinteract.cgi"; http.request_body; content:"path="; sid:2026100616; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2025-34035; reference:url,www.exploit-db.com/exploits/42114;)
+
+# CVE-2023-46805 + CVE-2024-21887: Ivanti Connect Secure auth bypass + RCE chain
+# Path traversal via /api/v1/totp/user-backup-code/../../ bypasses auth;
+# command injection in JSON body fields of admin endpoints
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2023-46805 CVE-2024-21887 Ivanti Connect Secure auth bypass RCE chain"; flow:to_server,established; http.uri.raw; content:"/api/v1/totp/user-backup-code/../../"; sid:2026100617; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2023-46805; reference:cve,2024-21887; reference:url,horizon3.ai/intelligence/blogs/understanding-the-actively-exploited-ivanti-cves/;)
+
+# CVE-2024-10915: D-Link NAS account_mgr.cgi group parameter injection
+# GET /cgi-bin/account_mgr.cgi?cmd=cgi_user_add&group=';<cmd>;'
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2024-10915 D-Link NAS account_mgr.cgi command injection"; flow:to_server,established; http.uri; content:"/cgi-bin/account_mgr.cgi"; content:"cmd=cgi_user_add"; distance:0; sid:2026100618; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2024-10915; reference:url,github.com/ThemeHackers/CVE-2024-10914;)
+
+# CVE-2023-41011: China Mobile HG6543C4 shortcut_telnet.cg command injection
+# GET /shortcut_telnet.cg?<params> — unauthenticated
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2023-41011 China Mobile HG6543C4 shortcut_telnet.cg command injection"; flow:to_server,established; http.uri; content:"/shortcut_telnet.cg"; sid:2026100619; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2023-41011;)
+
+# CVE-2025-34037: Linksys E-Series tmUnblock.cgi ttcp_ip injection (commonly :8080)
+# POST /tmUnblock.cgi with ttcp_ip=-h `<cmd>` (backtick breakout)
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2025-34037 Linksys E-Series tmUnblock.cgi command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/tmUnblock.cgi"; http.request_body; content:"ttcp_ip="; sid:2026100620; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2025-34037; reference:url,github.com/Taxanehh/CVE-2025-34037;)
+
+# CVE-2026-87827: KGUARD DVR rsSystemServer raw TCP command injection (TCP:56789)
+# Service passes raw TCP stream to system() — no framing, no auth
+alert tcp any any -> $HOME_NET 56789 (msg:"SYNTHDET ClingSTUN CVE-2026-87827 KGUARD DVR rsSystemServer command injection wget"; flow:to_server,established; content:"wget "; nocase; sid:2026100621; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2026-87827; reference:url,blog.netlab.360.com/mirai_ptea-botnet-is-exploiting-undisclosed-kguard-dvr-vulnerability-en/;)
+
+alert tcp any any -> $HOME_NET 56789 (msg:"SYNTHDET ClingSTUN CVE-2026-87827 KGUARD DVR rsSystemServer command injection curl"; flow:to_server,established; content:"curl "; nocase; sid:2026100622; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2026-87827; reference:url,blog.netlab.360.com/mirai_ptea-botnet-is-exploiting-undisclosed-kguard-dvr-vulnerability-en/;)
+
+# CVE-2026-36356: MeiG Smart FORGE_SLT711 SetRemoteAccessCfg password injection
+# POST /action/SetRemoteAccessCfg with command substitution in JSON password field
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2026-36356 MeiG Smart FORGE_SLT711 SetRemoteAccessCfg command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/action/SetRemoteAccessCfg"; sid:2026100623; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2026-36356; reference:url,www.exploit-db.com/exploits/52581;)
+
+# CVE-2025-67038: Lantronix EDS5000 rpc/auth username injection
+# POST /cgi-bin/luci/rpc/auth with $() in the JSON username field
+alert http any any -> $HOME_NET any (msg:"SYNTHDET ClingSTUN CVE-2025-67038 Lantronix EDS5000 rpc auth username command injection"; flow:to_server,established; http.method; content:"POST"; http.uri; content:"/cgi-bin/luci/rpc/auth"; http.request_body; content:"|24 28|"; sid:2026100624; rev:1; metadata:severity critical, family ClingSTUN, created_at 2026_10_06; classtype:attempted-admin; reference:cve,2025-67038;)
