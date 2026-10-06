@@ -53,7 +53,7 @@ rule ClingSTUN_Backdoor_Behavior
         // STUN binding request magic (0x0001) + zero-padded length
         $stun_magic   = { 00 01 00 00 }
     condition:
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (
             (($path_cling1 or $path_cling2) and ($tag_realtek or $tag_router or $ua_cling)) or
             (($path_cling1 or $path_cling2) and ($init_inittab or $init_rcs or $init_rcboot) and ($proc_mount or $proc_cmdline)) or
@@ -109,7 +109,7 @@ rule ClingSTUN_IOC_Infrastructure
         // self-propagation marker
         $selfrep          = ".selfrep"
     condition:
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and (
             ($stun_op and 2 of ($stun_*)) or
             4 of ($stun_*) or
@@ -130,7 +130,7 @@ rule ClingSTUN_Specimen_Pin
         family      = "ClingSTUN"
         reference   = "https://www.fortinet.com/blog/threat-research/clingstun-linux-backdoor-abuses-public-stun-infrastructure"
     condition:
-        uint32(0) == 1179403647
+        uint32(0) == 0x464c457f
         and filesize < 5MB
         and (
             hash.sha256(0, filesize) == "dc892f5013edb0aa1e61e808511387373d8d120348b5be0929621d21e6e9946a" or
