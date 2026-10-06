@@ -24,7 +24,11 @@ Benign ELF with partial STUN strings (Google STUN IP, `/dev/watchdog`, STUN magi
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Rule | Corpus size | Hits | Verdict |
+|---|---|---|---|
+| ClingSTUN_Backdoor_Behavior | 5,963 | 0 | CLEAN |
+
+Zero false positives. Co-occurrence guards (`.cling` paths + infection tags + persistence targets) are sufficiently specific to avoid triggering on legitimate ELF binaries.
 
 ## Coverage assessment
 
