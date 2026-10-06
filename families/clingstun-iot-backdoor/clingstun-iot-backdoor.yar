@@ -62,7 +62,8 @@ rule ClingSTUN_Backdoor_Behavior
         $stun_magic   = { 00 01 00 00 }
 
     condition:
-        (uint32(0) == 0x464c457f) and  // ELF magic
+        (uint32(0) == 0x464c457f) and
+        (filesize < 5MB) and
         (
             (
                 ($path_cling1 or $path_cling2) and
@@ -141,7 +142,8 @@ rule ClingSTUN_IOC_Infrastructure
         $selfrep  = ".selfrep"
 
     condition:
-        (uint32(0) == 0x464c457f) and  // ELF
+        (uint32(0) == 0x464c457f) and
+        (filesize < 5MB) and
         (
             ($stun_op and 2 of ($stun_*)) or
             (4 of ($stun_*)) or
@@ -164,6 +166,7 @@ rule ClingSTUN_Specimen_Pin
 
     condition:
         (uint32(0) == 0x464c457f) and
+        (filesize < 5MB) and
         (
             hash.sha256(0, filesize) == "dc892f5013edb0aa1e61e808511387373d8d120348b5be0929621d21e6e9946a" or
             hash.sha256(0, filesize) == "a297eddfa7abea8d411afc0f150f8f6f30e470a77204de87e3b0815fa9bb8a84" or
