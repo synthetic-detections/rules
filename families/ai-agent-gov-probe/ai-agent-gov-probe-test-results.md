@@ -12,11 +12,11 @@ and format-fuzzing probes against government web services.
 
 Five Suricata rules covering indicators that existing ET/Snort rulesets
 do not well-cover:
-- sid:9000901 — INT32 boundary value `2147483648` in HTTP query parameter
-- sid:9000902 — `debug=1` + `output=` enumeration in same request
-- sid:9000903 — `debug=1` + `raw=` enumeration in same request
-- sid:9000904 — Disposable email domain (`guerrillamail`) in POST body
-- sid:9000905 — OpenAI agent task-tag prefix (`oai_` / `oai:`) in query string
+- sid:9001601 — INT32 boundary value `2147483648` in HTTP query parameter
+- sid:9001602 — `debug=1` + `output=` enumeration in same request
+- sid:9001603 — `debug=1` + `raw=` enumeration in same request
+- sid:9001604 — Disposable email domain (`guerrillamail`) in POST body
+- sid:9001605 — OpenAI agent task-tag prefix (`oai_` / `oai:`) in query string
 
 ## Compile check
 
@@ -33,11 +33,11 @@ Attack PCAPs (must alert):
 
 | PCAP | Alerts | SID |
 |---|---|---|
-| attack-int32-boundary.pcap | 1 | 9000901 |
-| attack-debug-output-enum.pcap | 1 | 9000902 |
-| attack-debug-raw-enum.pcap | 1 | 9000903 |
-| attack-disposable-email.pcap | 1 | 9000904 |
-| attack-oai-agent-tag.pcap | 1 | 9000905 |
+| attack-int32-boundary.pcap | 1 | 9001601 |
+| attack-debug-output-enum.pcap | 1 | 9001602 |
+| attack-debug-raw-enum.pcap | 1 | 9001603 |
+| attack-disposable-email.pcap | 1 | 9001604 |
+| attack-oai-agent-tag.pcap | 1 | 9001605 |
 
 Benign PCAPs (must be silent):
 
@@ -56,10 +56,10 @@ N/A — no YARA rule (network-only family).
 
 ## Notes
 
-- sid 9000901 (INT32 boundary) will match any use of `2147483648` in a query
+- sid 9001601 (INT32 boundary) will match any use of `2147483648` in a query
   string, including legitimate pagination edge cases in applications that use
   unsigned 32-bit page numbers. Tune threshold if deployed on such services.
-- sid 9000905 (oai tag) uses pcre to anchor the `oai` match to a parameter
+- sid 9001605 (oai tag) uses pcre to anchor the `oai` match to a parameter
   value position (`?param=oai_...`), avoiding false positives from strings
   like `oauth` in parameter names.
 - If Transluce or OpenAI publish exact user-agent strings used by the agents,

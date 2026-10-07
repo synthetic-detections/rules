@@ -11,16 +11,16 @@
 # traversal.  These rules target the NOVEL indicators specific to agentic
 # AI probing that are not well-covered:
 #
-#   sid 9000901 — INT32 boundary probe: exact value 2147483648 (2^31) in
+#   sid 9001601 — INT32 boundary probe: exact value 2147483648 (2^31) in
 #                 an HTTP query parameter.  Automated boundary fuzzers use
 #                 this; legitimate users almost never type it.
-#   sid 9000902 — Format/debug enumeration: debug=1 alongside output=,
+#   sid 9001602 — Format/debug enumeration: debug=1 alongside output=,
 #                 raw=, or format= in the same HTTP request — a signature
 #                 of systematic API-surface enumeration.
-#   sid 9000903 — Disposable-email API-key registration: guerrillamail
+#   sid 9001603 — Disposable-email API-key registration: guerrillamail
 #                 domain in an HTTP POST body — the BEA incident showed
 #                 agents self-registering for API keys with throwaway mail.
-#   sid 9000904 — OpenAI agent tag marker: "oai:" or "oai_" prefix in
+#   sid 9001604 — OpenAI agent tag marker: "oai:" or "oai_" prefix in
 #                 HTTP query strings, observed in 10K+ Education Dept
 #                 requests as an agent-task correlation tag.
 #
@@ -29,7 +29,7 @@
 #   https://thehackernews.com/2026/10/openai-disrupts-reasoning-extraction.html
 # ----------------------------------------------------------------------------
 
-# --- sid 9000901: INT32 boundary probe in query parameter ---
+# --- sid 9001601: INT32 boundary probe in query parameter ---
 # 2147483648 = 2^31, one past signed INT_MAX.  The LAC agents injected
 # this into numeric search fields to test integer-overflow handling.
 # Anchored to query string (http_uri after ?) to avoid body FPs.
@@ -40,9 +40,9 @@ alert http any any -> any any ( \
     classtype:web-application-activity; \
     reference:url,transluce.org/us-canada-gov; \
     metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
-    sid:9000901; rev:1;)
+    sid:9001601; rev:1;)
 
-# --- sid 9000902: debug + format enumeration in a single request ---
+# --- sid 9001602: debug + format enumeration in a single request ---
 # The LAC agents toggled debug=1 and probed output/raw/format parameters
 # in the same request — systematic API-surface mapping.
 alert http any any -> any any ( \
@@ -53,7 +53,7 @@ alert http any any -> any any ( \
     classtype:web-application-activity; \
     reference:url,transluce.org/us-canada-gov; \
     metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
-    sid:9000902; rev:1;)
+    sid:9001602; rev:1;)
 
 alert http any any -> any any ( \
     msg:"AI-AGENT-PROBE debug flag + raw parameter enumeration in same request"; \
@@ -63,9 +63,9 @@ alert http any any -> any any ( \
     classtype:web-application-activity; \
     reference:url,transluce.org/us-canada-gov; \
     metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
-    sid:9000903; rev:1;)
+    sid:9001603; rev:1;)
 
-# --- sid 9000904: disposable-email domain in POST body ---
+# --- sid 9001604: disposable-email domain in POST body ---
 # The BEA incident: an agent tried to register for an API key using
 # guerrillamailblock.com.  Matches any guerrillamail variant in a POST.
 alert http any any -> any any ( \
@@ -76,9 +76,9 @@ alert http any any -> any any ( \
     classtype:web-application-activity; \
     reference:url,transluce.org/us-canada-gov; \
     metadata:family ai-agent-gov-probe, severity high, created_at 2026_10_02; \
-    sid:9000904; rev:1;)
+    sid:9001604; rev:1;)
 
-# --- sid 9000905: "oai" agent-task tag in query string ---
+# --- sid 9001605: "oai" agent-task tag in query string ---
 # 10K+ requests to the US Education Dept carried tags prefixed "oai:" or
 # "oai_" as agent-task correlation markers.  Match in query string only.
 alert http any any -> any any ( \
@@ -89,4 +89,4 @@ alert http any any -> any any ( \
     classtype:web-application-activity; \
     reference:url,transluce.org/us-canada-gov; \
     metadata:family ai-agent-gov-probe, severity medium, created_at 2026_10_02; \
-    sid:9000905; rev:1;)
+    sid:9001605; rev:1;)
