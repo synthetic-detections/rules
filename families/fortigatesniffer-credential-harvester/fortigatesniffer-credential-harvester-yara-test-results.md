@@ -45,4 +45,6 @@ yara -w fortigatesniffer-credential-harvester.yar /dev/null
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Slice | Scanned | Hits | Verdict |
+|-------|---------|------|---------|
+| Full corpus | 5,961 | 0 | CLEAN — no false positives |
