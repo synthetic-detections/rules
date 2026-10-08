@@ -71,6 +71,7 @@ statistics recorded in each transcript.
 | `cisco-sdwan-cve-2026-76504` | — | ✅ | 2026-10-03 HelpNetSecurity — Cisco Catalyst SD-WAN Manager API auth bypass via URI encoding (CVSS 9.8, zero-day in the wild) |
 | `mistic-backdoor` | ✅ | — | 2026-10-04 Symantec — Mistic/MLTBackdoor fileless backdoor by KongTuke/TAG-124, MpExtMs.exe DLL sideloading chain (version.dll → EndpointDlp.dll), in-memory execution, VICE SPIDER ecosystem |
 | `atlassian-webresource-pathtraversal-cve-2026-21589` | — | ✅ | 2026-10-05 watchTowr — Atlassian webresource plugin `::` path traversal pre-auth file read across all Data Center products (CVSS 10.0) |
+| `fortigatesniffer-credential-harvester` | ✅ | — | 2026-10-08 FBI/USSS — FortigateSniffer Go-based credential sniffer (FortiBleed campaign), 86K devices, IAB for INC/Lynx/Payload ransomware |
 
 ## Layout
 
