@@ -1,0 +1,23 @@
+<!-- Legitimate Windows Task Scheduler XML export -->
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Author>DOMAIN\admin</Author>
+    <Description>Daily backup rotation</Description>
+    <Date>2025-06-15T08:00:00</Date>
+  </RegistrationInfo>
+  <Triggers>
+    <TimeTrigger>
+      <Repetition>
+        <Interval>PT30M</Interval>
+      </Repetition>
+      <StartBoundary>2025-06-15T08:00:00</StartBoundary>
+    </TimeTrigger>
+  </Triggers>
+  <Actions>
+    <Exec>
+      <Command>C:\Tools\backup.exe</Command>
+      <Arguments>/rotate /keep 7</Arguments>
+    </Exec>
+  </Actions>
+</Task>
