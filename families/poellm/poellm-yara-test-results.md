@@ -58,4 +58,4 @@ making standalone FP extremely unlikely.
 | Rule              | Slice  | Hits | Verdict |
 |-------------------|-------:|-----:|---------|
 | PoeLLM_Behavioral | 11,674 |    0 | Clean   |
-| PoeLLM_IOC        |        |      | PENDING |
+| PoeLLM_IOC        | 10,605 |    0 | Clean   |
