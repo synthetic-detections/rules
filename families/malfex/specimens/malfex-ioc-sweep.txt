@@ -1,0 +1,9 @@
+Synthetic specimen for MALFEX IOC sweep rule test.
+Actor GitHub: cavecrew
+Actor email: corpmalfex@gmail.com
+C2 endpoints: 104.234.65.75:700, 45.89.30.194, 191.96.81.101, 51.137.158.178
+Staging: api.imghippo.com/uploads/payload.png
+npm packages: function-flag, function-color, cdn-img-fetch, img-to-native, native-runner
+ScopeSmart Technologies Inc vendor directory
+Scheduled task \Maiden with TapiUnattend.exe hollowing
+AES key: malfexteam2027

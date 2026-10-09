@@ -1,0 +1,7 @@
+Synthetic specimen for MALFEX Overlord RAT behavioural rule test.
+Drops payload into %LOCALAPPDATA%\ScopeSmart Technologies Inc\
+AutoIt script: h.a3x loaded by AutoIt3.exe
+Scheduled task \Maiden runs every 5 minutes
+Task author: Welcome, comment: Wichita
+AES decryption key: malfexteam2027
+Process hollowing target: TapiUnattend.exe with explorer.exe parent spoofing
