@@ -57,4 +57,4 @@ The `cavecrew` GitHub handle has a co-occurrence guard and will not fire alone.
 | Rule                          |  Slice | Hits | Verdict |
 |-------------------------------|-------:|-----:|---------|
 | MALFEX_OverlordRAT_Behavioral |  6,291 |    0 | Clean   |
-| MALFEX_IOC                    |        |      | PENDING |
+| MALFEX_IOC                    | 10,896 |    0 | Clean   |
