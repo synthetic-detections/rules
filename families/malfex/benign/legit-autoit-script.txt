@@ -1,0 +1,9 @@
+; Legitimate AutoIt automation script for software deployment
+; Uses AutoIt3.exe but no MALFEX-specific vendor or task names
+#include <File.au3>
+#include <Array.au3>
+
+Local $sInstallDir = @AppDataDir & "\MyCompany\Installer\"
+DirCreate($sInstallDir)
+FileCopy("setup.exe", $sInstallDir & "setup.exe")
+Run($sInstallDir & "setup.exe /silent")

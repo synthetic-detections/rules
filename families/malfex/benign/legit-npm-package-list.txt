@@ -1,0 +1,11 @@
+// Legitimate npm package listing — contains generic package names
+// but no MALFEX-specific campaign indicators.
+{
+  "dependencies": {
+    "express": "^4.18.0",
+    "function-bind": "^1.1.2",
+    "color-convert": "^2.0.1",
+    "native-image": "^3.0.1",
+    "image-size": "^1.0.0"
+  }
+}
