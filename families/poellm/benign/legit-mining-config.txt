@@ -1,0 +1,16 @@
+{
+    "application": "crypto-portfolio-tracker",
+    "description": "Legitimate cryptocurrency portfolio tracking app",
+    "supported_exchanges": [
+        "binance",
+        "coinbase",
+        "kraken",
+        "kryptex-exchange"
+    ],
+    "mining_stats_endpoint": "/api/v1/mining/stats",
+    "xmrig_pool_monitor": true,
+    "pool_addresses": [
+        "stratum+tcp://pool.example.com:3333"
+    ],
+    "version": "2.4.1"
+}

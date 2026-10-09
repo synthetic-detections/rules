@@ -1,0 +1,10 @@
+PoeLLM IOC reference document (synthetic test specimen)
+Contains IOC strings to validate Antino_IOC rule matching.
+
+C2 GitHub repo: ejejejdfbbebe
+Active C2: 92.119.164.50, 103.249.201.108, 178.128.14.204
+Historical C2: 136.148.69.233, 185.132.53.158, 120.224.114.212
+Historical C2: 5.78.73.122, 15.204.178.28, 92.119.165.74
+Historical C2: 45.133.73.28, 89.39.253.46, 191.37.28.160
+Payload name: libgcrypt
+Mining pool: kryptex

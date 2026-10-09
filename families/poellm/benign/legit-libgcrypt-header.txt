@@ -1,0 +1,28 @@
+/* libgcrypt.h -- GNU Privacy Guard cryptographic library interface
+ * Copyright (C) 2000-2024 Free Software Foundation, Inc.
+ *
+ * This file is part of Libgcrypt.
+ */
+
+#ifndef _GCRYPT_H
+#define _GCRYPT_H
+
+#include <stdlib.h>
+#include <stdarg.h>
+
+/* The version of this header should match the installed library. */
+#define GCRYPT_VERSION "1.10.3"
+
+/* The type for gcry_error_t. */
+typedef unsigned int gcry_error_t;
+
+/* Perform various operations defined by CMD. */
+gcry_error_t gcry_control (enum gcry_ctl_cmds cmd, ...);
+
+/* Map an error source to a string. */
+const char *gcry_strsource (gcry_error_t err);
+
+/* Check that the library fulfills the version requirement. */
+const char *gcry_check_version (const char *req_version);
+
+#endif /* _GCRYPT_H */
