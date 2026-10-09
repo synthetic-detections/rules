@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""Fetch release notes from GitHub raw content."""
+
+import urllib.request
+
+REPO = "torvalds/linux"
+BASE = "https://raw.githubusercontent.com"
+
+def get_changelog(tag):
+    url = f"{BASE}/{REPO}/{tag}/Documentation/process/changes.rst"
+    with urllib.request.urlopen(url) as resp:
+        return resp.read().decode()
+
+if __name__ == "__main__":
+    print(get_changelog("v6.8"))
