@@ -52,4 +52,6 @@ XMRig or service-management strings. Key FP boundaries:
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Rule                       |  Slice | Hits | Verdict |
+|----------------------------|-------:|-----:|---------|
+| AhsayCBS_XMRig_Behavioral | 10,980 |    0 | Clean   |
