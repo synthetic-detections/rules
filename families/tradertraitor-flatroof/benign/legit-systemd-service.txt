@@ -1,0 +1,20 @@
+# Legitimate systemd service file
+# Contains persistence-related terms that should NOT trigger FLATROOF rules
+
+[Unit]
+Description=Git Configuration Update Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/git-update-daemon
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+# Service name
+# imagent is a legitimate macOS Messages daemon name
+# powershell-config-service is not present here
+# session.lock is a common lockfile pattern
