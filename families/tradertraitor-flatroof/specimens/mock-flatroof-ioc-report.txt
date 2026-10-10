@@ -1,0 +1,22 @@
+TraderTraitor FLATROOF IOC Report
+=================================
+
+Campaign Infrastructure
+-----------------------
+C2 domain: hashicorp-terraform.io
+Staging URL: diagnose.hashicorp-terraform.io
+Dynamic DNS C2: supportaru.serveftp.com
+Backup C2: arusupport-region1-webhook.online
+Dead drop: pastebin.com/raw/3yptBDhL
+Secondary C2: delay.servehttp.com
+
+Encryption
+----------
+Loader AES key: PTa3WZPQZAjj55t@
+Config key: u73adF39ZT
+Config AES: a9d932dcfa3289a6
+
+Supply Chain
+------------
+Trojanized package: terraform-provider-awsbeta
+End-of-font payload marker: @@ENDFONT@@
