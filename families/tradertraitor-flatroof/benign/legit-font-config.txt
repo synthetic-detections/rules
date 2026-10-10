@@ -1,0 +1,17 @@
+# Legitimate font configuration file
+# Contains font-related terms that should NOT trigger FLATROOF rules
+
+[fonts]
+HiraginoSans-Bold = /usr/share/fonts/HiraginoSans-Bold.ttf
+MalgunGothic-Bold = /usr/share/fonts/MalgunGothic-Bold.ttf
+NotoSansCJK-Bold = /usr/share/fonts/NotoSansCJK-Bold.otf
+
+[browser_extensions]
+# Legitimate wallet extension references in a browser config
+extension.metamask.enabled = true
+extension.phantom.enabled = true
+
+[encryption]
+# AES configuration (different keys, generic terms)
+algorithm = AES-256-CBC
+key_length = 256

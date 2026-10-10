@@ -1,0 +1,16 @@
+// Mock trojanized Terraform provider
+// Tests: TraderTraitor_FLATROOF_Behavioral (paths 3, 6)
+
+package main
+
+// Provider metadata
+var providerName = "terraform-provider-awsbeta"
+var registryDomain = "hashicorp-terraform.io"
+
+// Crypto wallet extension targets
+var targets = []string{
+    "MetaMask",
+    "Phantom",
+    "Trust Wallet",
+    "Rabby",
+}
