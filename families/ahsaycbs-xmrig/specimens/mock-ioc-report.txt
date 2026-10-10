@@ -1,0 +1,29 @@
+INCIDENT REPORT: AhsayCBS Exploitation -> XMRig Cryptominer
+Date: 2026-10-08
+Attribution: unattributed, financially motivated
+Classification: HIGH
+Reporting: Huntress
+CVEs: CVE-2026-105133, CVE-2026-105134
+
+Staging infrastructure:
+- imagefiles-backup.oss-ap-southeast-7.aliyuncs.com/javas/Office/win/
+- Payloads: msedge.exe (modified NSSM), edge.exe (XMRig), config.json,
+  WinRing0x64.sys, Taskgmr.ps1
+
+Service persistence:
+- MicrosoftEdgeUpdateSvc (installed via msedge.exe/NSSM -> edge.exe)
+- Pool: xmr.kryptex.network:8029
+- User: krxYMRN97D/creativejs
+
+Attacker IPs:
+- 177.4.12.11 (initial exploitation)
+- 38.60.252.110 (payload staging)
+- 107.191.47.199 (C2)
+- 185.220.236.49 (Tor exit / scanning)
+- 104.234.26.10 (exploitation)
+- 123.202.208.37 (exploitation)
+
+File hashes (SHA-256):
+- 05f69ae6b2b89c1c4dcf836bff032232f11bf0109f2b498e2345045d06139034 (msedge.exe)
+- 4dcb0202fe8b2d4d7b183764e38184cd6ed50132786cc7e7d1f7f4bce1dd6f3d (edge.exe)
+- 481728a7c9c4c02be07051d9c1958d902ea6397ebb8952ab83944818e3d25d21 (Taskgmr.ps1)
