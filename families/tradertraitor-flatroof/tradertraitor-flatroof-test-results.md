@@ -42,4 +42,6 @@
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Rule                                | Slice | Hits | Verdict |
+|-------------------------------------|------:|-----:|---------|
+| TraderTraitor_FLATROOF_Behavioral   | 5,393 |    0 | Clean   |
