@@ -44,4 +44,5 @@
 
 | Rule                                | Slice | Hits | Verdict |
 |-------------------------------------|------:|-----:|---------|
-| TraderTraitor_FLATROOF_Behavioral   | 5,393 |    0 | Clean   |
+| TraderTraitor_FLATROOF_Behavioral   |  5,393 |    0 | Clean   |
+| TraderTraitor_FLATROOF_IOC          | 11,508 |    0 | Clean   |
