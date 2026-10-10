@@ -55,3 +55,4 @@ XMRig or service-management strings. Key FP boundaries:
 | Rule                       |  Slice | Hits | Verdict |
 |----------------------------|-------:|-----:|---------|
 | AhsayCBS_XMRig_Behavioral | 10,980 |    0 | Clean   |
+| AhsayCBS_XMRig_IOC        | 10,774 |    0 | Clean   |
