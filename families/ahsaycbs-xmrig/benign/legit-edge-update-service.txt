@@ -1,0 +1,12 @@
+Microsoft Edge Update Service Configuration
+-------------------------------------------
+Service name: MicrosoftEdgeUpdate
+Display name: Microsoft Edge Update Service (edgeupdate)
+Path: "C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" /svc
+
+This is a legitimate Microsoft Edge browser update service. It checks for
+and installs updates to Microsoft Edge. The service name is
+"MicrosoftEdgeUpdate" (NOT "MicrosoftEdgeUpdateSvc").
+
+Status: Running
+Startup type: Automatic (Delayed Start)
