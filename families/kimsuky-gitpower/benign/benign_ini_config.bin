@@ -1,0 +1,4 @@
+[settings]
+config = first.ini
+backup = help.ini
+logdir = C:\Logs\
