@@ -62,4 +62,4 @@ yara -w kimsuky-gitpower.yar /dev/null
 |------|-------------|------|---------|
 | Kimsuky_GitPower_Behavioral | 6,430 files | 0 | CLEAN |
 | Kimsuky_GitPower_IOC | 11,136 files (budget) | 0 | CLEAN |
-| Kimsuky_GitPower_Specimen | pending | — | — |
+| Kimsuky_GitPower_Specimen | 11,277 files | 0 | CLEAN |
