@@ -76,6 +76,7 @@ statistics recorded in each transcript.
 | `malfex` | ✅ | — | 2026-10 Checkmarx / CloudSEK — MALFEX npm supply-chain campaign: Overlord RAT (AutoIt, `ScopeSmart Technologies` fake vendor, `\Maiden` task, TapiUnattend hollowing), movinlike stealer (Discord/browser/crypto), Solana C2 resolution |
 | `ahsaycbs-xmrig` | ✅ | — | 2026-10-08 Huntress — AhsayCBS backup server zero-day exploitation chain (CVE-2026-105133 auth bypass + CVE-2026-105134 CVSS-10 RCE), JSP webshell, XMRig disguised as Edge, WinRing0 driver, Kryptex pool |
 | `tradertraitor-flatroof` | ✅ | — | 2026-10-08 Zscaler ThreatLabz — TraderTraitor (Jade Sleet / UNC4899) trojanized Terraform provider, FLATROOF Rust cross-platform backdoor, ROOFDECK second-stage, Pastebin/Nostr/Telegram C2, crypto wallet stealer |
+| `midnight-mimosa` | ✅ | — | 2026-10-08 Bitdefender — firmware supply-chain embedding ad-fraud and residential-proxy in budget MediaTek Android phones, RC4-encrypted framework loader (libeasy.so), Play Store disable/enable, remote DEX RCE channel |
 
 ## Layout
 
