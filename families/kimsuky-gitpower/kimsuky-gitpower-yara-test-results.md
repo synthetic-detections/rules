@@ -58,4 +58,8 @@ yara -w kimsuky-gitpower.yar /dev/null
 
 ## Corpus FP test
 
-PENDING — scans launched, awaiting results.
+| Rule | Corpus slice | Hits | Verdict |
+|------|-------------|------|---------|
+| Kimsuky_GitPower_Behavioral | 6,430 files | 0 | CLEAN |
+| Kimsuky_GitPower_IOC | pending | — | — |
+| Kimsuky_GitPower_Specimen | pending | — | — |
