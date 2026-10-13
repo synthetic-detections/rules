@@ -72,7 +72,7 @@ rule AvisLoader_Behavioral : behavioral loader persistence
         $sec_themida    = ".themida" ascii
         $sec_vmprotect  = ".vmp" ascii
         $sec_enigma     = ".enigma" ascii
-        $sec_upx        = "UPX" ascii
+        $sec_upx        = "UPX0" ascii
 
     condition:
         (
