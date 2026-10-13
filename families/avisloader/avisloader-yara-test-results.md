@@ -65,4 +65,8 @@ yara-linter unavailable (broken symlink). Skipped.
 
 ## Corpus FP test
 
-PENDING — yaragate unavailable (502). Scan to be retried when service is restored.
+| Rule | Corpus slice | Hits | Verdict |
+|------|-------------|------|---------|
+| AvisLoader_Behavioral | 11,449 files | 0 | CLEAN |
+| AvisLoader_IOC | 10,681 files | 0 | CLEAN |
+| AvisLoader_Specimen | 11,391 files | 0 | CLEAN |
