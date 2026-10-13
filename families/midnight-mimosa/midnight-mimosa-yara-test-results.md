@@ -51,4 +51,8 @@ Result: **PASS** (no errors, no warnings)
 
 ## Corpus FP test
 
-PENDING — scanner requires single-rule submission; to be completed per-rule.
+| Rule | Corpus slice | Hits | Verdict |
+|------|-------------|------|---------|
+| MidnightMimosa_FirmwareBackdoor_Behavioral | 6,461 files | 0 | CLEAN |
+| MidnightMimosa_IOC | 10,803 files | 0 | CLEAN |
+| MidnightMimosa_Specimen | 11,460 files | 0 | CLEAN |
