@@ -34,18 +34,20 @@ rule PEERSTITCH_Behavioural : implant peerstitch
         reference   = "https://unit42.paloaltonetworks.com/fortimanager-cve-2024-47575-peerstitch-malware.md"
     strings:
         // ARM64 mmap(RWX) shellcode bootstrap template
-        $mmap_tmpl   = { 00 00 80 D2 01 00 88 D2 E2 00 80 D2 43 04 80 D2 04 00 80 D2 05 00 80 D2 C8 1B 80 D2 01 00 00 D4 01 84 BA 52 01 00 00 B9 00 00 1F D6 }
+        $mmap_tmpl    = { 00 00 80 D2 01 00 88 D2 E2 00 80 D2 43 04 80 D2 04 00 80 D2 05 00 80 D2 C8 1B 80 D2 01 00 00 D4 01 84 BA 52 01 00 00 B9 00 00 1F D6 }
         // injection entry prologue (ADR + LDR + BLR, then stack setup)
         $inj_prologue = { 1E 00 00 10 DE C3 40 F8 C0 03 1F D6 }
         // NOP patch word written over daemon call sites (MOV X0, X0 -> 0xAA0003E0, LE)
-        $nop_patch   = { E0 03 00 AA }
+        $nop_patch    = { E0 03 00 AA }
         // injected FortiOS daemons + process memory write path
-        $miglogd     = "/bin/miglogd" ascii
-        $iked        = "/bin/iked" ascii
-        $procmem     = "/proc/%d/mem" ascii
+        $miglogd      = "/bin/miglogd"
+        $iked         = "/bin/iked"
+        $procmem      = "/proc/%d/mem"
     condition:
-        uint32(0) == 0x464c457f           // ELF
-        and uint16(18) == 0x00b7          // EM_AARCH64
+        // ELF
+        // EM_AARCH64
+        uint32(0) == 0x464c457f
+        and uint16(18) == 183
         and (
             ($procmem and ($miglogd or $iked) and ($mmap_tmpl or $inj_prologue)) or
             ($mmap_tmpl and $inj_prologue and $nop_patch) or
@@ -64,28 +66,28 @@ rule PEERSTITCH_IOC : implant peerstitch
         family      = "peerstitch-fortigate-implant"
         reference   = "https://unit42.paloaltonetworks.com/fortimanager-cve-2024-47575-peerstitch-malware.md"
     strings:
-        $cover_path  = "/tmp/apache2/conf/md-acme.conf" ascii
-        $cover_body  = "#0 certs managed by ACME" ascii
-        $stage_dir   = "/data2/template/" ascii
-        $trav1       = "../../../../setup" ascii
-        $trav2       = "../../tmp/apache2/conf/md-acme.conf" ascii
-        $daemon1     = "/bin/miglogd" ascii
-        $daemon2     = "/bin/iked" ascii
+        $cover_path = "/tmp/apache2/conf/md-acme.conf"
+        $cover_body = "#0 certs managed by ACME"
+        $stage_dir  = "/data2/template/"
+        $trav1      = "../../../../setup"
+        $trav2      = "../../tmp/apache2/conf/md-acme.conf"
+        $daemon1    = "/bin/miglogd"
+        $daemon2    = "/bin/iked"
         // stager filenames (Emscripten/WASM + Node.js orchestrator)
-        $f_pmjs      = "pM.js" ascii
-        $f_ipssem    = "ipssem.js" ascii
-        $f_lldprx    = "lldprx" ascii
+        $f_pmjs     = "pM.js"
+        $f_ipssem   = "ipssem.js"
+        $f_lldprx   = "lldprx"
         // attacker IPs (installer / malware host + rogue FortiManager entries)
-        $c2_1        = "23.240.77.233" ascii
-        $c2_2        = "47.18.167.159" ascii
-        $c2_3        = "45.32.41.202" ascii
-        $c2_4        = "198.199.122.22" ascii
+        $c2_1       = "23.240.77.233"
+        $c2_2       = "47.18.167.159"
+        $c2_3       = "45.32.41.202"
+        $c2_4       = "198.199.122.22"
     condition:
         (
             ($cover_path and $cover_body) or
-            ($cover_path and (any of ($daemon*))) or
+            ($cover_path and any of ($daemon*)) or
             (any of ($trav*) and $cover_path) or
-            ($stage_dir and (any of ($f_*)) and (any of ($daemon*))) or
+            ($stage_dir and any of ($f_*) and any of ($daemon*)) or
             (2 of ($f_*) and any of ($c2_*)) or
             (2 of ($c2_*) and (any of ($daemon*) or $cover_path))
         )
