@@ -51,9 +51,12 @@ staging directory with a stager filename, or multiple C2 markers.
 
 ## Corpus FP test
 
-Corpus FP scan pending (full read-only corpus pass of the single broadest rule, 40-hit cap,
-15-minute budget; result to be appended). Specimen/benign smoke tests pass; benign ARM64 ELF
-that names the FortiOS daemons stays clean, which is the main structural-collision risk.
+Corpus FP scan of the broadest rule (PEERSTITCH_Behavioural) against a corpus slice:
+**6,914 samples scanned, 0 matches, 0 read errors** — clean, no false positives. The
+specimen-pin rule is hash-only (no FP surface) and the IOC rule is guarded by string
+co-occurrence; the behavioural rule is the one with any breadth, and it stayed silent across
+the slice. Benign ARM64 ELF that names the FortiOS daemons also stays clean locally, which is
+the main structural-collision risk. Verdict: no tightening needed.
 
 ## Campaign overlap
 
