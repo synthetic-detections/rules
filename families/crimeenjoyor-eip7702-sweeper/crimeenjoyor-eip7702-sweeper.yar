@@ -304,6 +304,9 @@ rule CrimeEnjoyor_IOC : evm ioc
         // caught by live contract scanner at block 25956136 on 2026-09-11
         $addr20    = "0xd8e252367271923f556c3f3a0790bd1740f005b2" nocase
         $addr21    = "0x277622cd50eccb9007f2e1e84399831249c43b74" nocase
+        // v1 clone (destination()+initialize()+0x43000825, 1254B, no XOR)
+        // caught by live contract scanner at block 26229868 on 2026-10-20
+        $addr22    = "0xfc331d2b80b05f1608a6637d7d08e1e78940a0d6" nocase
         // Contract names as strings (appear in deployment artifacts, ABIs, configs)
         $name01    = "CrimeEnjoyor"
         $name02    = "AdvancedCrimeEnjoyor"
@@ -319,7 +322,7 @@ rule CrimeEnjoyor_IOC : evm ioc
         // Contract name + EIP-7702 bytecode marker
         // IPFS metadata reference
         (
-            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10, $addr11, $addr12, $addr13, $addr14, $addr15, $addr16, $addr17, $addr18, $addr19, $addr20, $addr21) or
+            any of ($addr01, $addr02, $addr03, $addr04, $addr06, $addr07, $addr08, $addr09, $addr10, $addr11, $addr12, $addr13, $addr14, $addr15, $addr16, $addr17, $addr18, $addr19, $addr20, $addr21, $addr22) or
             ($addr05 and any of ($name*)) or
             (any of ($name*) and $evm_7702) or
             $ipfs_meta
