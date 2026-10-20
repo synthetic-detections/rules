@@ -38,4 +38,8 @@ Zero false positives on structurally similar benign samples.
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Slice | Scanned | Hits | Verdict |
+|-------|---------|------|---------|
+| Full corpus | 6,764 | 0 | **CLEAN** |
+
+Zero false positives across 6,764 samples (IOC rule, 9m46s scan).
