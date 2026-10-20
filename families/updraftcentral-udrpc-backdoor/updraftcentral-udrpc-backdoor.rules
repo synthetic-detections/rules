@@ -1,0 +1,76 @@
+# updraftcentral-udrpc-backdoor.rules
+# ----------------------------------------------------------------------------
+# UpdraftCentral UDRPC backdoor campaign, October 2026
+#
+# TeamUpdraft's teamupdraft.com breached Oct 17-18, 2026. Attackers stole
+# UpdraftCentral connection keys and used signed UDRPC commands to push
+# malicious plugins (webshells, auth-cookie backdoors) to customer sites.
+#
+# Two attack phases observed on the wire:
+#
+# Phase 1 — UDRPC command delivery via admin-ajax.php
+#   All UpdraftCentral commands route through wp-admin/admin-ajax.php with
+#   action=updraft_central_ajaxcallback. The body carries a signed
+#   udrpc_message, a key_name identifying the connection, and the format
+#   version. Two sub-vectors:
+#   - CVE-2026-10795 (June 2026): format=1 legacy RPC + crypto bypass
+#   - October key compromise: valid signed commands with stolen keys
+#     (key_name contains ".central.updraftplus.com")
+#
+# Phase 2 — Backdoor access after plugin installation
+#   Variant A (OffSeq webshell): POST with admin888 password gate
+#   Variant B (auth-cookie): GET with token= query parameter that triggers
+#   wp_set_auth_cookie() for admin impersonation
+#
+#   sid 9001001 — CVE-2026-10795: format=1 legacy UDRPC exploitation
+#   sid 9001002 — Stolen-key UDRPC command delivery (.central.updraftplus.com)
+#   sid 9001003 — UDRPC plugin.upload_plugin command (malicious plugin push)
+#   sid 9001004 — OffSeq webshell access (admin888 + system command execution)
+# ----------------------------------------------------------------------------
+
+alert http any any -> any any ( \
+    msg:"UPDRAFTCENTRAL-UDRPC CVE-2026-10795 format=1 legacy RPC exploit attempt"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"admin-ajax.php"; http_uri; \
+    content:"updraft_central_ajaxcallback"; http_client_body; nocase; \
+    content:"format=1"; http_client_body; nocase; \
+    content:"udrpc_message"; http_client_body; nocase; \
+    reference:cve,2026-10795; \
+    reference:url,offseq.com/en/research/the-backdoor-inside-the-backup-request/; \
+    classtype:web-application-attack; \
+    sid:9001001; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"UPDRAFTCENTRAL-UDRPC stolen connection-key command delivery"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"admin-ajax.php"; http_uri; \
+    content:"updraft_central_ajaxcallback"; http_client_body; nocase; \
+    content:".central.updraftplus.com"; http_client_body; nocase; \
+    content:"udrpc_message"; http_client_body; nocase; \
+    reference:url,www.wordfence.com/blog/2026/10/updraftcentral-connection-key-compromise/; \
+    classtype:web-application-attack; \
+    sid:9001002; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"UPDRAFTCENTRAL-UDRPC plugin.upload_plugin command (malicious plugin push)"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"admin-ajax.php"; http_uri; \
+    content:"updraft_central_ajaxcallback"; http_client_body; nocase; \
+    content:"udrpc_message"; http_client_body; nocase; \
+    content:"plugin.upload_plugin"; http_client_body; nocase; \
+    reference:url,www.wordfence.com/blog/2026/10/updraftcentral-connection-key-compromise/; \
+    classtype:web-application-attack; \
+    sid:9001003; rev:1;)
+
+alert http any any -> any any ( \
+    msg:"UPDRAFTCENTRAL-UDRPC OffSeq webshell access (admin888 gate)"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"admin888"; http_client_body; \
+    content:"postpass2"; http_client_body; \
+    reference:url,offseq.com/en/research/the-backdoor-inside-the-backup-request/; \
+    classtype:web-application-attack; \
+    sid:9001004; rev:1;)
