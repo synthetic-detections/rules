@@ -1,0 +1,6 @@
+Welcome to the Rust application
+AES-256-GCM encryption library loaded
+Processing file: document.pdf
+LaunchAgent installed at ~/Library/LaunchAgents/com.mycompany.app.plist
+Build completed with cargo build --release
+modified_source.rs template generated
