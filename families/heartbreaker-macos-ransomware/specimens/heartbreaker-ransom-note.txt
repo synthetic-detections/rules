@@ -1,0 +1,16 @@
+HEARTBREAKER WARNING!
+Your system has been encrypted!
+Please send 0.003 BTC to unlock your files.
+All files in your Downloads folder have been encrypted with AES-256-GCM.
+Do not attempt to modify encrypted files.
+Encrypting file: test.docx
+com.network.startup
+com.myapp.startup
+METAMORPHIC_MARKER_START
+METAMORPHIC_MARKER_END
+g_w`:D2Xq6Yxez-5{#3mfd=VcB.Qhsub
+mimicore::morph()
+mimicore::add_to_startup()
+.heartbreaker
+modified_source.rs
+heartbreaker-e2c97a640967e3f6
