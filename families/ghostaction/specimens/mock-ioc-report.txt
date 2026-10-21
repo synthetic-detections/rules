@@ -1,0 +1,13 @@
+GhostAction Campaign IOC Report
+================================
+
+C2 Infrastructure:
+  - 193.32.204.199 (active October 2026 wave)
+  - 45.139.104.115 (earlier 2025 wave)
+
+Malicious workflow: security-audit.yml
+Trigger: pull_request_target
+Exfiltration: curl -X POST to C2 with GITHUB_TOKEN and secrets
+
+Affected repos: 30,000+
+Confirmed stolen secrets: 3,325

@@ -1,0 +1,40 @@
+# ghostaction.rules
+# ----------------------------------------------------------------------------
+# GhostAction — GitHub Actions credential-theft campaign
+# Compromised maintainer accounts push malicious workflows that exfiltrate
+# secrets via HTTP POST to attacker C2 infrastructure.
+#
+# October 2026 wave C2: 193.32.204.199
+# 2025 wave C2: 45.139.104.115
+#
+#   sid 2026102101 — HTTP POST to October 2026 C2 (193.32.204.199)
+#   sid 2026102102 — HTTP POST to 2025 wave C2 (45.139.104.115)
+#   sid 2026102103 — HTTP POST carrying GITHUB_TOKEN to any destination
+# ----------------------------------------------------------------------------
+
+alert http $HOME_NET any -> 193.32.204.199 any ( \
+    msg:"GHOSTACTION C2 exfil — HTTP POST to 193.32.204.199 (Oct 2026 wave)"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    reference:url,www.stepsecurity.io/blog/ghostaction-returns; \
+    reference:url,blog.gitguardian.com/ghostaction-campaign-3-325-secrets-stolen/; \
+    classtype:trojan-activity; \
+    sid:2026102101; rev:1;)
+
+alert http $HOME_NET any -> 45.139.104.115 any ( \
+    msg:"GHOSTACTION C2 exfil — HTTP POST to 45.139.104.115 (2025 wave)"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    reference:url,www.stepsecurity.io/blog/ghostaction-returns; \
+    classtype:trojan-activity; \
+    sid:2026102102; rev:1;)
+
+alert http $HOME_NET any -> any any ( \
+    msg:"GHOSTACTION credential exfil — HTTP POST containing GITHUB_TOKEN"; \
+    flow:to_server,established; \
+    content:"POST"; http_method; \
+    content:"GITHUB_TOKEN"; nocase; http_client_body; fast_pattern; \
+    content:"ghp_"; http_client_body; \
+    reference:url,blog.gitguardian.com/ghostaction-campaign-3-325-secrets-stolen/; \
+    classtype:trojan-activity; \
+    sid:2026102103; rev:1;)
