@@ -81,6 +81,7 @@ statistics recorded in each transcript.
 | `midnight-mimosa` | ✅ | — | 2026-10-08 Bitdefender — firmware supply-chain embedding ad-fraud and residential-proxy in budget MediaTek Android phones, RC4-encrypted framework loader (libeasy.so), Play Store disable/enable, remote DEX RCE channel |
 | `heartbreaker-macos-ransomware` | ✅ | — | 2026-10-20 Objective-See (Wardle) — Heartbreaker metamorphic macOS ransomware, Rust/ARM64, AES-256-GCM with hardcoded key, .heartbreaker extension, LaunchAgent persistence, self-recompiling metamorphic engine via mimicore |
 | `updraftcentral-udrpc-backdoor` | ✅ | ✅ | 2026-10-19 Wordfence / OffSeq / TeamUpdraft — UpdraftCentral key compromise, signed UDRPC commands install webshell + auth-cookie backdoor plugins on connected WordPress sites |
+| `ghostaction` | ✅ | ✅ | 2026-10-21 StepSecurity / GitGuardian — GhostAction GitHub Actions credential-theft campaign, compromised maintainer accounts push malicious `security-audit.yml` workflows, 30k+ repos, 3,325 secrets exfiltrated |
 
 ## Layout
 
