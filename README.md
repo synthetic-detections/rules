@@ -82,6 +82,7 @@ statistics recorded in each transcript.
 | `heartbreaker-macos-ransomware` | ✅ | — | 2026-10-20 Objective-See (Wardle) — Heartbreaker metamorphic macOS ransomware, Rust/ARM64, AES-256-GCM with hardcoded key, .heartbreaker extension, LaunchAgent persistence, self-recompiling metamorphic engine via mimicore |
 | `updraftcentral-udrpc-backdoor` | ✅ | ✅ | 2026-10-19 Wordfence / OffSeq / TeamUpdraft — UpdraftCentral key compromise, signed UDRPC commands install webshell + auth-cookie backdoor plugins on connected WordPress sites |
 | `ghostaction` | ✅ | ✅ | 2026-10-21 StepSecurity / GitGuardian — GhostAction GitHub Actions credential-theft campaign, compromised maintainer accounts push malicious `security-audit.yml` workflows, 30k+ repos, 3,325 secrets exfiltrated |
+| `php2shell-cve-2026-109618` | — | ✅ | 2026-10-22 — PHP session upload progress heap UAF RCE (CVE-2026-109618/109619, CVSS 9.2), three-stage exploit detection: OOM crash, heap groom, forged HashTable payload |
 
 ## Layout
 
