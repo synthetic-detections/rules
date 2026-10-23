@@ -33,4 +33,8 @@ Varonis: [StealC Returns](https://www.varonis.com/blog/stealc-returns)
 
 ## Corpus FP test
 
-PENDING — scan launched via `yara-scan --detach`.
+| Samples scanned | Hits | Duration | Verdict |
+|---|---|---|---|
+| 10,352 | 0 | 14m16s | **CLEAN** |
+
+Scan job 38, 2026-10-23. Strings rule only (scanner gate requires single-rule submission). Zero false positives.
