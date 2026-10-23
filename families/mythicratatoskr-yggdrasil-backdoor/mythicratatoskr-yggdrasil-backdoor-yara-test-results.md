@@ -33,4 +33,8 @@ ESET LABScon 2026: [MythicRatatoskr](https://www.welivesecurity.com/en/eset-rese
 
 ## Corpus FP test
 
-PENDING — scan launched via `yara-scan --detach`.
+| Samples scanned | Hits | Duration | Verdict |
+|---|---|---|---|
+| 6,648 | 0 | 9m58s | **CLEAN** |
+
+Scan job 37, 2026-10-23. Agent rule only (scanner gate requires single-rule submission). Zero false positives.
