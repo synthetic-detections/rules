@@ -83,6 +83,8 @@ statistics recorded in each transcript.
 | `updraftcentral-udrpc-backdoor` | ✅ | ✅ | 2026-10-19 Wordfence / OffSeq / TeamUpdraft — UpdraftCentral key compromise, signed UDRPC commands install webshell + auth-cookie backdoor plugins on connected WordPress sites |
 | `ghostaction` | ✅ | ✅ | 2026-10-21 StepSecurity / GitGuardian — GhostAction GitHub Actions credential-theft campaign, compromised maintainer accounts push malicious `security-audit.yml` workflows, 30k+ repos, 3,325 secrets exfiltrated |
 | `php2shell-cve-2026-109618` | — | ✅ | 2026-10-22 — PHP session upload progress heap UAF RCE (CVE-2026-109618/109619, CVSS 9.2), three-stage exploit detection: OOM crash, heap groom, forged HashTable payload |
+| `mythicratatoskr-yggdrasil-backdoor` | ✅ | — | 2026-10-22 ESET LABScon — Sandworm/UAC-0099 Mythic agent using Yggdrasil decentralized mesh C2, AES-256-CFB config, companion SOCKS5 proxy, deployed against Ukrainian grain logistics |
+| `stadia-rat` | ✅ | — | 2026-10-22 Varonis — StealC developer's new RAT, native MSVC PE32 with single KERNEL32 import, RC4-over-HTTP C2, HVNC, App-Bound Encryption helper shared with StealC v3.5 |
 
 ## Layout
 
