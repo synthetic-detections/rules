@@ -51,4 +51,8 @@ Benign corpus: `legit_sitecustomize.py` (vanilla Python encoding setup), `legit_
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Rule | Samples scanned | Hits | Verdict |
+|---|---|---|---|
+| LiteLLM_SupplyChain_Privcollect | 6,583 | 0 | Clean |
+| LiteLLM_SupplyChain_IOC | 11,642 | 0 | Clean |
+| LiteLLM_SupplyChain_Specimen | — | — | Hash-only, not scanned |
