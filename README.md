@@ -85,6 +85,7 @@ statistics recorded in each transcript.
 | `php2shell-cve-2026-109618` | — | ✅ | 2026-10-22 — PHP session upload progress heap UAF RCE (CVE-2026-109618/109619, CVSS 9.2), three-stage exploit detection: OOM crash, heap groom, forged HashTable payload |
 | `mythicratatoskr-yggdrasil-backdoor` | ✅ | — | 2026-10-22 ESET LABScon — Sandworm/UAC-0099 Mythic agent using Yggdrasil decentralized mesh C2, AES-256-CFB config, companion SOCKS5 proxy, deployed against Ukrainian grain logistics |
 | `stadia-rat` | ✅ | — | 2026-10-22 Varonis — StealC developer's new RAT, native MSVC PE32 with single KERNEL32 import, RC4-over-HTTP C2, HVNC, App-Bound Encryption helper shared with StealC v3.5 |
+| `litellm-supply-chain` | ✅ | — | 2026-10-24 Rescana / Wiz / Aikido — LiteLLM v1.107.0 PyPI+Docker supply-chain compromise, privcollect credential stealer + dead-drop remote-code loader |
 
 ## Layout
 
