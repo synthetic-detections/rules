@@ -60,4 +60,6 @@ benign-tls-example.pcap    → (no alerts) ✓
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Slice | Files scanned | Hits | Verdict |
+|-------|--------------|------|---------|
+| Full corpus | 6,474 | 0 | Clean |
