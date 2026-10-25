@@ -86,6 +86,7 @@ statistics recorded in each transcript.
 | `mythicratatoskr-yggdrasil-backdoor` | ✅ | — | 2026-10-22 ESET LABScon — Sandworm/UAC-0099 Mythic agent using Yggdrasil decentralized mesh C2, AES-256-CFB config, companion SOCKS5 proxy, deployed against Ukrainian grain logistics |
 | `stadia-rat` | ✅ | — | 2026-10-22 Varonis — StealC developer's new RAT, native MSVC PE32 with single KERNEL32 import, RC4-over-HTTP C2, HVNC, App-Bound Encryption helper shared with StealC v3.5 |
 | `litellm-supply-chain` | ✅ | — | 2026-10-24 Rescana / Wiz / Aikido — LiteLLM v1.107.0 PyPI+Docker supply-chain compromise, privcollect credential stealer + dead-drop remote-code loader |
+| `blackx-uefi-bootkit` | ✅ | ✅ | 2026-10-25 Kaspersky — BlackX UEFI bootkit (APT41), Baton Drop Secure Boot bypass, OxiDLLRunner OLLVM sideloader, cloud-C2 RAT, diplomatic targets in Central Asia |
 
 ## Layout
 

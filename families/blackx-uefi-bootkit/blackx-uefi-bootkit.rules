@@ -1,0 +1,14 @@
+# blackx-uefi-bootkit.rules
+# ----------------------------------------------------------------------------
+# BlackX UEFI bootkit C2 — APT41-attributed, 2026-10-24
+#
+# OxiDLLRunner's Rust payload fetches plugin DLLs from archivetj[.]com.
+# Two signatures detect the C2 domain in DNS lookups and TLS handshakes.
+#
+# Sources:
+#   https://securelist.com/uefi-bootkit-blackx/121539/
+# ----------------------------------------------------------------------------
+
+alert dns $HOME_NET any -> any any (msg:"BLACKX UEFI Bootkit C2 DNS lookup (archivetj.com)"; dns.query; content:"archivetj.com"; nocase; endswith; reference:url,securelist.com/uefi-bootkit-blackx/121539/; classtype:trojan-activity; sid:9001001; rev:1;)
+
+alert tls $HOME_NET any -> $EXTERNAL_NET any (msg:"BLACKX UEFI Bootkit C2 TLS SNI (archivetj.com)"; tls.sni; content:"archivetj.com"; nocase; endswith; reference:url,securelist.com/uefi-bootkit-blackx/121539/; classtype:trojan-activity; sid:9001002; rev:1;)
