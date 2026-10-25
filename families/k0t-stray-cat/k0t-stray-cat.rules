@@ -1,0 +1,65 @@
+# k0t-stray-cat.rules
+# ----------------------------------------------------------------------------
+# k0t / Stray Cat — initial access broker campaign wire-side detection
+# Source: https://www.group-ib.com/blog/stray-cat-network-edge/
+#
+# k0t exploits FortiGate, FortiWeb, and GlobalProtect devices, then uses
+# AdaptixC2 and MeshCentral for persistent access. Custom tools stage from
+# known domains and IPs. Downstream victims observed on Qilin and The
+# Gentlemen leak sites.
+#
+#   sid 2026102501 — DNS query for k0t C2/staging domain
+#   sid 2026102502 — TLS SNI to k0t C2/staging domain
+#   sid 2026102503 — Outbound TCP to AdaptixC2 team server 64.94.85.14:4321
+#   sid 2026102504 — Outbound TCP to AdaptixC2 beacon target 168.100.11.99
+#   sid 2026102505 — DNS query for MeshCentral C2 domain
+#   sid 2026102506 — TLS SNI to MeshCentral C2 domain
+# ----------------------------------------------------------------------------
+
+alert dns any any -> any any ( \
+    msg:"K0T-STRAYCAT DNS query for staging/C2 domain"; \
+    dns.query; \
+    pcre:"/^(sthyjk\.com|alknene\.shop|radesashar\.com|agent\.afahimsa\.top)$/"; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102501; rev:1;)
+
+alert tls any any -> any any ( \
+    msg:"K0T-STRAYCAT TLS SNI to staging/C2 domain"; \
+    flow:to_server,established; \
+    tls.sni; \
+    pcre:"/^(sthyjk\.com|alknene\.shop|radesashar\.com|agent\.afahimsa\.top)$/"; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102502; rev:1;)
+
+alert tcp $HOME_NET any -> 64.94.85.14 4321 ( \
+    msg:"K0T-STRAYCAT outbound to AdaptixC2 team server 64.94.85.14:4321"; \
+    flow:to_server,established; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102503; rev:1;)
+
+alert tcp $HOME_NET any -> 168.100.11.99 any ( \
+    msg:"K0T-STRAYCAT outbound to AdaptixC2 beacon target 168.100.11.99"; \
+    flow:to_server,established; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102504; rev:1;)
+
+alert dns any any -> any any ( \
+    msg:"K0T-STRAYCAT DNS query for MeshCentral C2 domain"; \
+    dns.query; \
+    pcre:"/^(mesh\.buttruyen\.com|meshcentral\.girydsfsggvb\.com)$/"; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102505; rev:1;)
+
+alert tls any any -> any any ( \
+    msg:"K0T-STRAYCAT TLS SNI to MeshCentral C2 domain"; \
+    flow:to_server,established; \
+    tls.sni; \
+    pcre:"/^(mesh\.buttruyen\.com|meshcentral\.girydsfsggvb\.com)$/"; \
+    reference:url,www.group-ib.com/blog/stray-cat-network-edge/; \
+    classtype:trojan-activity; \
+    sid:2026102506; rev:1;)
