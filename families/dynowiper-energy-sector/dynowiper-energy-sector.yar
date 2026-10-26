@@ -17,9 +17,11 @@
      renames it "Custom Domain Policy", creates SYSTEM scheduled task
      "Custom GPO Task" with filter GUID 79A87EBB-4DF6-4541-9530-CAD8BEE8A7AD,
      then self-cleans.
-   - LazyWiper: PowerShell wiper, assessed by CERT as LLM-generated and
-     non-distinctive (C# helper WriteRandomBytes, a long extension list with the
-     misspellings .pcks/.pcks12/.pcks7, self-terminates on a domain controller).
+   - LazyWiper: PowerShell wiper, assessed by CERT as LLM-generated
+     (C# class RandomByteWriter with WriteRandomBytes method, embeds via
+     Add-Type, overwrites files with 32-byte random writes at 16-byte seek
+     intervals giving ~2/3 overwrite; misspellings .pcks/.pcks12/.pcks7; aborts
+     on hostname containing "pe-dc"; disables Defender via Set-MpPreference).
 
    The OT destruction (Hitachi RTU560 corrupted firmware, Mikronika/Relion file
    deletion, Moxa/Teltonika/WAGO factory-reset + IP->127.0.0.1, Siemens S7 STOP)
@@ -38,9 +40,11 @@
          gated on a PE + an exclusion string (PDB paths are forgeable)
      (3) DynoWiper_GPO_Distributor  — behavioural/critical: the PowerShell dropper
          (filter GUID + Custom Domain Policy + Custom GPO Task)
-     (4) LazyWiper_Build            — low/brittle: LLM-generated build; pins THIS
-         build via WriteRandomBytes + the misspelled .pcks* extensions + DC-abort
-     (5) DynoWiper_Campaign_IOCs    — IOC/high: sha256/sha1 + C2 IP pins
+     (4) LazyWiper_Behavior          — behavioural/critical: PS1 + C# embedding +
+         FileStream write-with-seek-16 + Defender disable; survives regeneration
+     (5) LazyWiper_Build             — low/brittle: LLM-generated build; pins THIS
+         build via RandomByteWriter class + .pcks* extension typos + pe-dc abort
+     (6) DynoWiper_Campaign_IOCs    — IOC/high: sha256/sha1 + C2 IP pins
 
    This adopts and extends CERT Polska's published DynoWiper rule (which keys on
    4-of {$recycle.bin, program files(x86), perflogs, windows\x00, Error opening
@@ -125,24 +129,47 @@ rule DynoWiper_GPO_Distributor : malware
         ($guid or ($n1 and $n2) or $del or ($n2 and $n3)) and filesize < 1MB
 }
 
-rule LazyWiper_Build : wiper
+rule LazyWiper_Behavior : behavioral wiper
 {
     meta:
-        description = "LazyWiper PowerShell wiper (this build) — WriteRandomBytes helper + the misspelled .pcks/.pcks12/.pcks7 extensions + DC-abort; LLM-generated, pins THIS build, not durable across regeneration"
+        description = "LazyWiper PowerShell wiper — Add-Type C# embedding + FileStream overwrite with 32-byte random writes at 16-byte seek intervals + Defender disable; survives cosmetic LLM regeneration"
         author      = "synthetic-detections"
-        date        = "2026-08-09"
-        severity    = "low"
+        date        = "2026-10-26"
+        severity    = "critical"
         family      = "dynowiper-energy-sector"
         reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
     strings:
+        $embed = "Add-Type" ascii wide nocase
+        $w1    = "FileStream" ascii wide
+        $w2    = "FileAccess.Write" ascii wide
+        $w3    = "new Random()" ascii wide
+        $w4    = "new byte[32]" ascii wide
+        $w5    = "Seek(16" ascii wide
+        $def   = "DisableRealTimeMonitoring" ascii wide nocase
+    condition:
+        not uint16(0) == 0x5a4d and $embed and $def and 3 of ($w*) and filesize < 200KB
+}
+
+rule LazyWiper_Build : wiper
+{
+    meta:
+        description = "LazyWiper PowerShell wiper (this build) — RandomByteWriter class + the misspelled .pcks/.pcks12/.pcks7 extensions + pe-dc hostname abort; LLM-generated, pins THIS build"
+        author      = "synthetic-detections"
+        date        = "2026-10-26"
+        severity    = "low"
+        family      = "dynowiper-energy-sector"
+        reference   = "https://cert.pl/en/posts/2026/01/incident-report-energy-sector-2025/"
+        hash        = "033cb31c081ff4292f82e528f5cb78a503816462daba8cc18a6c4531009602c2"
+    strings:
+        $cls = "RandomByteWriter" ascii wide nocase
         $fn  = "WriteRandomBytes" ascii wide nocase
         $e1  = ".pcks12" ascii wide nocase
         $e2  = ".pcks7" ascii wide nocase
-        $e3  = "\".pcks\"" ascii wide nocase
-        $dc1 = "DomainController" ascii wide nocase
-        $dc2 = "ProductType" ascii wide nocase
+        $e3  = ".pcks" ascii wide nocase
+        $dc1 = "pe-dc" ascii wide nocase
+        $dc2 = "GetHostName" ascii wide nocase
     condition:
-        $fn and 2 of ($e*) and any of ($dc*) and filesize < 200KB
+        ($cls or $fn) and 2 of ($e*) and any of ($dc*) and filesize < 200KB
 }
 
 rule DynoWiper_Campaign_IOCs : c2 ioc
