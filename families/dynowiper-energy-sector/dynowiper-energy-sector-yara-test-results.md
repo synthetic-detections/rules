@@ -102,8 +102,8 @@ Rerun 2026-08-11 (independent second pass, larger budget-bounded slices):
 Cumulative across both passes: 80,689 file-scans, 0 matches.
 
 ### Updated LazyWiper rules (2026-10-26)
-- `LazyWiper_Behavior` — PENDING (corpus scan launched, awaiting results)
-- `LazyWiper_Build` (rewritten) — PENDING (corpus scan launched, awaiting results)
+- `LazyWiper_Behavior` — 5,248 scanned, **0 matches**, 0 read-errors.
+- `LazyWiper_Build` (rewritten) — 8,311 scanned, **0 matches**, 0 read-errors.
 
 ## Update 2026-08-22 — FP tightening
 Campaign IOC condition changed from `any of them` to `filesize < 4MB and (any of ($s*) or all of ($ip*))`: the two C2 IPs are YARA substring matches (185.200.177.10 ⊂ 185.200.177.100), so they now require both relay IPs together; the full SHA-256 hashes still fire alone. Smoke test re-run: specimens hit, benign clean.
