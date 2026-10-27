@@ -1,0 +1,6 @@
+Plex Media Server Plugin Manifest
+Name: SubZero.bundle
+Version: 2.6.5
+Protocol: http
+Proxy: false
+Framework: 2.5.0

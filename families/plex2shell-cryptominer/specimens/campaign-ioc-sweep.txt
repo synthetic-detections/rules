@@ -1,0 +1,12 @@
+Plex2Shell campaign IOC sweep file
+SHA256 hashes:
+b20f39fc00d242e706b6c30367ad811c676e0575050a4ec2f30104b696944b49
+e546b10aee5edc754da4f9b0baace00392257121911f630145078eafad1e6bd9
+C2 infrastructure:
+217.60.194.116
+91.92.40.202
+176.65.139.228
+45.194.92.222
+Domains:
+ota.proxystream.st
+global.relay.proxystream.st

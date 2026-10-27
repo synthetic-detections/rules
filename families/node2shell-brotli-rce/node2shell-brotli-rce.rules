@@ -1,0 +1,50 @@
+# Node2Shell CVE-2026-111497 — Suricata rules
+# Brotli decoder OOB write exploited via HTTP Content-Encoding: br
+#
+# Attack vectors:
+#   Inbound:  POST with Content-Encoding: br → Express 5 / body-parser 2.x
+#   Outbound: Response with Content-Encoding: br → Node.js fetch()
+#
+# Reference: https://thehackernews.com/2026/10/researchers-demonstrate-node2shell-rce.html
+
+# --- Inbound: Brotli-compressed POST request body ---
+# Brotli in request bodies is unusual — legitimate clients almost never
+# send Content-Encoding: br in POST requests. This is the primary
+# Express 5 / body-parser 2.x attack vector.
+alert http any any -> $HOME_NET any ( \
+    msg:"SYNTHDET Node2Shell CVE-2026-111497 — Brotli-compressed HTTP request body (potential exploit delivery)"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.header; content:"Content-Encoding"; content:"br"; distance:0; within:20; \
+    http.content_len; content:!"0"; \
+    threshold:type limit, track by_src, count 1, seconds 60; \
+    classtype:attempted-admin; \
+    sid:2026111497; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             cve CVE-2026-111497, \
+             attack_target Web_Server, \
+             deployment Perimeter, \
+             signature_severity Major, \
+             family node2shell-brotli-rce; \
+    reference:cve,2026-111497; \
+)
+
+# --- Inbound: Small Brotli request body (tighter variant) ---
+# The known PoC is 86 bytes. Flag Brotli POST bodies under 512 bytes.
+alert http any any -> $HOME_NET any ( \
+    msg:"SYNTHDET Node2Shell CVE-2026-111497 — Small Brotli POST body (< 512 bytes, likely exploit)"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.header; content:"Content-Encoding"; content:"br"; distance:0; within:20; \
+    urilen:>0; \
+    dsize:<512; \
+    classtype:attempted-admin; \
+    sid:2026111498; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             cve CVE-2026-111497, \
+             attack_target Web_Server, \
+             deployment Perimeter, \
+             signature_severity Critical, \
+             family node2shell-brotli-rce; \
+    reference:cve,2026-111497; \
+)

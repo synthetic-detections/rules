@@ -1,0 +1,87 @@
+# Plex2Shell CVE-2026-96652/96654/96655/96656 — Suricata rules
+# Four-CVE chain → unauthenticated RCE on Plex Media Server < 1.43.3.10861
+#
+# Chain: SSRF via /player/timeline → admin token leak → transcoder
+# SSRF → .so write to Codecs dir → dlopen → code execution
+#
+# Post-exploitation: XMRig miner + AISURU proxyware
+#
+# References:
+#   https://github.com/code-zm/plex2shell
+#   https://thehackernews.com/2026/10/hackers-exploit-plex2shell-flaws-to.html
+
+# --- Exploit: SSRF via /player/timeline with URL in protocol= ---
+# The initial exploit step injects a full URL into the protocol
+# parameter of /player/timeline. Legitimate Plex clients send
+# protocol=http or protocol=https, never a full URL.
+alert http any any -> $HOME_NET 32400 ( \
+    msg:"SYNTHDET Plex2Shell CVE-2026-96652 — SSRF via /player/timeline protocol= parameter"; \
+    flow:to_server,established; \
+    http.uri; content:"/player/timeline"; content:"protocol=http"; distance:0; content:"://"; distance:0; within:40; \
+    classtype:attempted-admin; \
+    sid:2026096652; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             cve CVE-2026-96652, \
+             attack_target Web_Server, \
+             deployment Perimeter, \
+             signature_severity Critical, \
+             family plex2shell-cryptominer; \
+    reference:cve,2026-96652; \
+    reference:url,github.com/code-zm/plex2shell; \
+)
+
+# --- Exploit: SSRF via /player/timeline/subscribe variant ---
+alert http any any -> $HOME_NET 32400 ( \
+    msg:"SYNTHDET Plex2Shell CVE-2026-96652 — SSRF via /player/timeline/subscribe"; \
+    flow:to_server,established; \
+    http.uri; content:"/player/timeline/subscribe"; content:"protocol="; distance:0; content:"://"; distance:0; within:60; \
+    classtype:attempted-admin; \
+    sid:2026096653; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             cve CVE-2026-96652, \
+             attack_target Web_Server, \
+             deployment Perimeter, \
+             signature_severity Critical, \
+             family plex2shell-cryptominer; \
+    reference:cve,2026-96652; \
+)
+
+# --- C2: Outbound connection to proxystream.st mining/proxy infra ---
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Plex2Shell C2 — DNS lookup for proxystream.st (AISURU mining/proxy infrastructure)"; \
+    dns.query; content:"proxystream.st"; nocase; \
+    classtype:trojan-activity; \
+    sid:2026096654; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             deployment Perimeter, \
+             signature_severity Major, \
+             family plex2shell-cryptominer; \
+    reference:url,thehackernews.com/2026/10/hackers-exploit-plex2shell-flaws-to.html; \
+)
+
+# --- C2: Payload download from known hosting IP ---
+alert http $HOME_NET any -> [217.60.194.116] any ( \
+    msg:"SYNTHDET Plex2Shell — Outbound connection to payload hosting IP 217.60.194[.]116"; \
+    flow:to_server,established; \
+    classtype:trojan-activity; \
+    sid:2026096655; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             deployment Perimeter, \
+             signature_severity Critical, \
+             family plex2shell-cryptominer; \
+    reference:url,thehackernews.com/2026/10/hackers-exploit-plex2shell-flaws-to.html; \
+)
+
+# --- Mining: Stratum protocol to proxystream.st pool ---
+alert tcp $HOME_NET any -> any any ( \
+    msg:"SYNTHDET Plex2Shell — XMRig Stratum connection to ota.proxystream.st mining pool"; \
+    flow:to_server,established; \
+    content:"|22|method|22|"; content:"mining."; distance:0; within:30; \
+    content:"proxystream"; distance:0; within:200; \
+    classtype:trojan-activity; \
+    sid:2026096656; rev:1; \
+    metadata:created_at 2026_10_27, updated_at 2026_10_27, \
+             deployment Perimeter, \
+             signature_severity Major, \
+             family plex2shell-cryptominer; \
+)
