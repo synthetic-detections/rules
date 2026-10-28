@@ -50,4 +50,5 @@ legitimate checkout code that references card/cvv/cpf fields.
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+Behavioural rule scanned against 6,221 samples: **0 matches**.
+Verdict: **CLEAN** — no false positives.
