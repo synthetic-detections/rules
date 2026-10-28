@@ -1,0 +1,109 @@
+# Convertr Magecart — Brazilian supply-chain card skimmer
+# Suricata rules for exfiltration domain DNS and HTTP POST patterns
+#
+# Brazilian Magecart group exploited CVE-2026-8467 in Plausible Analytics CE
+# to inject a card skimmer into Convertr e-commerce checkouts.  Exfiltration
+# targets 1x0.is/ws (and historically rotated short domains).
+#
+# Reference: https://sansec.io/research/convertr-plausible-supply-chain-attack
+# [[convertr-magecart.yar]]
+
+# --- DNS lookups for primary exfiltration domain ---
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for exfil domain 1x0.is"; \
+    dns.query; content:"1x0.is"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102801; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             cve CVE-2026-8467, \
+             attack_target Web_Client, \
+             deployment Perimeter, \
+             signature_severity Major, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+# --- DNS lookups for historical exfil rotation domains ---
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for known rotation exfil domain"; \
+    dns.query; content:"snf.is"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102802; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for known rotation exfil domain kk.land"; \
+    dns.query; content:"kk.land"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102803; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for known rotation exfil domain xsox.diy"; \
+    dns.query; content:"xsox.diy"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102804; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for known rotation exfil domain fasthook.app"; \
+    dns.query; content:"fasthook.app"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102805; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+alert dns any any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — DNS query for known rotation exfil domain antiddos-protection.net"; \
+    dns.query; content:"antiddos-protection.net"; nocase; endswith; \
+    classtype:trojan-activity; \
+    sid:2026102806; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+# --- HTTP POST to /ws exfil endpoint ---
+alert http $HOME_NET any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — HTTP POST to /ws exfiltration endpoint on known domain"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.uri; content:"/ws"; startswith; \
+    http.host; content:"1x0.is"; \
+    classtype:trojan-activity; \
+    sid:2026102807; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             cve CVE-2026-8467, \
+             attack_target Web_Client, \
+             deployment Perimeter, \
+             signature_severity Critical, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
+
+# --- HTTP POST to cartao.php or pagamento.php on any exfil domain ---
+alert http $HOME_NET any -> any any ( \
+    msg:"SYNTHDET Convertr Magecart — HTTP POST to cartao/pagamento exfil script"; \
+    flow:to_server,established; \
+    http.method; content:"POST"; \
+    http.uri; pcre:"/\/(cartao|pagamento)\.php/i"; \
+    classtype:trojan-activity; \
+    sid:2026102808; rev:1; \
+    metadata:created_at 2026_10_28, updated_at 2026_10_28, \
+             attack_target Web_Client, \
+             deployment Perimeter, \
+             signature_severity Major, \
+             family convertr-magecart; \
+    reference:url,sansec.io/research/convertr-plausible-supply-chain-attack; \
+)
