@@ -43,4 +43,4 @@ Benign set: `legit-plex-plugin.txt` contains "Protocol: http" and
 
 ## Corpus FP test
 
-PENDING — jobs 47, 50-52 submitted to yaragate, awaiting results.
+Corpus FP scan pending.

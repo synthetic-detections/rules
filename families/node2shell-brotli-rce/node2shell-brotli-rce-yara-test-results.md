@@ -53,4 +53,4 @@ rules target the HTTP envelope, not bare Brotli streams).
 
 ## Corpus FP test
 
-PENDING — jobs 48-49 submitted to yaragate, awaiting results.
+Corpus FP scan pending.
