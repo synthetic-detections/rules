@@ -87,6 +87,7 @@ statistics recorded in each transcript.
 | `stadia-rat` | ✅ | — | 2026-10-22 Varonis — StealC developer's new RAT, native MSVC PE32 with single KERNEL32 import, RC4-over-HTTP C2, HVNC, App-Bound Encryption helper shared with StealC v3.5 |
 | `litellm-supply-chain` | ✅ | — | 2026-10-24 Rescana / Wiz / Aikido — LiteLLM v1.107.0 PyPI+Docker supply-chain compromise, privcollect credential stealer + dead-drop remote-code loader |
 | `blackx-uefi-bootkit` | ✅ | ✅ | 2026-10-25 Kaspersky — BlackX UEFI bootkit (APT41), Baton Drop Secure Boot bypass, OxiDLLRunner OLLVM sideloader, cloud-C2 RAT, diplomatic targets in Central Asia |
+| `aokigahara` | ✅ | — | 2026-10-29 Check Point / Symantec / Carbon Black — Aokigahara (Aoki) Windows infostealer, `aisessions` module harvests AI coding-assistant credentials (Claude Desktop, ChatGPT, Codex, Cursor, Windsurf), AES-GCM exfil to `/gate` endpoint, unattributed |
 
 ## Layout
 
