@@ -51,4 +51,8 @@ overlap (mysql.com, sqlite.org) does not trigger IOC.
 
 ## Corpus FP test
 
-Corpus FP scan pending.
+| Rule | Samples | Hits | Verdict |
+|---|---|---|---|
+| BloodAlchemy_VaporPanda_Behaviour | 10,510 | 0 | CLEAN |
+| BloodAlchemy_VaporPanda_IOC | — | — | pending |
+| BloodAlchemy_VaporPanda_Specimen | — | — | pending |
