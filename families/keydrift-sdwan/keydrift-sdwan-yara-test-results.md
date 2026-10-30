@@ -50,5 +50,5 @@ overlapping strings (TracerPid, /bin/sh, sshd, runit paths).
 | Rule | Samples | Hits | Verdict |
 |---|---|---|---|
 | KeyDrift_SDWan_Behaviour | 6,209 | 0 | CLEAN |
-| KeyDrift_SDWan_IOC | — | — | pending |
+| KeyDrift_SDWan_IOC | 10,593 | 0 | CLEAN |
 | KeyDrift_SDWan_Packed_Loader | — | — | not scanned (no standalone gate submission) |
